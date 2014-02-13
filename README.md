@@ -1,4 +1,4 @@
-bplc
+bplc-ruby
 ====
 
-An implementation of the BPL language for OCCS Compilers
+An implementation of a BPL language compiler in Ruby for the OCCS Compilers course.
