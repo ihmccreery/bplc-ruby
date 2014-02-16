@@ -1,7 +1,6 @@
 require 'stringio'
 
 class Scanner
-  # takes `source` as an argument
   def initialize(source)
     configure_source(source)
     @line_number = 1
@@ -86,7 +85,7 @@ class Scanner
     end
   end
 
-  # NOTE increments line numbers as it consumes go
+  # NOTE increments line numbers as it consumes
   def consume_whitespace_and_comments
     # consume whitespace
     c = getc
