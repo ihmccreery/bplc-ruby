@@ -34,6 +34,20 @@ class Scanner
       ungetc(c)
       return Token.new(s, :num, @line_number)
 
+    # strings
+    elsif s == '"'
+      # don't want the quotes
+      s = ''
+      c = getc
+      while(c != '"')
+        if ["\n", nil].include? c
+          raise SyntaxError, "unterminated string \"#{s}\" on line #{@line_number}"
+        end
+        s << c
+        c = getc
+      end
+      return Token.new(s, :str, @line_number)
+
     # single-character symbols
     # NOTE we've already checked for comments, so we can consume '/'
     elsif %w[; , [ ] { } ( ) + - * / % &].include? s

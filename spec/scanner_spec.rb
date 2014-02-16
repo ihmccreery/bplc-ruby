@@ -26,14 +26,14 @@ describe Scanner do
       end
     end
 
-    it "recognizes numbers" do
+    it "recognizes numerics" do
       s = Scanner.new("1 22")
       %w[1 22].each do |t|
         expect(s.next_token).to eq(Token.new(t, :num, 1))
       end
     end
 
-    it "recognizes negative numbers" do
+    it "recognizes negative numerics" do
       s = Scanner.new("1 -22")
       expect(s.next_token).to eq(Token.new('1', :num, 1))
       expect(s.next_token).to eq(Token.new('-', :minus, 1))
@@ -44,6 +44,22 @@ describe Scanner do
       s = Scanner.new("1a")
       expect(s.next_token).to eq(Token.new('1', :num, 1))
       expect(s.next_token).to eq(Token.new('a', :id, 1))
+    end
+
+    it "recognizes strings" do
+      s = Scanner.new('"string""another string"')
+      expect(s.next_token).to eq(Token.new('string', :str, 1))
+      expect(s.next_token).to eq(Token.new('another string', :str, 1))
+    end
+
+    it "raises SyntaxErrors on multi-line strings" do
+      s = Scanner.new("\"this is a\nmulti-line string\"")
+      expect{s.next_token}.to raise_error(SyntaxError, 'unterminated string "this is a" on line 1')
+    end
+
+    it "raises SyntaxErrors on unterminated strings" do
+      s = Scanner.new("\"this is a")
+      expect{s.next_token}.to raise_error(SyntaxError, 'unterminated string "this is a" on line 1')
     end
 
     it "recognizes single-character symbols" do
@@ -65,6 +81,23 @@ describe Scanner do
       %w[= < <= == != >= >].each do |t|
         expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
       end
+    end
+
+    it "raises SyntaxErrors on '!' without a following '='" do
+      s = Scanner.new("!\n!a")
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 1")
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 2")
+    end
+
+    it "returns nil on end-of-file" do
+      s = Scanner.new("a")
+      expect(s.next_token).to eq(Token.new('a', :id, 1))
+      expect(s.next_token).to eq(Token.new(nil, :eof, 1))
+    end
+
+    it "raises SyntaxErrors on erroneous characters" do
+      s = Scanner.new("#")
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '#' on line 1")
     end
 
     it "consumes whitespace properly" do
@@ -104,23 +137,6 @@ describe Scanner do
     it "raises SyntaxErrors on unterminated multi-line comments" do
       s = Scanner.new("/*\n\n")
       expect{s.next_token}.to raise_error(SyntaxError, "unterminated comment beginning on line 1")
-    end
-
-    it "raises SyntaxErrors on '!' without a following '='" do
-      s = Scanner.new("!\n!a")
-      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 1")
-      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 2")
-    end
-
-    it "returns nil on end-of-file" do
-      s = Scanner.new("a")
-      expect(s.next_token).to eq(Token.new('a', :id, 1))
-      expect(s.next_token).to eq(Token.new(nil, :eof, 1))
-    end
-
-    it "raises SyntaxErrors on erroneous characters" do
-      s = Scanner.new("#")
-      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '#' on line 1")
     end
 
     it "provides line numbers" do
