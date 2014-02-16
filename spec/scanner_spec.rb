@@ -19,6 +19,62 @@ describe Scanner do
   end
 
   describe "#next_token" do
+    it "recognizes identifiers" do
+      s = Scanner.new("a bb c_c d1")
+      %w[a bb c_c d1].each do |t|
+        expect(s.next_token).to eq(Token.new(t, :id, 1))
+      end
+    end
+
+    it "recognizes numbers" do
+      s = Scanner.new("1 22")
+      %w[1 22].each do |t|
+        expect(s.next_token).to eq(Token.new(t, :num, 1))
+      end
+    end
+
+    it "recognizes negative numbers" do
+      s = Scanner.new("1 -22")
+      expect(s.next_token).to eq(Token.new('1', :num, 1))
+      expect(s.next_token).to eq(Token.new('-', :minus, 1))
+      expect(s.next_token).to eq(Token.new('22', :num, 1))
+    end
+
+    it "splits number-identifier concatentations" do
+      s = Scanner.new("1a")
+      expect(s.next_token).to eq(Token.new('1', :num, 1))
+      expect(s.next_token).to eq(Token.new('a', :id, 1))
+    end
+
+    it "recognizes single-character symbols" do
+      s = Scanner.new(";,[]{}()+-*/%&")
+      %w[; , [ ] { } ( ) + - * / % &].each do |t|
+        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+      end
+    end
+
+    it "recognizes ambiguous symbols" do
+      s = Scanner.new("= < <= == != >= >")
+      %w[= < <= == != >= >].each do |t|
+        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+      end
+    end
+
+    it "recognizes ambiguous symbols" do
+      s = Scanner.new("=<<===!=>=>")
+      %w[= < <= == != >= >].each do |t|
+        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+      end
+    end
+
+    it "consumes whitespace properly" do
+      s = Scanner.new("a bb\tc_c\rd1\ne")
+      %w[a bb c_c d1].each do |t|
+        expect(s.next_token).to eq(Token.new(t, :id, 1))
+      end
+      expect(s.next_token).to eq(Token.new('e', :id, 2))
+    end
+
     it "bypasses comments" do
       s = Scanner.new("a/*this is a comment*/bb/*this is another comment*/c_c")
       %w[a bb c_c].each do |t|
@@ -48,62 +104,6 @@ describe Scanner do
     it "raises SyntaxErrors on unterminated multi-line comments" do
       s = Scanner.new("/*\n\n")
       expect{s.next_token}.to raise_error(SyntaxError, "unterminated comment beginning on line 1")
-    end
-
-    it "recognizes identifiers" do
-      s = Scanner.new("a bb c_c d1")
-      %w[a bb c_c d1].each do |t|
-        expect(s.next_token).to eq(Token.new(t, :id, 1))
-      end
-    end
-
-    it "recognizes numbers" do
-      s = Scanner.new("1 22")
-      %w[1 22].each do |t|
-        expect(s.next_token).to eq(Token.new(t, :num, 1))
-      end
-    end
-
-    it "recognizes negative numbers" do
-      s = Scanner.new("1 -22")
-      expect(s.next_token).to eq(Token.new('1', :num, 1))
-      expect(s.next_token).to eq(Token.new('-', :minus, 1))
-      expect(s.next_token).to eq(Token.new('22', :num, 1))
-    end
-
-    it "splits number-identifier concatentations" do
-      s = Scanner.new("1a")
-      expect(s.next_token).to eq(Token.new('1', :num, 1))
-      expect(s.next_token).to eq(Token.new('a', :id, 1))
-    end
-
-    it "consumes whitespace properly" do
-      s = Scanner.new("a bb\tc_c\rd1\ne")
-      %w[a bb c_c d1].each do |t|
-        expect(s.next_token).to eq(Token.new(t, :id, 1))
-      end
-      expect(s.next_token).to eq(Token.new('e', :id, 2))
-    end
-
-    it "recognizes single-character symbols" do
-      s = Scanner.new(";,[]{}()+-*/%&")
-      %w[; , [ ] { } ( ) + - * / % &].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
-      end
-    end
-
-    it "recognizes ambiguous symbols" do
-      s = Scanner.new("= < <= == != >= >")
-      %w[= < <= == != >= >].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
-      end
-    end
-
-    it "recognizes ambiguous symbols" do
-      s = Scanner.new("=<<===!=>=>")
-      %w[= < <= == != >= >].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
-      end
     end
 
     it "raises SyntaxErrors on '!' without a following '='" do
