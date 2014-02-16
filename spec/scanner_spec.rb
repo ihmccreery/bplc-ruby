@@ -144,12 +144,28 @@ describe Scanner do
       expect(s.next_token).to eq(Token.new('a', :id, 1))
       expect(s.next_token).to eq(Token.new('bb', :id, 2))
     end
+  end
 
-    it "scans scanner_test.bpl properly" do
-      s = Scanner.new(File.new(SCANNER_TEST_FILENAME))
-      SCANNER_TEST_TOKENS.each do |t|
-        expect(s.next_token).to eq(t)
+  describe "#current_token" do
+    it "returns the current token" do
+      s = Scanner.new("a bb c_c d1")
+      %w[a bb c_c d1].each do |t|
+        s.next_token
+        expect(s.current_token).to eq(Token.new(t, :id, 1))
       end
+    end
+
+    it "returns nil before calling next_token" do
+      s = Scanner.new("a bb c_c d1")
+      expect(s.current_token).to be_nil
+    end
+  end
+
+  it "scans scanner_test.bpl properly" do
+    s = Scanner.new(File.new(SCANNER_TEST_FILENAME))
+    SCANNER_TEST_TOKENS.each do |t|
+      expect(s.next_token).to eq(t)
+      expect(s.current_token).to eq(t)
     end
   end
 end

@@ -1,6 +1,8 @@
 require 'stringio'
 
 class Scanner
+  attr_accessor :current_token
+
   def initialize(source)
     configure_source(source)
     @line_number = 1
@@ -19,9 +21,9 @@ class Scanner
       end
       ungetc(c)
       if Token::KEYWORDS[s]
-        return Token.new(s, Token::KEYWORDS[s], @line_number)
+        return @current_token = Token.new(s, Token::KEYWORDS[s], @line_number)
       else
-        return Token.new(s, :id, @line_number)
+        return @current_token = Token.new(s, :id, @line_number)
       end
 
     # numerics
@@ -32,7 +34,7 @@ class Scanner
         c = getc
       end
       ungetc(c)
-      return Token.new(s, :num, @line_number)
+      return @current_token = Token.new(s, :num, @line_number)
 
     # strings
     elsif s == '"'
@@ -46,28 +48,28 @@ class Scanner
         s << c
         c = getc
       end
-      return Token.new(s, :str, @line_number)
+      return @current_token = Token.new(s, :str, @line_number)
 
     # single-character symbols
     # NOTE we've already checked for comments, so we can consume '/'
     elsif %w[; , [ ] { } ( ) + - * / % &].include? s
-      return Token.new(s, Token::SYMBOLS[s], @line_number)
+      return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
 
     # ambiguous symbols
     elsif %w[= < >].include? s
       c = getc
       if c == '='
         s << c
-        return Token.new(s, Token::SYMBOLS[s], @line_number)
+        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
       else
         ungetc(c)
-        return Token.new(s, Token::SYMBOLS[s], @line_number)
+        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
       end
     elsif s == '!'
       c = getc
       if c == '='
         s << c
-        return Token.new(s, Token::SYMBOLS[s], @line_number)
+        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
       else
         ungetc(c)
         raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
@@ -75,7 +77,7 @@ class Scanner
 
     # end-of-file
     elsif s.nil?
-      return Token.new(s, :eof, @line_number)
+      return @current_token = Token.new(s, :eof, @line_number)
 
     # syntax error
     else
