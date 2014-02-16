@@ -1,7 +1,7 @@
 /* A program to compute factorials */
 
 int fact( int n) {
-	if (n <= 1)
+	if (n == 0)
 		return	1;
 	else
 		return n*fact(n-1);
@@ -10,7 +10,7 @@ int fact( int n) {
 void main(void) {
 	int x;
 	x = 1;
-	while(x <= 10) {
+	while(x < 10) {
 		write(x);
 		write(fact(x));
 		writeln();

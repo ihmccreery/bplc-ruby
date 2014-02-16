@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'scanner_test_tokens'
+require 'ex1_tokens'
 
-SCANNER_TEST_FILENAME = "spec/scanner_test.bpl"
+SCANNER_TEST_FILENAME = "spec/ex1.bpl"
 
 describe Scanner do
   describe "#initialize" do
@@ -163,7 +163,7 @@ describe Scanner do
 
   it "scans scanner_test.bpl properly" do
     s = Scanner.new(File.new(SCANNER_TEST_FILENAME))
-    SCANNER_TEST_TOKENS.each do |t|
+    EX1_TOKENS.each do |t|
       expect(s.next_token).to eq(t)
       expect(s.current_token).to eq(t)
     end
