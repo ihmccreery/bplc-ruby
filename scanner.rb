@@ -1,6 +1,10 @@
 require 'stringio'
 
+# a simple scanner that takes in a String, File, or other IO object
+# and yields successive tokens with #next_token and #current_token
 class Scanner
+
+  # the current Token in the source
   attr_accessor :current_token
 
   def initialize(source)
@@ -8,6 +12,8 @@ class Scanner
     @line_number = 1
   end
 
+  # gets the next Token in the source and returns it, progressing
+  # #current_token as well
   def next_token
     consume_whitespace_and_comments
     s = getc
@@ -101,11 +107,11 @@ class Scanner
     end
   end
 
-  # NOTE increments line numbers as it consumes
   def consume_whitespace_and_comments
     # consume whitespace
     c = getc
     while c =~ /\s/
+      # increment line numbers
       if c == "\n"
         @line_number += 1
       end
@@ -133,6 +139,7 @@ class Scanner
     beginning_line = @line_number
     until s =~ /.*\*\//
       c = getc
+      # increment line numbers
       if c == "\n"
         @line_number += 1
       end

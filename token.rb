@@ -1,5 +1,7 @@
 class Token
 
+  # a hash of strings representing every symbol in BPL
+  # keyed to its respective #type.
   SYMBOLS = {';' => :semicolon,
              ',' => :comma,
              '[' => :l_bracket,
@@ -22,6 +24,8 @@ class Token
              '%' => :percent,
              '&' => :ampersand}.freeze
 
+  # a hash of strings representing every keyword in BPL
+  # keyed to its respective #type.
   KEYWORDS = {'int' => :int,
               'void' => :void,
               'string' => :string,
@@ -33,7 +37,14 @@ class Token
               'writeln' => :writeln,
               'read' => :read}
 
-  attr_accessor :value, :type, :line_number
+  # the string value of the token
+  attr_reader :value
+
+  # the type of token, as a symbol
+  attr_reader :type
+
+  # the line from which the Token was generated
+  attr_reader :line_number
 
   def initialize(value, type, line_number)
     @value = value
@@ -41,6 +52,7 @@ class Token
     @line_number = line_number
   end
 
+  # checks for equality based on the attributes of the Token
   def ==(t)
     (t.class == self.class) && (t.state == self.state)
   end
@@ -48,6 +60,7 @@ class Token
 
   protected
 
+  # list of attributes used for checking equality
   def state
     [@value, @type, @line_number]
   end
