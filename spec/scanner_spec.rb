@@ -40,6 +40,16 @@ describe Scanner do
       expect(s.next_token).to eq(Token.new(nil, :eof, 1))
     end
 
+    it "raises SyntaxErrors on unterminated comments" do
+      s = Scanner.new("/*")
+      expect{s.next_token}.to raise_error(SyntaxError, "unterminated comment beginning on line 1")
+    end
+
+    it "raises SyntaxErrors on unterminated multi-line comments" do
+      s = Scanner.new("/*\n\n")
+      expect{s.next_token}.to raise_error(SyntaxError, "unterminated comment beginning on line 1")
+    end
+
     it "recognizes identifiers" do
       s = Scanner.new("a bb c_c d1")
       %w[a bb c_c d1].each do |t|
@@ -97,9 +107,9 @@ describe Scanner do
     end
 
     it "raises SyntaxErrors on '!' without a following '='" do
-      s = Scanner.new("! !a")
-      expect{s.next_token}.to raise_error(SyntaxError)
-      expect{s.next_token}.to raise_error(SyntaxError)
+      s = Scanner.new("!\n!a")
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 1")
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '!' on line 2")
     end
 
     it "returns nil on end-of-file" do
@@ -110,7 +120,7 @@ describe Scanner do
 
     it "raises SyntaxErrors on erroneous characters" do
       s = Scanner.new("#")
-      expect{s.next_token}.to raise_error(SyntaxError)
+      expect{s.next_token}.to raise_error(SyntaxError, "invalid symbol '#' on line 1")
     end
 
     it "provides line numbers" do

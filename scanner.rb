@@ -57,8 +57,7 @@ class Scanner
         return Token.new(s, Token::SYMBOLS[s], @line_number)
       else
         ungetc(c)
-        # TODO need more info here
-        raise SyntaxError
+        raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
       end
 
     # end-of-file
@@ -67,8 +66,7 @@ class Scanner
 
     # syntax error
     else
-      # TODO need more info here
-      raise SyntaxError
+      raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
     end
   end
 
@@ -117,14 +115,14 @@ class Scanner
 
   def consume_until_end_of_comment
     s = getc
+    beginning_line = @line_number
     until s =~ /.*\*\//
       c = getc
       if c == "\n"
         @line_number += 1
       end
       if c.nil?
-        # TODO need more info here
-        raise SyntaxError
+        raise SyntaxError, "unterminated comment beginning on line #{beginning_line}"
       else
         s << c
       end
