@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'ex1_tokens'
 
-SCANNER_TEST_FILENAME = "spec/ex1.bpl"
+EX1_FNAME = "spec/ex1.bpl"
 
 describe Scanner do
   describe "#initialize" do
@@ -10,11 +10,11 @@ describe Scanner do
     end
 
     it "can be constructed from a File" do
-      expect(Scanner.new(File.new(SCANNER_TEST_FILENAME))).to be_a Scanner
+      expect(Scanner.new(File.new(EX1_FNAME))).to be_a Scanner
     end
 
     it "can be constructed from a stream" do
-      expect(Scanner.new(open(SCANNER_TEST_FILENAME))).to be_a Scanner
+      expect(Scanner.new(open(EX1_FNAME))).to be_a Scanner
     end
   end
 
@@ -161,8 +161,8 @@ describe Scanner do
     end
   end
 
-  it "scans scanner_test.bpl properly" do
-    s = Scanner.new(File.new(SCANNER_TEST_FILENAME))
+  it "scans ex1.bpl properly" do
+    s = Scanner.new(File.new(EX1_FNAME))
     EX1_TOKENS.each do |t|
       expect(s.next_token).to eq(t)
       expect(s.current_token).to eq(t)
