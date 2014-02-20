@@ -49,6 +49,7 @@ class Scanner
       c = getc
       while(c != '"')
         if ["\n", nil].include? c
+          ungetc(c)
           raise SyntaxError, "unterminated string \"#{s}\" on line #{@line_number}"
         end
         s << c
@@ -87,6 +88,7 @@ class Scanner
 
     # syntax error
     else
+      ungetc(c)
       raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
     end
   end
@@ -111,10 +113,6 @@ class Scanner
     # consume whitespace
     c = getc
     while c =~ /\s/
-      # increment line numbers
-      if c == "\n"
-        @line_number += 1
-      end
       c = getc
     end
 
@@ -135,16 +133,13 @@ class Scanner
   end
 
   def consume_until_end_of_comment
+    beginning_line_number = @line_number
     s = getc
-    beginning_line = @line_number
     until s =~ /.*\*\//
       c = getc
-      # increment line numbers
-      if c == "\n"
-        @line_number += 1
-      end
       if c.nil?
-        raise SyntaxError, "unterminated comment beginning on line #{beginning_line}"
+        ungetc(c)
+        raise SyntaxError, "unterminated comment beginning on line #{beginning_line_number}"
       else
         s << c
       end
@@ -152,10 +147,17 @@ class Scanner
   end
 
   def getc
-    @source.getc
+    c = @source.getc
+    if c == "\n"
+      @line_number += 1
+    end
+    return c
   end
 
   def ungetc(c)
+    if c == "\n"
+      @line_number -= 1
+    end
     @source.ungetc(c)
   end
 end
