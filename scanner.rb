@@ -1,6 +1,6 @@
 require 'stringio'
 
-# a simple scanner that takes in a String, File, or other IO object
+# a simple Scanner that takes in a String, File, or other IO object
 # and yields successive tokens with #next_token and #current_token
 class Scanner
 
@@ -129,7 +129,7 @@ class Scanner
   # source must either
   #   be a String (in which case we construct a StringIO object)
   #   be a File (in which case we construct an IO object)
-  #   respond to #getc
+  #   respond to #getc and #ungetc
   def configure_source(source)
     if source.is_a? String
       @source = StringIO.new(source)

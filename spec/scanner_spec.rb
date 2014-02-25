@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'ex1_tokens'
 
-EX1_FNAME = "spec/ex1.bpl"
-
 describe Scanner do
   describe "#initialize" do
     it "can be constructed from a String" do
