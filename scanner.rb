@@ -16,63 +16,88 @@ class Scanner
   # #current_token as well
   def next_token
     consume_whitespace_and_comments
-    s = getc
+    p = peek
 
-    # identifiers & keywords
-    if s =~ /[A-Za-z_]/
-      c = getc
-      while(c =~ /[0-9A-Za-z_]/)
-        s << c
-        c = getc
-      end
-      ungetc(c)
-      if Token::KEYWORDS[s]
-        return @current_token = Token.new(s, Token::KEYWORDS[s], @line_number)
-      else
-        return @current_token = Token.new(s, :id, @line_number)
-      end
+    if p =~ /[A-Za-z_]/
+      return get_identifier_or_keyword
 
-    # numerics
-    elsif s =~ /[0-9]/
-      c = getc
-      while(c =~ /[0-9]/)
-        s << c
-        c = getc
-      end
-      ungetc(c)
-      return @current_token = Token.new(s, :num, @line_number)
+    elsif p =~ /[0-9]/
+      return get_numeric
 
-    # strings
-    elsif s == '"'
-      # don't want the quotes
-      s = ''
-      c = getc
-      while(c != '"')
-        if ["\n", nil].include? c
-          ungetc(c)
-          raise SyntaxError, "unterminated string \"#{s}\" on line #{@line_number}"
-        end
-        s << c
-        c = getc
-      end
-      return @current_token = Token.new(s, :str, @line_number)
+    elsif p == '"'
+      return get_string
 
-    # single-character symbols
     # NOTE we've already checked for comments, so we can consume '/'
-    elsif %w[; , [ ] { } ( ) + - * / % &].include? s
-      return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+    elsif %w[; , [ ] { } ( ) + - * / % &].include? p
+      return get_single_character_symbol
 
-    # ambiguous symbols
-    elsif %w[= < >].include? s
+    elsif %w[= < > !].include? p
+      return get_ambiguous_symbol
+
+    elsif p.nil?
+      return get_eof
+
+    else
+      raise SyntaxError, "invalid symbol '#{getc}' on line #{@line_number}"
+    end
+  end
+
+  private
+
+  ###############
+  # get methods #
+  ###############
+
+  def get_identifier_or_keyword
+    s = getc
+    c = getc
+    while(c =~ /[0-9A-Za-z_]/)
+      s << c
       c = getc
-      if c == '='
-        s << c
-        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
-      else
+    end
+    ungetc(c)
+    if Token::KEYWORDS[s]
+      return @current_token = Token.new(s, Token::KEYWORDS[s], @line_number)
+    else
+      return @current_token = Token.new(s, :id, @line_number)
+    end
+  end
+
+  def get_numeric
+    s = getc
+    c = getc
+    while(c =~ /[0-9]/)
+      s << c
+      c = getc
+    end
+    ungetc(c)
+    return @current_token = Token.new(s, :num, @line_number)
+  end
+
+  def get_string
+    # don't want the quotes
+    getc
+    s = ''
+    c = getc
+    while(c != '"')
+      if ["\n", nil].include? c
         ungetc(c)
-        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+        raise SyntaxError, "unterminated string \"#{s}\" on line #{@line_number}"
       end
-    elsif s == '!'
+      s << c
+      c = getc
+    end
+    return @current_token = Token.new(s, :str, @line_number)
+  end
+
+  def get_single_character_symbol
+    c = getc
+    return @current_token = Token.new(c, Token::SYMBOLS[c], @line_number)
+  end
+
+  def get_ambiguous_symbol
+    s = getc
+    if s == '!'
       c = getc
       if c == '='
         s << c
@@ -81,19 +106,25 @@ class Scanner
         ungetc(c)
         raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
       end
-
-    # end-of-file
-    elsif s.nil?
-      return @current_token = Token.new(s, :eof, @line_number)
-
-    # syntax error
     else
-      ungetc(c)
-      raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
+      c = getc
+      if c == '='
+        s << c
+        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+      else
+        ungetc(c)
+        return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+      end
     end
   end
 
-  private
+  def get_eof
+    return @current_token = Token.new(getc, :eof, @line_number)
+  end
+
+  ###################
+  # support methods #
+  ###################
 
   # source must either
   #   be a String (in which case we construct a StringIO object)
@@ -144,6 +175,12 @@ class Scanner
         s << c
       end
     end
+  end
+
+  def peek
+    c = getc
+    ungetc(c)
+    return c
   end
 
   def getc
