@@ -1,6 +1,6 @@
-Dir[File.expand_path("../../*.rb", __FILE__)].each { |f| require f }
+Dir[File.expand_path("../../lib/*.rb", __FILE__)].each { |f| require f }
 
-EX1_FNAME = "spec/ex1.bpl"
+EX1_FNAME = File.expand_path("../ex1.bpl", __FILE__)
 
 RSpec.configure do |config|
   # Run specs in random order to surface order dependencies. If you find an
