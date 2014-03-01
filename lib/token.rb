@@ -37,6 +37,8 @@ class Token
               'writeln' => :writeln,
               'read' => :read}
 
+  TYPE_SPECIFIERS = [:int, :void, :string]
+
   # the string value of the token
   attr_reader :value
 
@@ -50,6 +52,10 @@ class Token
     @value = value
     @type = type
     @line_number = line_number
+  end
+
+  def is_type_specifier?
+    return TYPE_SPECIFIERS.include? type
   end
 
   # checks for equality based on the attributes of the Token
