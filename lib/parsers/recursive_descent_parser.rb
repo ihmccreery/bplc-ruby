@@ -10,11 +10,19 @@ module Parsers
         return @parse
       else
         next_token
-        parse_variable_declaration
+        parse_declaration_list
       end
     end
 
     private
+
+    def parse_declaration_list
+      p = Parse::DeclarationList.new(nil, parse_variable_declaration)
+      while current_token.is_type_specifier?
+        p = Parse::DeclarationList.new(p, parse_variable_declaration)
+      end
+      return p
+    end
 
     def parse_variable_declaration
       Parse::VariableDeclaration.new(parse_type_specifier, parse_id, parse_semicolon)

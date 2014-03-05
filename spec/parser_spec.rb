@@ -8,14 +8,27 @@ describe Parser do
     end
   end
 
-  # TODO this is hideous; I need to think about how to do this OO properly
   describe "#parse" do
-    it "should parse a variable declaration" do
-      parse = Parser.new(Scanner.new("int x;")).parse
-      expect(parse).to be_a Parse::VariableDeclaration
-      expect(parse.type_specifier).to be_a Parse::TypeSpecifier
-      expect(parse.id).to be_a Parse::Id
-      expect(parse.semicolon).to be_a Parse::Semicolon
+    context "a VariableDeclaration" do
+      it "should parse a variable declaration" do
+        parse = Parser.new(Scanner.new("int x;")).parse
+        expect(parse).to be_a Parse::VariableDeclaration
+        expect(parse.type_specifier).to be_a Parse::TypeSpecifier
+        expect(parse.id).to be_a Parse::Id
+        expect(parse.semicolon).to be_a Parse::Semicolon
+      end
+    end
+
+    context "a DeclarationList" do
+      it "should parse to a tiered tree of declarations" do
+        p = Parser.new(Scanner.new("int x; void y; string z;")).parse
+        expect(p).to be_a Parse::DeclarationList
+        expect(p.variable_declaration).to be_a Parse::VariableDeclaration
+        expect(p.declaration_list).to be_a Parse::DeclarationList
+        expect(p.declaration_list.variable_declaration).to be_a Parse::VariableDeclaration
+        expect(p.declaration_list.declaration_list).to be_a Parse::DeclarationList
+        expect(p.declaration_list.declaration_list.variable_declaration).to be_a Parse::VariableDeclaration
+      end
     end
   end
 
