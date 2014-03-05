@@ -11,7 +11,7 @@ describe Parser do
   describe "#parse" do
     context "a VariableDeclaration" do
       it "should parse a variable declaration" do
-        parse = Parser.new(Scanner.new("int x;")).parse
+        parse = Parser.new(Scanner.new("int x;")).parse.variable_declaration
         expect(parse).to be_a Parse::VariableDeclaration
         expect(parse.type_specifier).to be_a Parse::TypeSpecifier
         expect(parse.id).to be_a Parse::Id
