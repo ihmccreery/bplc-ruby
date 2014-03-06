@@ -20,7 +20,7 @@ describe Parser do
     context "a Program" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse }
 
-      it "has a DeclarationList" do
+      it "has a declaration_list" do
         expect(p.declaration_list).to be_a DeclarationList
       end
     end
@@ -28,7 +28,7 @@ describe Parser do
     context "a DeclarationList" do
       let(:d) { Parser.new(Scanner.new("int x;")).parse.declaration_list }
 
-      it "has a nil DeclarationList and a Declaration" do
+      it "has a nil declaration_list and a declaration" do
         expect(d.declaration_list).to be_nil
         expect(d.declaration).to be_a Declaration
       end
@@ -37,7 +37,7 @@ describe Parser do
     context "a Declaration" do
       let(:d) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
 
-      it "has a TypeSpecifier and an Id" do
+      it "has a type_specifier and an id" do
         expect(d.type_specifier).to be_a TypeSpecifier
         expect(d.id).to be_a Id
       end
