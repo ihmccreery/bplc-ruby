@@ -14,7 +14,15 @@ module Parsers
     end
 
     def declaration
-      return Declaration.new
+      return Declaration.new(type_specifier, id)
+    end
+
+    def type_specifier
+      return TypeSpecifier.new
+    end
+
+    def id
+      return Id.new
     end
   end
 end

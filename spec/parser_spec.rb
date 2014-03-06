@@ -33,5 +33,14 @@ describe Parser do
         expect(d.declaration).to be_a Declaration
       end
     end
+
+    context "a Declaration" do
+      let(:d) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
+
+      it "has a TypeSpecifier and an Id" do
+        expect(d.type_specifier).to be_a TypeSpecifier
+        expect(d.id).to be_a Id
+      end
+    end
   end
 end

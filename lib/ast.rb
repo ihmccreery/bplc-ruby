@@ -19,4 +19,16 @@ class DeclarationList < Ast
 end
 
 class Declaration < Ast
+  attr_accessor :type_specifier, :id
+
+  def initialize(type_specifier, id)
+    @type_specifier = type_specifier
+    @id = id
+  end
+end
+
+class TypeSpecifier < Ast
+end
+
+class Id < Ast
 end
