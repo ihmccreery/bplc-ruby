@@ -1,6 +1,14 @@
 class Ast
 end
 
+class TokenAst < Ast
+  attr_accessor :token
+
+  def initialize(token)
+    @token = token
+  end
+end
+
 class Program < Ast
   attr_accessor :declaration_list
 
@@ -27,13 +35,8 @@ class Declaration < Ast
   end
 end
 
-class TypeSpecifier < Ast
-  attr_accessor :token
-
-  def initialize(token)
-    @token = token
-  end
+class TypeSpecifier < TokenAst
 end
 
-class Id < Ast
+class Id < TokenAst
 end

@@ -22,7 +22,7 @@ module Parsers
     end
 
     def id
-      return Id.new
+      return Id.new(next_token)
     end
 
     private
