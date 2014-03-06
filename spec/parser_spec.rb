@@ -24,5 +24,14 @@ describe Parser do
         expect(p.declaration_list).to be_a DeclarationList
       end
     end
+
+    context "a DeclarationList" do
+      let(:d) { Parser.new(Scanner.new("a")).parse.declaration_list }
+
+      it "has a nil DeclarationList and a Declaration" do
+        expect(d.declaration_list).to be_nil
+        expect(d.declaration).to be_a Declaration
+      end
+    end
   end
 end

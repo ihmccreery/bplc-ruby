@@ -10,7 +10,11 @@ module Parsers
     end
 
     def declaration_list
-      return DeclarationList.new
+      return DeclarationList.new(nil, declaration)
+    end
+
+    def declaration
+      return Declaration.new
     end
   end
 end
