@@ -42,7 +42,7 @@ module Scanners
                 'writeln' => :writeln,
                 'read' => :read}
 
-    # the current Ast::Token in the source
+    # the current Token in the source
     attr_accessor :current_token
 
     def initialize(source)
@@ -50,7 +50,7 @@ module Scanners
       @line_number = 1
     end
 
-    # gets the next Ast::Token in the source and returns it, progressing
+    # gets the next Token in the source and returns it, progressing
     # #current_token as well
     def next_token
       consume_whitespace_and_comments
@@ -95,9 +95,9 @@ module Scanners
       end
       ungetc(c)
       if KEYWORDS[s]
-        return @current_token = Ast::Token.new(s, KEYWORDS[s], @line_number)
+        return @current_token = Token.new(s, KEYWORDS[s], @line_number)
       else
-        return @current_token = Ast::Token.new(s, :id, @line_number)
+        return @current_token = Token.new(s, :id, @line_number)
       end
     end
 
@@ -109,7 +109,7 @@ module Scanners
         c = getc
       end
       ungetc(c)
-      return @current_token = Ast::Token.new(s, :num, @line_number)
+      return @current_token = Token.new(s, :num, @line_number)
     end
 
     def get_string
@@ -125,12 +125,12 @@ module Scanners
         s << c
         c = getc
       end
-      return @current_token = Ast::Token.new(s, :str, @line_number)
+      return @current_token = Token.new(s, :str, @line_number)
     end
 
     def get_single_character_symbol
       c = getc
-      return @current_token = Ast::Token.new(c, SYMBOLS[c], @line_number)
+      return @current_token = Token.new(c, SYMBOLS[c], @line_number)
     end
 
     def get_ambiguous_symbol
@@ -139,7 +139,7 @@ module Scanners
         c = getc
         if c == '='
           s << c
-          return @current_token = Ast::Token.new(s, SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
           ungetc(c)
           raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
@@ -148,16 +148,16 @@ module Scanners
         c = getc
         if c == '='
           s << c
-          return @current_token = Ast::Token.new(s, SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
           ungetc(c)
-          return @current_token = Ast::Token.new(s, SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         end
       end
     end
 
     def get_eof
-      return @current_token = Ast::Token.new(getc, :eof, @line_number)
+      return @current_token = Token.new(getc, :eof, @line_number)
     end
 
     ###################
