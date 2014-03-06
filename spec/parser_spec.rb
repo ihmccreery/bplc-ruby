@@ -42,5 +42,14 @@ describe Parser do
         expect(d.id).to be_a Id
       end
     end
+
+    context "a TypeSpecifier" do
+      let(:t) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.type_specifier }
+
+      it "has a token of the appropriate type" do
+        expect(t.token).to be_a Token
+        expect(t.token.type).to eq :int
+      end
+    end
   end
 end

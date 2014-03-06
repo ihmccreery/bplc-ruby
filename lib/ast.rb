@@ -28,6 +28,11 @@ class Declaration < Ast
 end
 
 class TypeSpecifier < Ast
+  attr_accessor :token
+
+  def initialize(token)
+    @token = token
+  end
 end
 
 class Id < Ast

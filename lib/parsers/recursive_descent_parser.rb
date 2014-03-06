@@ -18,11 +18,17 @@ module Parsers
     end
 
     def type_specifier
-      return TypeSpecifier.new
+      return TypeSpecifier.new(next_token)
     end
 
     def id
       return Id.new
+    end
+
+    private
+
+    def next_token
+      @source.next_token
     end
   end
 end
