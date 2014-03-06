@@ -16,28 +16,30 @@ module Parsers
 
     private
 
+    TYPE_SPECIFIERS = [:int, :void, :string]
+
     def parse_declaration_list
-      p = Parse::DeclarationList.new(nil, parse_variable_declaration)
-      while current_token.is_type_specifier?
-        p = Parse::DeclarationList.new(p, parse_variable_declaration)
+      p = Ast::DeclarationList.new(nil, parse_variable_declaration)
+      while TYPE_SPECIFIERS.include? current_token.type
+        p = Ast::DeclarationList.new(p, parse_variable_declaration)
       end
       return p
     end
 
     def parse_variable_declaration
-      Parse::VariableDeclaration.new(parse_type_specifier, parse_id, parse_semicolon)
+      Ast::VariableDeclaration.new(parse_type_specifier, parse_id, parse_semicolon)
     end
 
     def parse_type_specifier
-      Parse::TypeSpecifier.new(process_token)
+      Ast::TypeSpecifier.new(process_token)
     end
 
     def parse_id
-      Parse::Id.new(process_token)
+      Ast::Id.new(process_token)
     end
 
     def parse_semicolon
-      Parse::Semicolon.new(process_token)
+      Ast::Semicolon.new(process_token)
     end
 
     ###################

@@ -5,6 +5,43 @@ module Scanners
   # and yields successive tokens with #next_token and #current_token
   class DfaScanner
 
+    # a hash of strings representing every symbol in BPL
+    # keyed to its respective #type.
+    SYMBOLS = {';' => :semicolon,
+               ',' => :comma,
+               '[' => :l_bracket,
+               ']' => :r_bracket,
+               '{' => :l_brace,
+               '}' => :r_brace,
+               '(' => :l_paren,
+               ')' => :r_paren,
+               '+' => :plus,
+               '-' => :minus,
+               '*' => :asterisk,
+               '/' => :slash,
+               '=' => :gets,
+               '<' => :lt,
+               '<=' => :leq,
+               '==' => :eq,
+               '!=' => :neq,
+               '>=' => :geq,
+               '>' => :gt,
+               '%' => :percent,
+               '&' => :ampersand}.freeze
+
+    # a hash of strings representing every keyword in BPL
+    # keyed to its respective #type.
+    KEYWORDS = {'int' => :int,
+                'void' => :void,
+                'string' => :string,
+                'if' => :if,
+                'else' => :else,
+                'while' => :while,
+                'return' => :return,
+                'write' => :write,
+                'writeln' => :writeln,
+                'read' => :read}
+
     # the current Token in the source
     attr_accessor :current_token
 
@@ -57,8 +94,8 @@ module Scanners
         c = getc
       end
       ungetc(c)
-      if Token::KEYWORDS[s]
-        return @current_token = Token.new(s, Token::KEYWORDS[s], @line_number)
+      if KEYWORDS[s]
+        return @current_token = Token.new(s, KEYWORDS[s], @line_number)
       else
         return @current_token = Token.new(s, :id, @line_number)
       end
@@ -93,7 +130,7 @@ module Scanners
 
     def get_single_character_symbol
       c = getc
-      return @current_token = Token.new(c, Token::SYMBOLS[c], @line_number)
+      return @current_token = Token.new(c, SYMBOLS[c], @line_number)
     end
 
     def get_ambiguous_symbol
@@ -102,7 +139,7 @@ module Scanners
         c = getc
         if c == '='
           s << c
-          return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
           ungetc(c)
           raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
@@ -111,10 +148,10 @@ module Scanners
         c = getc
         if c == '='
           s << c
-          return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
           ungetc(c)
-          return @current_token = Token.new(s, Token::SYMBOLS[s], @line_number)
+          return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         end
       end
     end

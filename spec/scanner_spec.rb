@@ -63,21 +63,21 @@ describe Scanner do
     it "recognizes single-character symbols" do
       s = Scanner.new(";,[]{}()+-*/%&")
       %w[; , [ ] { } ( ) + - * / % &].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+        expect(s.next_token).to eq(Token.new(t, Scanner::SYMBOLS[t], 1))
       end
     end
 
     it "recognizes ambiguous symbols" do
       s = Scanner.new("= < <= == != >= >")
       %w[= < <= == != >= >].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+        expect(s.next_token).to eq(Token.new(t, Scanner::SYMBOLS[t], 1))
       end
     end
 
     it "recognizes ambiguous symbols" do
       s = Scanner.new("=<<===!=>=>")
       %w[= < <= == != >= >].each do |t|
-        expect(s.next_token).to eq(Token.new(t, Token::SYMBOLS[t], 1))
+        expect(s.next_token).to eq(Token.new(t, Scanner::SYMBOLS[t], 1))
       end
     end
 
