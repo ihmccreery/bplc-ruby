@@ -31,15 +31,15 @@ module Parsers
     end
 
     def parse_type_specifier
-      Ast::TypeSpecifier.new(process_token)
+      process_token
     end
 
     def parse_id
-      Ast::Id.new(process_token)
+      process_token
     end
 
     def parse_semicolon
-      Ast::Semicolon.new(process_token)
+      process_token
     end
 
     ###################

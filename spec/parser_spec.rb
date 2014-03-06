@@ -13,9 +13,9 @@ describe Parser do
       it "should parse a variable declaration" do
         parse = Parser.new(Scanner.new("int x;")).parse.variable_declaration
         expect(parse).to be_a Ast::VariableDeclaration
-        expect(parse.type_specifier).to be_a Ast::TypeSpecifier
-        expect(parse.id).to be_a Ast::Id
-        expect(parse.semicolon).to be_a Ast::Semicolon
+        expect(parse.type_specifier).to be_a Ast::Token
+        expect(parse.id).to be_a Ast::Token
+        expect(parse.semicolon).to be_a Ast::Token
       end
     end
 
