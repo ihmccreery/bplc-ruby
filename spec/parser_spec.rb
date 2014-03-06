@@ -26,11 +26,27 @@ describe Parser do
     end
 
     context "a DeclarationList" do
-      let(:d) { Parser.new(Scanner.new("int x;")).parse.declaration_list }
+      let(:d) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
 
-      it "has a nil declaration_list and a declaration" do
-        expect(d.declaration_list).to be_nil
-        expect(d.declaration).to be_a Declaration
+      it "is properly nested and has declarations" do
+        z = d
+        y = d.declaration_list
+        x = d.declaration_list.declaration_list
+
+        expect(x).to be_a DeclarationList
+        expect(x.declaration.type_specifier.token.type).to eq(:int)
+        expect(x.declaration.id.token.type).to eq(:id)
+        expect(x.declaration.id.token.value).to eq("x")
+
+        expect(y).to be_a DeclarationList
+        expect(y.declaration.type_specifier.token.type).to eq(:void)
+        expect(y.declaration.id.token.type).to eq(:id)
+        expect(y.declaration.id.token.value).to eq("y")
+
+        expect(z).to be_a DeclarationList
+        expect(z.declaration.type_specifier.token.type).to eq(:string)
+        expect(z.declaration.id.token.type).to eq(:id)
+        expect(z.declaration.id.token.value).to eq("z")
       end
     end
 
@@ -48,7 +64,7 @@ describe Parser do
 
       it "has a token of the appropriate type" do
         expect(t.token).to be_a Token
-        expect(t.token.type).to eq :int
+        expect(t.token.type).to eq(:int)
       end
     end
 
@@ -57,8 +73,8 @@ describe Parser do
 
       it "has a token of the appropriate type and value" do
         expect(i.token).to be_a Token
-        expect(i.token.type).to eq :id
-        expect(i.token.value).to eq "x"
+        expect(i.token.type).to eq(:id)
+        expect(i.token.value).to eq("x")
       end
     end
   end

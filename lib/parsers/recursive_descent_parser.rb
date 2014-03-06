@@ -1,8 +1,12 @@
 module Parsers
   # a simple Parser
   class RecursiveDescentParser
+
+    TYPE_SPECIFIERS = [:int, :void, :string].freeze
+
     def initialize(source)
       @source = source
+      next_token
     end
 
     def parse
@@ -10,22 +14,46 @@ module Parsers
     end
 
     def declaration_list
-      return DeclarationList.new(nil, declaration)
+      d = DeclarationList.new(nil, declaration)
+      while is_type_specifier?(current_token)
+        d = DeclarationList.new(d, declaration)
+      end
+      return d
     end
 
     def declaration
-      return Declaration.new(type_specifier, id)
+      d = Declaration.new(type_specifier, id)
+      semicolon
+      return d
     end
 
     def type_specifier
-      return TypeSpecifier.new(next_token)
+      return TypeSpecifier.new(consume_token)
     end
 
     def id
-      return Id.new(next_token)
+      return Id.new(consume_token)
+    end
+
+    def semicolon
+      consume_token
     end
 
     private
+
+    def is_type_specifier?(token)
+      TYPE_SPECIFIERS.include? token.type
+    end
+
+    def consume_token
+      t = current_token
+      next_token
+      return t
+    end
+
+    def current_token
+      @source.current_token
+    end
 
     def next_token
       @source.next_token
