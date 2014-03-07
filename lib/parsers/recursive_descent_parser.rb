@@ -44,7 +44,7 @@ module Parsers
 
     def type_specifier
       if is_type_specifier?(current_token)
-        return TypeSpecifier.new(consume_token)
+        return TypeSpecifier.new(eat_token)
       else
         raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
       end
@@ -52,37 +52,37 @@ module Parsers
 
     def id
       if current_token.type == :id
-        return Id.new(consume_token)
+        return Id.new(eat_token)
       else
         raise SyntaxError, "expected id, got #{current_token.type.to_s}"
       end
     end
 
     def semicolon
-      if current_token.type == :semicolon
-        consume_token
-      else
-        raise SyntaxError, "expected semicolon, got #{current_token.type.to_s}"
-      end
+      eat(:semicolon)
     end
 
     def eof
-      if current_token.type == :eof
-        consume_token
-      else
-        raise SyntaxError, "expected eof, got #{current_token.type.to_s}"
-      end
+      eat(:eof)
     end
 
     ###################
     # support methods #
     ###################
 
+    def eat(type)
+      if current_token.type == type
+        eat_token
+      else
+        raise SyntaxError, "expected #{type.to_s}, got #{current_token.type.to_s}"
+      end
+    end
+
     def is_type_specifier?(token)
       TYPE_SPECIFIERS.include? token.type
     end
 
-    def consume_token
+    def eat_token
       t = current_token
       next_token
       return t
