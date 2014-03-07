@@ -14,6 +14,12 @@ describe Parser do
       expect(p).to be_a Program
     end
 
+    it "can be called multiple times" do
+      p = Parser.new(Scanner.new("int x;"))
+      expect(p.parse).to be_a Ast
+      expect(p.parse).to be_a Ast
+    end
+
     context "a Program" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse }
 

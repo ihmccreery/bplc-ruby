@@ -1,7 +1,6 @@
 module Parsers
   # a simple Parser
   class RecursiveDescentParser
-
     TYPE_SPECIFIERS = [:int, :void, :string].freeze
 
     def initialize(source)
@@ -10,7 +9,11 @@ module Parsers
     end
 
     def parse
-      return Program.new(declaration_list)
+      if @parse
+        return @parse
+      else
+        return @parse = Program.new(declaration_list)
+      end
     end
 
     def declaration_list
