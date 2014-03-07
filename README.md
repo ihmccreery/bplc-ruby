@@ -14,16 +14,15 @@ Angle brackets, (e.g. `<Id>`,) indicate that the class is a `TokenAst`, meaning 
 
 ### Implemented
 
-    Program         ::= DeclarationList
+`Program ::= DeclarationList`
 
-    DelcarationList ::= DeclarationList Declaration | Declaration
+`DelcarationList ::= DeclarationList Declaration | Declaration`
 
-    Declaration     ::= <TypeSpecifier> <Id>; | <TypeSpecifier> *<Id>; | <TypeSpecifier> <Id>[<Num>];
-
+`Declaration ::= <TypeSpecifier> <Id>; | <TypeSpecifier> *<Id>; | <TypeSpecifier> <Id>[<Num>];`:
 A `Declaration` can be of type `SimpleDecaration`, `PointerDeclaration`, or `ArrayDeclaration`.
 
 ### Not Implemented
 
-    Declaration     >   FunctionDeclaration
+`Declaration > FunctionDeclaration`
 
 ... and everything else.
