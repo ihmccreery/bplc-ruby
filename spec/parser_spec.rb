@@ -29,12 +29,12 @@ describe Parser do
     end
 
     context "a DeclarationList" do
-      let(:d) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
+      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
 
       it "is properly nested and has declarations" do
-        z = d
-        y = d.declaration_list
-        x = d.declaration_list.declaration_list
+        z = p
+        y = p.declaration_list
+        x = p.declaration_list.declaration_list
 
         expect(x).to be_a DeclarationList
         expect(x.declaration.type_specifier.token.type).to eq(:int)
@@ -54,15 +54,15 @@ describe Parser do
     end
 
     context "a SimpleDeclaration" do
-      let(:d) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
 
       it "is a SimpleDeclaration" do
-        expect(d).to be_a SimpleDeclaration
+        expect(p).to be_a SimpleDeclaration
       end
 
       it "has a type_specifier and an id" do
-        expect(d.type_specifier).to be_a TypeSpecifier
-        expect(d.id).to be_a Id
+        expect(p.type_specifier).to be_a TypeSpecifier
+        expect(p.id).to be_a Id
       end
 
       context "that is malformed" do
@@ -80,15 +80,15 @@ describe Parser do
     end
 
     context "a PointerDeclaration" do
-      let(:d) { Parser.new(Scanner.new("int *x;")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int *x;")).parse.declaration_list.declaration }
 
       it "is a PointerDeclaration" do
-        expect(d).to be_a PointerDeclaration
+        expect(p).to be_a PointerDeclaration
       end
 
       it "has a type_specifier and an id" do
-        expect(d.type_specifier).to be_a TypeSpecifier
-        expect(d.id).to be_a Id
+        expect(p.type_specifier).to be_a TypeSpecifier
+        expect(p.id).to be_a Id
       end
 
       context "that is malformed" do
@@ -106,16 +106,16 @@ describe Parser do
     end
 
     context "an ArrayDeclaration" do
-      let(:d) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration }
 
-      it "is a ArrayDeclaration" do
-        expect(d).to be_a ArrayDeclaration
+      it "is an ArrayDeclaration" do
+        expect(p).to be_a ArrayDeclaration
       end
 
       it "has a type_specifier, id, and size" do
-        expect(d.type_specifier).to be_a TypeSpecifier
-        expect(d.id).to be_a Id
-        expect(d.size).to be_a Num
+        expect(p.type_specifier).to be_a TypeSpecifier
+        expect(p.id).to be_a Id
+        expect(p.size).to be_a Num
       end
 
       context "that is malformed" do
@@ -133,31 +133,43 @@ describe Parser do
     end
 
     context "a TypeSpecifier" do
-      let(:t) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.type_specifier }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.type_specifier }
+
+      it "is a TypeSpecifier" do
+        expect(p).to be_a TypeSpecifier
+      end
 
       it "has a token of the appropriate type" do
-        expect(t.token).to be_a Token
-        expect(t.token.type).to eq(:int)
+        expect(p.token).to be_a Token
+        expect(p.token.type).to eq(:int)
       end
     end
 
     context "an Id" do
-      let(:i) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.id }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.id }
+
+      it "is a Id" do
+        expect(p).to be_a Id
+      end
 
       it "has a token of the appropriate type and value" do
-        expect(i.token).to be_a Token
-        expect(i.token.type).to eq(:id)
-        expect(i.token.value).to eq("x")
+        expect(p.token).to be_a Token
+        expect(p.token.type).to eq(:id)
+        expect(p.token.value).to eq("x")
       end
     end
 
     context "a Num" do
-      let(:n) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration.size }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration.size }
+
+      it "is a Num" do
+        expect(p).to be_a Num
+      end
 
       it "has a token of the appropriate type and value" do
-        expect(n.token).to be_a Token
-        expect(n.token.type).to eq(:num)
-        expect(n.token.value).to eq("2")
+        expect(p.token).to be_a Token
+        expect(p.token.type).to eq(:num)
+        expect(p.token.value).to eq("2")
       end
     end
   end
