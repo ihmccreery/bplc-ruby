@@ -64,19 +64,11 @@ module Parsers
     end
 
     def id
-      if current_token.type == :id
-        return Id.new(eat_token)
-      else
-        raise SyntaxError, "expected id, got #{current_token.type.to_s}"
-      end
+      Id.new(eat(:id))
     end
 
     def num
-      if current_token.type == :num
-        return Num.new(eat_token)
-      else
-        raise SyntaxError, "expected num, got #{current_token.type.to_s}"
-      end
+      Num.new(eat(:num))
     end
 
     def semicolon
