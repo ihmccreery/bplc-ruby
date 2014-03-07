@@ -16,6 +16,12 @@ module Parsers
       end
     end
 
+    private
+
+    #################
+    # parse methods #
+    #################
+
     def program
       p = Program.new(declaration_list)
       eof
@@ -68,7 +74,9 @@ module Parsers
       end
     end
 
-    private
+    ###################
+    # support methods #
+    ###################
 
     def is_type_specifier?(token)
       TYPE_SPECIFIERS.include? token.type
