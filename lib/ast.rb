@@ -35,8 +35,26 @@ class Declaration < Ast
   end
 end
 
+class SimpleDeclaration < Declaration
+end
+
+class PointerDeclaration < Declaration
+end
+
+class ArrayDeclaration < Declaration
+  attr_accessor :size
+
+  def initialize(type_specifier, id, size)
+    super(type_specifier, id)
+    @size = size
+  end
+end
+
 class TypeSpecifier < TokenAst
 end
 
 class Id < TokenAst
+end
+
+class Num < TokenAst
 end

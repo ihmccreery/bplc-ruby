@@ -37,7 +37,20 @@ module Parsers
     end
 
     def declaration
-      d = Declaration.new(type_specifier, id)
+      t = type_specifier
+      if current_token.type == :asterisk
+        eat(:asterisk)
+        d = PointerDeclaration.new(t, id)
+      else
+        i = id
+        if current_token.type == :l_bracket
+          eat(:l_bracket)
+          d = ArrayDeclaration.new(t, i, num)
+          eat(:r_bracket)
+        else
+          d = SimpleDeclaration.new(t, i)
+        end
+      end
       semicolon
       return d
     end
@@ -55,6 +68,14 @@ module Parsers
         return Id.new(eat_token)
       else
         raise SyntaxError, "expected id, got #{current_token.type.to_s}"
+      end
+    end
+
+    def num
+      if current_token.type == :num
+        return Num.new(eat_token)
+      else
+        raise SyntaxError, "expected num, got #{current_token.type.to_s}"
       end
     end
 
