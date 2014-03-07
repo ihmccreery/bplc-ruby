@@ -8,12 +8,9 @@ describe Parser do
   end
 
   describe "#parse" do
-    it "returns an Ast" do
-      expect(Parser.new(Scanner.new("int x;")).parse).to be_a Ast
-    end
-
-    it "returns a Program" do
+    it "returns an Ast that is also a Program" do
       p = Parser.new(Scanner.new("int x;")).parse
+      expect(p).to be_a Ast
       expect(p).to be_a Program
     end
 
