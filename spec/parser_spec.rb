@@ -53,9 +53,9 @@ describe Parser do
       end
     end
 
-    ################
-    # Declarations #
-    ################
+    #######################
+    # VariableDeclaration #
+    #######################
 
     context "a SimpleDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
@@ -114,7 +114,6 @@ describe Parser do
     context "an ArrayDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration }
 
-
       it "is a VariableDeclaration that is also a ArrayDeclaration" do
         expect(p).to be_a VariableDeclaration
         expect(p).to be_a ArrayDeclaration
@@ -143,6 +142,10 @@ describe Parser do
       end
     end
 
+    #######################
+    # FunctionDeclaration #
+    #######################
+
     context "a FunctionDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x(void) { }")).parse.declaration_list.declaration }
 
@@ -167,6 +170,10 @@ describe Parser do
         end
       end
     end
+
+    ########################
+    # Declaration Children #
+    ########################
 
     context "a TypeSpecifier" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.type_specifier }
