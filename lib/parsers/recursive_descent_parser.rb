@@ -12,8 +12,14 @@ module Parsers
       if @parse
         return @parse
       else
-        return @parse = Program.new(declaration_list)
+        return @parse = program
       end
+    end
+
+    def program
+      p = Program.new(declaration_list)
+      eof
+      return p
     end
 
     def declaration_list
@@ -51,6 +57,14 @@ module Parsers
         consume_token
       else
         raise SyntaxError, "expected semicolon, got #{current_token.type.to_s}"
+      end
+    end
+
+    def eof
+      if current_token.type == :eof
+        consume_token
+      else
+        raise SyntaxError, "expected eof, got #{current_token.type.to_s}"
       end
     end
 
