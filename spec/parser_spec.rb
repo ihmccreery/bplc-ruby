@@ -28,10 +28,6 @@ describe Parser do
       end
     end
 
-    ################
-    # Declarations #
-    ################
-
     context "a DeclarationList" do
       let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
 
@@ -56,6 +52,10 @@ describe Parser do
         expect(z.declaration.id.token.value).to eq("z")
       end
     end
+
+    ################
+    # Declarations #
+    ################
 
     context "a SimpleDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
