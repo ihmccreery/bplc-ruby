@@ -144,7 +144,7 @@ describe Parser do
     end
 
     context "a FunctionDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x(void)")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int x(void) { }")).parse.declaration_list.declaration }
 
       it "is a FunctionDeclaration" do
         expect(p).to be_a FunctionDeclaration
