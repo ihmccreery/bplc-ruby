@@ -36,6 +36,7 @@ module Parsers
       return d
     end
 
+    # get a VariableDeclaration or a FunctionDeclaration
     def declaration
       t = type_specifier
       if current_token.type == :asterisk

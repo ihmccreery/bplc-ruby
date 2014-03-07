@@ -35,13 +35,16 @@ class Declaration < Ast
   end
 end
 
-class SimpleDeclaration < Declaration
+class VariableDeclaration < Declaration
 end
 
-class PointerDeclaration < Declaration
+class SimpleDeclaration < VariableDeclaration
 end
 
-class ArrayDeclaration < Declaration
+class PointerDeclaration < VariableDeclaration
+end
+
+class ArrayDeclaration < VariableDeclaration
   attr_accessor :size
 
   def initialize(type_specifier, id, size)
