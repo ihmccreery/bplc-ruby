@@ -57,6 +57,19 @@ describe Parser do
         expect(d.type_specifier).to be_a TypeSpecifier
         expect(d.id).to be_a Id
       end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("x;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
+
+          p = Parser.new(Scanner.new("int ;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected id, got semicolon")
+
+          p = Parser.new(Scanner.new("int x"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got eof")
+        end
+      end
     end
 
     context "a TypeSpecifier" do

@@ -28,15 +28,27 @@ module Parsers
     end
 
     def type_specifier
-      return TypeSpecifier.new(consume_token)
+      if is_type_specifier?(current_token)
+        return TypeSpecifier.new(consume_token)
+      else
+        raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
+      end
     end
 
     def id
-      return Id.new(consume_token)
+      if current_token.type == :id
+        return Id.new(consume_token)
+      else
+        raise SyntaxError, "expected id, got #{current_token.type.to_s}"
+      end
     end
 
     def semicolon
-      consume_token
+      if current_token.type == :semicolon
+        consume_token
+      else
+        raise SyntaxError, "expected semicolon, got #{current_token.type.to_s}"
+      end
     end
 
     private
