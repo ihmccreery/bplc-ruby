@@ -50,6 +50,22 @@ class ArrayDeclaration < Declaration
   end
 end
 
+class FunctionDeclaration < Declaration
+  attr_accessor :params, :body
+
+  def initialize(type_specifier, id, params, body)
+    super(type_specifier, id)
+    @params = params
+    @body = body
+  end
+end
+
+class Params < TokenAst
+end
+
+class CompoundStatement < Ast
+end
+
 class TypeSpecifier < TokenAst
 end
 

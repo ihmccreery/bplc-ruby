@@ -28,6 +28,10 @@ describe Parser do
       end
     end
 
+    ################
+    # Declarations #
+    ################
+
     context "a DeclarationList" do
       let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
 
@@ -128,6 +132,31 @@ describe Parser do
 
           p = Parser.new(Scanner.new("x[2];"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
+        end
+      end
+    end
+
+    context "an FunctionDeclaration" do
+      let(:p) { Parser.new(Scanner.new("int x(void)")).parse.declaration_list.declaration }
+
+      it "is an FunctionDeclaration" do
+        expect(p).to be_a FunctionDeclaration
+      end
+
+      it "has a type_specifier, id, params, and body" do
+        expect(p.type_specifier).to be_a TypeSpecifier
+        expect(p.id).to be_a Id
+        expect(p.params).to be_a Params
+        expect(p.body).to be_a CompoundStatement
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int x();"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected void, got r_paren")
+
+          p = Parser.new(Scanner.new("int x(;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected void, got semicolon")
         end
       end
     end

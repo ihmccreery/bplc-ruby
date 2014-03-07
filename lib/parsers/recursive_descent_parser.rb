@@ -41,18 +41,29 @@ module Parsers
       if current_token.type == :asterisk
         eat(:asterisk)
         d = PointerDeclaration.new(t, id)
+        semicolon
       else
         i = id
         if current_token.type == :l_bracket
           eat(:l_bracket)
           d = ArrayDeclaration.new(t, i, num)
           eat(:r_bracket)
+          semicolon
+        elsif current_token.type == :l_paren
+          eat(:l_paren)
+          p = params
+          eat(:r_paren)
+          d = FunctionDeclaration.new(t, i, p, compound_statement)
         else
           d = SimpleDeclaration.new(t, i)
+          semicolon
         end
       end
-      semicolon
       return d
+    end
+
+    def params
+      Params.new(eat(:void))
     end
 
     def type_specifier
@@ -61,6 +72,10 @@ module Parsers
       else
         raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
       end
+    end
+
+    def compound_statement
+      return CompoundStatement.new
     end
 
     def id
