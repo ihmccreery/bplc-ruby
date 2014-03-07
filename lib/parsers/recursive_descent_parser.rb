@@ -24,7 +24,7 @@ module Parsers
 
     def program
       p = Program.new(declaration_list)
-      eof
+      eat(:eof)
       return p
     end
 
@@ -41,14 +41,14 @@ module Parsers
       if current_token.type == :asterisk
         eat(:asterisk)
         d = PointerDeclaration.new(t, id)
-        semicolon
+        eat(:semicolon)
       else
         i = id
         if current_token.type == :l_bracket
           eat(:l_bracket)
           d = ArrayDeclaration.new(t, i, num)
           eat(:r_bracket)
-          semicolon
+          eat(:semicolon)
         elsif current_token.type == :l_paren
           eat(:l_paren)
           p = params
@@ -56,7 +56,7 @@ module Parsers
           d = FunctionDeclaration.new(t, i, p, compound_statement)
         else
           d = SimpleDeclaration.new(t, i)
-          semicolon
+          eat(:semicolon)
         end
       end
       return d
@@ -84,14 +84,6 @@ module Parsers
 
     def num
       Num.new(eat(:num))
-    end
-
-    def semicolon
-      eat(:semicolon)
-    end
-
-    def eof
-      eat(:eof)
     end
 
     ###################
