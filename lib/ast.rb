@@ -63,7 +63,7 @@ class FunctionDeclaration < Declaration
   end
 end
 
-class Params < TokenAst
+class Params < Ast
 end
 
 class CompoundStatement < Ast
@@ -76,4 +76,39 @@ class Id < TokenAst
 end
 
 class Num < TokenAst
+end
+
+class VoidParams < Params
+  attr_accessor :token
+
+  def initialize(token)
+    @token = token
+  end
+end
+
+class ParamList < Params
+  attr_accessor :param_list, :param
+
+  def initialize(param_list, param)
+    @param_list = param_list
+    @param = param
+  end
+end
+
+class Param < Ast
+  attr_accessor :type_specifier, :id
+
+  def initialize(type_specifier, id)
+    @type_specifier = type_specifier
+    @id = id
+  end
+end
+
+class SimpleParam < Param
+end
+
+class PointerParam < Param
+end
+
+class ArrayParam < Param
 end

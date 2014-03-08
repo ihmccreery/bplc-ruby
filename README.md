@@ -23,13 +23,18 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Declaration > VariableDeclaration | FunctionDeclaration`
   - Note that in the BPL manual, a `Declaration` can produce a `VarDec` or `FunDec`.  We deviate from this, instead just
     letting a `Declaration` be one of two types: `VariableDeclaration` or `FunctionDeclaration`
-    - `VariableDeclaration > SimpleDeclaration | PointerDeclaration | SimpleDeclaration`
+    - `VariableDeclaration > SimpleDeclaration | PointerDeclaration | ArrayDeclaration`
         - `SimpleDeclaration ::= <TypeSpecifier> <Id>;`
-        - `SimpleDeclaration ::= <TypeSpecifier> *<Id>;`
-        - `SimpleDeclaration ::= <TypeSpecifier> <Id>[<Num>];`
+        - `PointerDeclaration ::= <TypeSpecifier> *<Id>;`
+        - `ArrayDeclaration ::= <TypeSpecifier> <Id>[<Num>];`
     - `FunctionDeclaration ::= <TypeSpecifier> <Id>(Params) CompoundStatement`
+- `Params > <VoidParams> | ParamsList`
+- `ParamsList :: ParamsList, Param | Param`
+- `Param > SimpleParam | PointerParam | ArrayParam`
+  - `SimpleParam ::= <TypeSpecifier> <Id>`
+  - `PointerParam ::= <TypeSpecifier> *<Id>`
+  - `ArrayParam ::= <TypeSpecifier> <Id>[]`
 
 ### Not Implemented
 
-- `Declaration > FunctionDeclaration`
 - everything else

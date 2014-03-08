@@ -64,7 +64,38 @@ module Parsers
     end
 
     def params
-      Params.new(eat(:void))
+      if current_token.type == :void
+        VoidParams.new(eat(:void))
+      else
+        param_list
+      end
+    end
+
+    def param_list
+      p = ParamList.new(nil, param)
+      while current_token.type == :comma
+        eat(:comma)
+        p = ParamList.new(p, param)
+      end
+      return p
+    end
+
+    def param
+      t = type_specifier
+      if current_token.type == :asterisk
+        eat(:asterisk)
+        p = PointerParam.new(t, id)
+      else
+        i = id
+        if current_token.type == :l_bracket
+          eat(:l_bracket)
+          eat(:r_bracket)
+          p = ArrayParam.new(t, i)
+        else
+          p = SimpleDeclaration.new(t, i)
+        end
+      end
+      return p
     end
 
     def type_specifier

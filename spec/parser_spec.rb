@@ -31,25 +31,29 @@ describe Parser do
     context "a DeclarationList" do
       let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
 
-      it "is properly nested and has declarations" do
-        z = p
-        y = p.declaration_list
-        x = p.declaration_list.declaration_list
+      it "is a set of nested DeclarationLists ending with nil" do
+        expect(p).to be_a DeclarationList
+        expect(p.declaration_list).to be_a DeclarationList
+        expect(p.declaration_list.declaration_list).to be_a DeclarationList
+        expect(p.declaration_list.declaration_list.declaration_list).to be_nil
+      end
 
-        expect(x).to be_a DeclarationList
-        expect(x.declaration.type_specifier.token.type).to eq(:int)
-        expect(x.declaration.id.token.type).to eq(:id)
-        expect(x.declaration.id.token.value).to eq("x")
+      it "is properly nested" do
+        z = p.declaration
+        y = p.declaration_list.declaration
+        x = p.declaration_list.declaration_list.declaration
 
-        expect(y).to be_a DeclarationList
-        expect(y.declaration.type_specifier.token.type).to eq(:void)
-        expect(y.declaration.id.token.type).to eq(:id)
-        expect(y.declaration.id.token.value).to eq("y")
+        expect(x.type_specifier.token.type).to eq(:int)
+        expect(x.id.token.type).to eq(:id)
+        expect(x.id.token.value).to eq("x")
 
-        expect(z).to be_a DeclarationList
-        expect(z.declaration.type_specifier.token.type).to eq(:string)
-        expect(z.declaration.id.token.type).to eq(:id)
-        expect(z.declaration.id.token.value).to eq("z")
+        expect(y.type_specifier.token.type).to eq(:void)
+        expect(y.id.token.type).to eq(:id)
+        expect(y.id.token.value).to eq("y")
+
+        expect(z.type_specifier.token.type).to eq(:string)
+        expect(z.id.token.type).to eq(:id)
+        expect(z.id.token.value).to eq("z")
       end
     end
 
@@ -162,11 +166,11 @@ describe Parser do
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int x();"))
-          expect{p.parse}.to raise_error(SyntaxError, "expected void, got r_paren")
+          p = Parser.new(Scanner.new("int x()"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
 
-          p = Parser.new(Scanner.new("int x(;"))
-          expect{p.parse}.to raise_error(SyntaxError, "expected void, got semicolon")
+          p = Parser.new(Scanner.new("int x( { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got l_brace")
         end
       end
     end
@@ -213,6 +217,62 @@ describe Parser do
         expect(p.token).to be_a Token
         expect(p.token.type).to eq(:num)
         expect(p.token.value).to eq("2")
+      end
+    end
+
+    context "a VoidParams" do
+      let(:p) { Parser.new(Scanner.new("int x(void) { }")).parse.declaration_list.declaration.params }
+
+      it "is a VoidParams that is also a Params" do
+        expect(p).to be_a VoidParams
+        expect(p).to be_a Params
+      end
+
+      it "has a token of the appropriate type" do
+        expect(p.token).to be_a Token
+        expect(p.token.type).to eq(:void)
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int x() { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
+
+          p = Parser.new(Scanner.new("int x(void void) { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got void")
+        end
+      end
+    end
+
+    context "a ParamList" do
+      let(:p) { Parser.new(Scanner.new("int x(int y, int z, int w) { }")).parse.declaration_list.declaration.params }
+
+      it "is a set of nested ParamLists ending with nil" do
+        expect(p).to be_a ParamList
+        expect(p).to be_a Params
+        expect(p.param_list).to be_a ParamList
+        expect(p.param_list).to be_a Params
+        expect(p.param_list.param_list).to be_a ParamList
+        expect(p.param_list.param_list).to be_a Params
+        expect(p.param_list.param_list.param_list).to be_nil
+      end
+
+      it "is properly nested" do
+        w = p.param
+        z = p.param_list.param
+        y = p.param_list.param_list.param
+
+        expect(y.type_specifier.token.type).to eq(:int)
+        expect(y.id.token.type).to eq(:id)
+        expect(y.id.token.value).to eq("y")
+
+        expect(z.type_specifier.token.type).to eq(:int)
+        expect(z.id.token.type).to eq(:id)
+        expect(z.id.token.value).to eq("z")
+
+        expect(w.type_specifier.token.type).to eq(:int)
+        expect(w.id.token.type).to eq(:id)
+        expect(w.id.token.value).to eq("w")
       end
     end
   end
