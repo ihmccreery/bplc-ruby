@@ -20,6 +20,8 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 
 - `Program ::= DeclarationList`
 - `DelcarationList ::= DeclarationList Declaration | Declaration`
+  - A `DeclarationList` always has a `declaration` child, and has `declaration_list` child that is either a `DeclarationList`
+    or nil.
 - `Declaration > VariableDeclaration | FunctionDeclaration`
   - Note that in the BPL manual, a `Declaration` can produce a `VarDec` or `FunDec`.  We deviate from this, instead just
     letting a `Declaration` be one of two types: `VariableDeclaration` or `FunctionDeclaration`
@@ -30,10 +32,12 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
     - `FunctionDeclaration ::= <TypeSpecifier> <Id>(Params) CompoundStatement`
 - `Params > <VoidParams> | ParamsList`
 - `ParamsList :: ParamsList, Param | Param`
+  - A `ParamList` always has a `param` child, and has `param_list` child that is either a `ParamList` or nil.
 - `Param > SimpleParam | PointerParam | ArrayParam`
   - `SimpleParam ::= <TypeSpecifier> <Id>`
   - `PointerParam ::= <TypeSpecifier> *<Id>`
   - `ArrayParam ::= <TypeSpecifier> <Id>[]`
+- CompoundStatement
 
 ### Not Implemented
 
