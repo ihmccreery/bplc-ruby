@@ -164,7 +164,7 @@ describe Parser do
     #######################
 
     context "a FunctionDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x(void) { }")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list.declaration }
 
       it "is a FunctionDeclaration" do
         expect(p).to be_a FunctionDeclaration
@@ -179,10 +179,10 @@ describe Parser do
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int x()"))
+          p = Parser.new(Scanner.new("int f()"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
 
-          p = Parser.new(Scanner.new("int x( { }"))
+          p = Parser.new(Scanner.new("int f( { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got l_brace")
         end
       end
@@ -234,7 +234,7 @@ describe Parser do
     end
 
     context "a VoidParams" do
-      let(:p) { Parser.new(Scanner.new("int x(void) { }")).parse.declaration_list.declaration.params }
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list.declaration.params }
 
       it "is a VoidParams that is also a Params" do
         expect(p).to be_a VoidParams
@@ -248,17 +248,17 @@ describe Parser do
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int x() { }"))
+          p = Parser.new(Scanner.new("int f() { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
 
-          p = Parser.new(Scanner.new("int x(void void) { }"))
+          p = Parser.new(Scanner.new("int f(void void) { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got void")
         end
       end
     end
 
     context "a ParamList" do
-      let(:p) { Parser.new(Scanner.new("int x(int y, int z, int w) { }")).parse.declaration_list.declaration.params }
+      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declaration_list.declaration.params }
 
       it "is a set of nested ParamLists ending with nil" do
         expect(p).to be_a ParamList
@@ -271,9 +271,13 @@ describe Parser do
       end
 
       it "is properly nested" do
-        w = p.param
-        z = p.param_list.param
-        y = p.param_list.param_list.param
+        z = p.param
+        y = p.param_list.param
+        x = p.param_list.param_list.param
+
+        expect(x.type_specifier.token.type).to eq(:int)
+        expect(x.id.token.type).to eq(:id)
+        expect(x.id.token.value).to eq("x")
 
         expect(y.type_specifier.token.type).to eq(:int)
         expect(y.id.token.type).to eq(:id)
@@ -282,21 +286,17 @@ describe Parser do
         expect(z.type_specifier.token.type).to eq(:int)
         expect(z.id.token.type).to eq(:id)
         expect(z.id.token.value).to eq("z")
-
-        expect(w.type_specifier.token.type).to eq(:int)
-        expect(w.id.token.type).to eq(:id)
-        expect(w.id.token.value).to eq("w")
       end
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int x(int y, int z,, int w) { }"))
+          p = Parser.new(Scanner.new("int f(int x, int y,, int z) { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got comma")
 
-          p = Parser.new(Scanner.new("int x(int y, z, int w) { }"))
+          p = Parser.new(Scanner.new("int f(int x, y, int z) { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
 
-          p = Parser.new(Scanner.new("int x(int y, int z int w) { }"))
+          p = Parser.new(Scanner.new("int f(int x, int y int z) { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got int")
         end
       end
