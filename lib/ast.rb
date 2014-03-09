@@ -1,7 +1,7 @@
 class Ast
 end
 
-class TokenAst < Ast
+module TokenAst
   attr_accessor :token
 
   def initialize(token)
@@ -69,21 +69,20 @@ end
 class CompoundStatement < Ast
 end
 
-class TypeSpecifier < TokenAst
+class TypeSpecifier < Ast
+  include TokenAst
 end
 
-class Id < TokenAst
+class Id < Ast
+  include TokenAst
 end
 
-class Num < TokenAst
+class Num < Ast
+  include TokenAst
 end
 
 class VoidParams < Params
-  attr_accessor :token
-
-  def initialize(token)
-    @token = token
-  end
+  include TokenAst
 end
 
 class ParamList < Params
