@@ -55,6 +55,19 @@ describe Parser do
         expect(z.id.token.type).to eq(:id)
         expect(z.id.token.value).to eq("z")
       end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int x; void y;; string z;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected eof, got semicolon")
+
+          p = Parser.new(Scanner.new("int x; y; string z;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected eof, got id")
+
+          p = Parser.new(Scanner.new("int x; void y string z;"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got string")
+        end
+      end
     end
 
     #######################
@@ -273,6 +286,19 @@ describe Parser do
         expect(w.type_specifier.token.type).to eq(:int)
         expect(w.id.token.type).to eq(:id)
         expect(w.id.token.value).to eq("w")
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int x(int y, int z,, int w) { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got comma")
+
+          p = Parser.new(Scanner.new("int x(int y, z, int w) { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
+
+          p = Parser.new(Scanner.new("int x(int y, int z int w) { }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got int")
+        end
       end
     end
   end
