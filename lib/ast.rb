@@ -9,6 +9,10 @@ module TokenAst
   end
 end
 
+###########
+# Program #
+###########
+
 class Program < Ast
   attr_accessor :declaration_list
 
@@ -16,6 +20,10 @@ class Program < Ast
     @declaration_list = declaration_list
   end
 end
+
+################
+# Declarations #
+################
 
 class DeclarationList < Ast
   attr_accessor :declaration_list, :declaration
@@ -63,22 +71,11 @@ class FunctionDeclaration < Declaration
   end
 end
 
+##########
+# Params #
+##########
+
 class Params < Ast
-end
-
-class CompoundStatement < Ast
-end
-
-class TypeSpecifier < Ast
-  include TokenAst
-end
-
-class Id < Ast
-  include TokenAst
-end
-
-class Num < Ast
-  include TokenAst
 end
 
 class VoidParams < Params
@@ -110,4 +107,27 @@ class PointerParam < Param
 end
 
 class ArrayParam < Param
+end
+
+#####################
+# CompoundStatement #
+#####################
+
+class CompoundStatement < Ast
+end
+
+############################
+# general terminal classes #
+############################
+
+class TypeSpecifier < Ast
+  include TokenAst
+end
+
+class Id < Ast
+  include TokenAst
+end
+
+class Num < Ast
+  include TokenAst
 end
