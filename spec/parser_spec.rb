@@ -21,7 +21,7 @@ describe Parser do
     end
 
     context "a Program" do
-      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse }
+      let(:p) { Parser.new(Scanner.new("int x; void *y; string z[2];")).parse }
 
       it "is a Program" do
         expect(p).to be_a Program
@@ -33,7 +33,7 @@ describe Parser do
     end
 
     context "a declarations" do
-      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declarations }
+      let(:p) { Parser.new(Scanner.new("int x; void *y; string z[2];")).parse.declarations }
 
       it "is an array of Declarations" do
         expect(p[0]).to be_a Declaration
@@ -47,14 +47,17 @@ describe Parser do
         y = p[1]
         z = p[2]
 
+        expect(x).to be_a SimpleDeclaration
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
         expect(x.id.token.value).to eq("x")
 
+        expect(y).to be_a PointerDeclaration
         expect(y.type_specifier.token.type).to eq(:void)
         expect(y.id.token.type).to eq(:id)
         expect(y.id.token.value).to eq("y")
 
+        expect(z).to be_a ArrayDeclaration
         expect(z.type_specifier.token.type).to eq(:string)
         expect(z.id.token.type).to eq(:id)
         expect(z.id.token.value).to eq("z")
@@ -62,13 +65,13 @@ describe Parser do
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int x; void y;; string z;"))
+          p = Parser.new(Scanner.new("int x; void *y;; string z[2];"))
           expect{p.parse}.to raise_error(SyntaxError, "expected eof, got semicolon")
 
           p = Parser.new(Scanner.new("int x; y; string z;"))
           expect{p.parse}.to raise_error(SyntaxError, "expected eof, got id")
 
-          p = Parser.new(Scanner.new("int x; void y string z;"))
+          p = Parser.new(Scanner.new("int x; void *y string z[2];"))
           expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got string")
         end
       end
@@ -322,7 +325,7 @@ describe Parser do
     end
 
     context "a local_declarations" do
-      let(:p) { body("int x; void y; string z;").local_declarations }
+      let(:p) { body("int x; void *y; string z[2];").local_declarations }
 
       it "is an array of Declarations" do
         expect(p).to be_a Array
@@ -337,14 +340,17 @@ describe Parser do
         y = p[1]
         z = p[2]
 
+        expect(x).to be_a SimpleDeclaration
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
         expect(x.id.token.value).to eq("x")
 
+        expect(y).to be_a PointerDeclaration
         expect(y.type_specifier.token.type).to eq(:void)
         expect(y.id.token.type).to eq(:id)
         expect(y.id.token.value).to eq("y")
 
+        expect(z).to be_a ArrayDeclaration
         expect(z.type_specifier.token.type).to eq(:string)
         expect(z.id.token.type).to eq(:id)
         expect(z.id.token.value).to eq("z")
