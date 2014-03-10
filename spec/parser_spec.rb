@@ -27,18 +27,25 @@ describe Parser do
         expect(p).to be_a Program
       end
 
-      it "has a declarations that is an array of Declarations" do
+      it "has a declarations that is an array" do
         expect(p.declarations).to be_a Array
-        expect(p.declarations[0]).to be_a Declaration
-        expect(p.declarations[1]).to be_a Declaration
-        expect(p.declarations[2]).to be_a Declaration
-        expect(p.declarations[3]).to be_nil
+      end
+    end
+
+    context "a declarations" do
+      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declarations }
+
+      it "is an array of Declarations" do
+        expect(p[0]).to be_a Declaration
+        expect(p[1]).to be_a Declaration
+        expect(p[2]).to be_a Declaration
+        expect(p[3]).to be_nil
       end
 
       it "is properly formed" do
-        x = p.declarations[0]
-        y = p.declarations[1]
-        z = p.declarations[2]
+        x = p[0]
+        y = p[1]
+        z = p[2]
 
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
