@@ -358,11 +358,14 @@ describe Parser do
 
       context "that is malformed" do
         it "raises SyntaxErrors" do
-          p = Parser.new(Scanner.new("int f(void) { int x void y; string z; }"))
+          p = Parser.new(Scanner.new("int f(void) { int x void y; string z[2]; }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got void")
 
-          p = Parser.new(Scanner.new("int f(void) { int x y; string z; }"))
-          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
+          p = Parser.new(Scanner.new("int f(void) { int x *y; string z[2]; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got asterisk")
+
+          p = Parser.new(Scanner.new("int f(void) { int x; void y(void) { } string z[2]; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got l_paren")
         end
       end
     end
