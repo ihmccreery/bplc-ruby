@@ -29,9 +29,9 @@ module Parsers
     end
 
     def declaration_list
-      d = DeclarationList.new(nil, declaration)
+      d = [declaration]
       while is_type_specifier?(current_token)
-        d = DeclarationList.new(d, declaration)
+        d << declaration
       end
       return d
     end
@@ -65,19 +65,16 @@ module Parsers
 
     def params
       if current_token.type == :void
-        VoidParams.new(eat(:void))
+        eat(:void)
+        return []
       else
-        param_list
+        p = [param]
+        while current_token.type == :comma
+          eat(:comma)
+          p << param
+        end
+        return p
       end
-    end
-
-    def param_list
-      p = ParamList.new(nil, param)
-      while current_token.type == :comma
-        eat(:comma)
-        p = ParamList.new(p, param)
-      end
-      return p
     end
 
     def param
@@ -92,7 +89,7 @@ module Parsers
           eat(:r_bracket)
           p = ArrayParam.new(t, i)
         else
-          p = SimpleDeclaration.new(t, i)
+          p = SimpleParam.new(t, i)
         end
       end
       return p

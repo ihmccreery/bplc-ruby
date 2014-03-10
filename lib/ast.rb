@@ -25,15 +25,6 @@ end
 # Declarations #
 ################
 
-class DeclarationList < Ast
-  attr_accessor :declaration_list, :declaration
-
-  def initialize(declaration_list, declaration)
-    @declaration_list = declaration_list
-    @declaration = declaration
-  end
-end
-
 class Declaration < Ast
   attr_accessor :type_specifier, :id
 
@@ -74,22 +65,6 @@ end
 ##########
 # Params #
 ##########
-
-class Params < Ast
-end
-
-class VoidParams < Params
-  include TokenAst
-end
-
-class ParamList < Params
-  attr_accessor :param_list, :param
-
-  def initialize(param_list, param)
-    @param_list = param_list
-    @param = param
-  end
-end
 
 class Param < Ast
   attr_accessor :type_specifier, :id

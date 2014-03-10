@@ -21,27 +21,24 @@ describe Parser do
     end
 
     context "a Program" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse }
+      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse }
 
-      it "has a declaration_list" do
-        expect(p.declaration_list).to be_a DeclarationList
-      end
-    end
-
-    context "a DeclarationList" do
-      let(:p) { Parser.new(Scanner.new("int x; void y; string z;")).parse.declaration_list }
-
-      it "is a set of nested DeclarationLists ending with nil" do
-        expect(p).to be_a DeclarationList
-        expect(p.declaration_list).to be_a DeclarationList
-        expect(p.declaration_list.declaration_list).to be_a DeclarationList
-        expect(p.declaration_list.declaration_list.declaration_list).to be_nil
+      it "is a Program" do
+        expect(p).to be_a Program
       end
 
-      it "is properly nested" do
-        z = p.declaration
-        y = p.declaration_list.declaration
-        x = p.declaration_list.declaration_list.declaration
+      it "has a declaration_list that is an array of Declarations" do
+        expect(p.declaration_list).to be_a Array
+        expect(p.declaration_list[0]).to be_a Declaration
+        expect(p.declaration_list[1]).to be_a Declaration
+        expect(p.declaration_list[2]).to be_a Declaration
+        expect(p.declaration_list[3]).to be_nil
+      end
+
+      it "is properly formed" do
+        x = p.declaration_list[0]
+        y = p.declaration_list[1]
+        z = p.declaration_list[2]
 
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
@@ -75,7 +72,7 @@ describe Parser do
     #######################
 
     context "a SimpleDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0] }
 
       it "is a VariableDeclaration that is also a SimpleDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -102,7 +99,7 @@ describe Parser do
     end
 
     context "a PointerDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int *x;")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int *x;")).parse.declaration_list[0] }
 
       it "is a VariableDeclaration that is also a PointerDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -129,7 +126,7 @@ describe Parser do
     end
 
     context "an ArrayDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list[0] }
 
       it "is a VariableDeclaration that is also a ArrayDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -164,7 +161,7 @@ describe Parser do
     #######################
 
     context "a FunctionDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list.declaration }
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list[0] }
 
       it "is a FunctionDeclaration" do
         expect(p).to be_a FunctionDeclaration
@@ -173,7 +170,7 @@ describe Parser do
       it "has a type_specifier, id, params, and body" do
         expect(p.type_specifier).to be_a TypeSpecifier
         expect(p.id).to be_a Id
-        expect(p.params).to be_a Params
+        expect(p.params).to be_a Array
         expect(p.body).to be_a CompoundStatement
       end
 
@@ -193,7 +190,7 @@ describe Parser do
     ########################
 
     context "a TypeSpecifier" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.type_specifier }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0].type_specifier }
 
       it "is a TypeSpecifier" do
         expect(p).to be_a TypeSpecifier
@@ -206,7 +203,7 @@ describe Parser do
     end
 
     context "an Id" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list.declaration.id }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0].id }
 
       it "is a Id" do
         expect(p).to be_a Id
@@ -220,7 +217,7 @@ describe Parser do
     end
 
     context "a Num" do
-      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list.declaration.size }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list[0].size }
 
       it "is a Num" do
         expect(p).to be_a Num
@@ -233,17 +230,12 @@ describe Parser do
       end
     end
 
-    context "a VoidParams" do
-      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list.declaration.params }
+    context "an empty params" do
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list[0].params }
 
-      it "is a VoidParams that is also a Params" do
-        expect(p).to be_a VoidParams
-        expect(p).to be_a Params
-      end
-
-      it "has a token of the appropriate type" do
-        expect(p.token).to be_a Token
-        expect(p.token.type).to eq(:void)
+      it "is an empty array" do
+        expect(p).to be_a Array
+        expect(p).to be_empty
       end
 
       context "that is malformed" do
@@ -257,23 +249,20 @@ describe Parser do
       end
     end
 
-    context "a ParamList" do
-      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declaration_list.declaration.params }
+    context "a params" do
+      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declaration_list[0].params }
 
-      it "is a set of nested ParamLists ending with nil" do
-        expect(p).to be_a ParamList
-        expect(p).to be_a Params
-        expect(p.param_list).to be_a ParamList
-        expect(p.param_list).to be_a Params
-        expect(p.param_list.param_list).to be_a ParamList
-        expect(p.param_list.param_list).to be_a Params
-        expect(p.param_list.param_list.param_list).to be_nil
+      it "is an array of Params" do
+        expect(p[0]).to be_a Param
+        expect(p[1]).to be_a Param
+        expect(p[2]).to be_a Param
+        expect(p[3]).to be_nil
       end
 
       it "is properly nested" do
-        z = p.param
-        y = p.param_list.param
-        x = p.param_list.param_list.param
+        x = p[0]
+        y = p[1]
+        z = p[2]
 
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)

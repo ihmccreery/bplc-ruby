@@ -18,10 +18,9 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 
 ### Implemented
 
-- `Program ::= DeclarationList`
-- `DelcarationList ::= DeclarationList Declaration | Declaration`
-  - A `DeclarationList` always has a `declaration` child, and has `declaration_list` child that is either a `DeclarationList`
-    or nil.
+- `Program ::= [Declaration, Declaration, ..., Declaration]`
+  - A `Program` has a `declaration_list` child which is just an array of Declarations.  This is different than the
+    grammar given in the BPL manual
 - `Declaration > VariableDeclaration | FunctionDeclaration`
   - Note that in the BPL manual, a `Declaration` can produce a `VarDec` or `FunDec`.  We deviate from this, instead just
     letting a `Declaration` be one of two types: `VariableDeclaration` or `FunctionDeclaration`
@@ -29,10 +28,9 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
         - `SimpleDeclaration ::= <TypeSpecifier> <Id>;`
         - `PointerDeclaration ::= <TypeSpecifier> *<Id>;`
         - `ArrayDeclaration ::= <TypeSpecifier> <Id>[<Num>];`
-    - `FunctionDeclaration ::= <TypeSpecifier> <Id>(Params) CompoundStatement`
-- `Params > <VoidParams> | ParamsList`
-- `ParamsList :: ParamsList, Param | Param`
-  - A `ParamList` always has a `param` child, and has `param_list` child that is either a `ParamList` or nil.
+    - `FunctionDeclaration ::= <TypeSpecifier> <Id>([Param, Param, ..., Param]) CompoundStatement`
+      - A `FunctionDeclaration` has a `params` child which is just an array of Params.  This is different than the
+        grammar given in the BPL manual
 - `Param > SimpleParam | PointerParam | ArrayParam`
   - `SimpleParam ::= <TypeSpecifier> <Id>`
   - `PointerParam ::= <TypeSpecifier> *<Id>`
