@@ -47,6 +47,9 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - An `Expression` can be an `AssignmentExpression`, `ComparisonExpression`, or `SimpleExpression`.  This is just a way of
     clarifying the grammar given in the BPL manual.
   - `SimpleExpression ::= E`
+- `E ::= E AddOp T | T`
+  - Unlike other left-recursive rules, `E` is actually implemented left-recursively.  An `E` has children `add_op`, `e`, and
+    `t`.  The left-most `E` of a nested set of `E`s has a nil `e` and a nil `add_op`.
 
 ### Not Implemented
 
@@ -54,5 +57,5 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E Relop E
-- `E ::=` stuff
+- `T ::=` stuff
 - everything else

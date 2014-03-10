@@ -410,5 +410,49 @@ describe Parser do
         expect(p.e).to be_a E
       end
     end
+
+    context "an E" do
+      let(:p) { body("x + y - z;").statements[0].expression.e }
+
+      it "is a nested set of Es" do
+        expect(p).to be_a E
+        expect(p.e).to be_a E
+        expect(p.e.e).to be_a E
+        expect(p.e.e.e).to be_nil
+      end
+
+      it "is properly nested" do
+        x = p.e.e
+        y = p.e
+        z = p
+
+        expect(x.add_op).to be_nil
+        # TODO T shouldn't actually act this way
+        expect(x.t.token.type).to eq(:id)
+        expect(x.t.token.value).to eq("x")
+
+        expect(y.add_op).to be_a AddOp
+        expect(y.add_op.token.type).to eq(:plus)
+        # TODO T shouldn't actually act this way
+        expect(y.t.token.type).to eq(:id)
+        expect(y.t.token.value).to eq("y")
+
+        expect(z.add_op).to be_a AddOp
+        expect(z.add_op.token.type).to eq(:minus)
+        # TODO T shouldn't actually act this way
+        expect(z.t.token.type).to eq(:id)
+        expect(z.t.token.value).to eq("z")
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int f(void) { x + y z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
+
+          p = Parser.new(Scanner.new("int f(void) { x +- y + z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected id, got minus")
+        end
+      end
+    end
   end
 end

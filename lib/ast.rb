@@ -120,12 +120,18 @@ class SimpleExpression < Expression
 end
 
 class E < Ast
-  # TODO placeholder
-  attr_accessor :id
+  attr_accessor :add_op, :e, :t
 
-  def initialize(id)
-    @id = id
+  def initialize(add_op, e, t)
+    @add_op = add_op
+    @e = e
+    @t = t
   end
+end
+
+class T < Ast
+  # TODO placeholder
+  include TokenAst
 end
 
 ############################
@@ -133,6 +139,10 @@ end
 ############################
 
 class TypeSpecifier < Ast
+  include TokenAst
+end
+
+class AddOp < Ast
   include TokenAst
 end
 
