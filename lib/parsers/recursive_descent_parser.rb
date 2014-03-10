@@ -106,7 +106,7 @@ module Parsers
     def compound_statement
       eat(:l_brace)
       eat(:r_brace)
-      return CompoundStatement.new
+      return CompoundStatement.new([], [])
     end
 
     def id

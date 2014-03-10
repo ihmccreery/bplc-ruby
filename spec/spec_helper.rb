@@ -9,3 +9,7 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
 end
+
+def body(s)
+  Parser.new(Scanner.new("int f(void) { #{s} }")).parse.declarations[0].body
+end

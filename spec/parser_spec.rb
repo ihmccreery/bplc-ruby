@@ -290,5 +290,32 @@ describe Parser do
         end
       end
     end
+
+    ########
+    # Body #
+    ########
+
+    context "a body" do
+      let(:p) { body("") }
+
+      it "is a CompoundStatement" do
+        expect(p).to be_a CompoundStatement
+      end
+
+      it "has a local_declarations that is an Array of Declarations" do
+        expect(p.local_declarations).to be_a Array
+        # TODO add declarations
+        expect(p.local_declarations[0]).to be_nil
+      end
+
+      it "has a statements that is an Array of Statements" do
+        expect(p.statements).to be_a Array
+        # TODO add statements
+        expect(p.statements[0]).to be_nil
+      end
+
+      # context "that is malformed" do
+      # end
+    end
   end
 end

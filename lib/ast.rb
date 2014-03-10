@@ -89,6 +89,12 @@ end
 #####################
 
 class CompoundStatement < Ast
+  attr_accessor :local_declarations, :statements
+
+  def initialize(local_declarations, statements)
+    @local_declarations = local_declarations
+    @statements = statements
+  end
 end
 
 ############################
