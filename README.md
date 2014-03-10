@@ -35,7 +35,10 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `SimpleParam ::= <TypeSpecifier> <Id>`
   - `PointerParam ::= <TypeSpecifier> *<Id>`
   - `ArrayParam ::= <TypeSpecifier> <Id>[]`
-- CompoundStatement
+- `CompoundStatement ::= { [Declaration, Declaration, ..., Declaration] [Statement, Statement, ..., Statement] }`
+  - A `CompoundStatement` just has a `local_declarations`, which is just an array of `Declarations`, and a statements, which is
+    just an array of `Statements`
+  - `local_declarations` can only include `VariableDeclarations`, not `FunctionDeclarations`
 
 ### Not Implemented
 
