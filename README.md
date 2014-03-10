@@ -19,7 +19,7 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 ### Implemented
 
 - `Program ::= [Declaration, Declaration, ..., Declaration]`
-  - A `Program` has a `declaration_list` child which is just an array of Declarations.  This is different than the
+  - A `Program` has a `declarations` child which is just an array of Declarations.  This is different than the
     grammar given in the BPL manual
 - `Declaration > VariableDeclaration | FunctionDeclaration`
   - Note that in the BPL manual, a `Declaration` can produce a `VarDec` or `FunDec`.  We deviate from this, instead just

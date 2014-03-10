@@ -23,12 +23,12 @@ module Parsers
     #################
 
     def program
-      p = Program.new(declaration_list)
+      p = Program.new(declarations)
       eat(:eof)
       return p
     end
 
-    def declaration_list
+    def declarations
       d = [declaration]
       while is_type_specifier?(current_token)
         d << declaration

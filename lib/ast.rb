@@ -14,10 +14,10 @@ end
 ###########
 
 class Program < Ast
-  attr_accessor :declaration_list
+  attr_accessor :declarations
 
-  def initialize(declaration_list)
-    @declaration_list = declaration_list
+  def initialize(declarations)
+    @declarations = declarations
   end
 end
 

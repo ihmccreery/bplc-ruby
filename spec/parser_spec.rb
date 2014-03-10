@@ -27,18 +27,18 @@ describe Parser do
         expect(p).to be_a Program
       end
 
-      it "has a declaration_list that is an array of Declarations" do
-        expect(p.declaration_list).to be_a Array
-        expect(p.declaration_list[0]).to be_a Declaration
-        expect(p.declaration_list[1]).to be_a Declaration
-        expect(p.declaration_list[2]).to be_a Declaration
-        expect(p.declaration_list[3]).to be_nil
+      it "has a declarations that is an array of Declarations" do
+        expect(p.declarations).to be_a Array
+        expect(p.declarations[0]).to be_a Declaration
+        expect(p.declarations[1]).to be_a Declaration
+        expect(p.declarations[2]).to be_a Declaration
+        expect(p.declarations[3]).to be_nil
       end
 
       it "is properly formed" do
-        x = p.declaration_list[0]
-        y = p.declaration_list[1]
-        z = p.declaration_list[2]
+        x = p.declarations[0]
+        y = p.declarations[1]
+        z = p.declarations[2]
 
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
@@ -72,7 +72,7 @@ describe Parser do
     #######################
 
     context "a SimpleDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0] }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0] }
 
       it "is a VariableDeclaration that is also a SimpleDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -99,7 +99,7 @@ describe Parser do
     end
 
     context "a PointerDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int *x;")).parse.declaration_list[0] }
+      let(:p) { Parser.new(Scanner.new("int *x;")).parse.declarations[0] }
 
       it "is a VariableDeclaration that is also a PointerDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -126,7 +126,7 @@ describe Parser do
     end
 
     context "an ArrayDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list[0] }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0] }
 
       it "is a VariableDeclaration that is also a ArrayDeclaration" do
         expect(p).to be_a VariableDeclaration
@@ -161,7 +161,7 @@ describe Parser do
     #######################
 
     context "a FunctionDeclaration" do
-      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list[0] }
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declarations[0] }
 
       it "is a FunctionDeclaration" do
         expect(p).to be_a FunctionDeclaration
@@ -190,7 +190,7 @@ describe Parser do
     ########################
 
     context "a TypeSpecifier" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0].type_specifier }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].type_specifier }
 
       it "is a TypeSpecifier" do
         expect(p).to be_a TypeSpecifier
@@ -203,7 +203,7 @@ describe Parser do
     end
 
     context "an Id" do
-      let(:p) { Parser.new(Scanner.new("int x;")).parse.declaration_list[0].id }
+      let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
 
       it "is a Id" do
         expect(p).to be_a Id
@@ -217,7 +217,7 @@ describe Parser do
     end
 
     context "a Num" do
-      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declaration_list[0].size }
+      let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0].size }
 
       it "is a Num" do
         expect(p).to be_a Num
@@ -231,7 +231,7 @@ describe Parser do
     end
 
     context "an empty params" do
-      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declaration_list[0].params }
+      let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declarations[0].params }
 
       it "is an empty array" do
         expect(p).to be_a Array
@@ -250,7 +250,7 @@ describe Parser do
     end
 
     context "a params" do
-      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declaration_list[0].params }
+      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0].params }
 
       it "is an array of Params" do
         expect(p[0]).to be_a Param
