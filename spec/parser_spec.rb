@@ -265,7 +265,7 @@ describe Parser do
         expect(p[3]).to be_nil
       end
 
-      it "is properly nested" do
+      it "is properly formed" do
         x = p[0]
         y = p[1]
         z = p[2]
