@@ -381,5 +381,21 @@ describe Parser do
         expect(p[3]).to be_nil
       end
     end
+
+    context "an ExpressionStatement" do
+      let(:p) { body("x;").statements[0] }
+
+      it "has an Expression" do
+        expect(p.expression).to be_a Expression
+      end
+    end
+
+    context "an empty ExpressionStatement" do
+      let(:p) { body("x; ;").statements[1] }
+
+      it "has a nil expression" do
+        expect(p.expression).to be_nil
+      end
+    end
   end
 end

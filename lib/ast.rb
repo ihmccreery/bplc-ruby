@@ -100,6 +100,17 @@ end
 class Statement < Ast
 end
 
+class ExpressionStatement < Statement
+  attr_accessor :expression
+
+  def initialize(expression)
+    @expression = expression
+  end
+end
+
+class Expression < Ast
+end
+
 ############################
 # general terminal classes #
 ############################

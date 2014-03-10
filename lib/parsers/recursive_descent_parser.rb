@@ -147,11 +147,25 @@ module Parsers
       return s
     end
 
-    # TODO this is dumb
+    # TODO unfinished
     def statement
-      eat(:id)
+      return expression_statement
+    end
+
+    def expression_statement
+      if current_token.type == :semicolon
+        s = ExpressionStatement.new(nil)
+      else
+        s = ExpressionStatement.new(expression)
+      end
       eat(:semicolon)
-      return Statement.new
+      return s
+    end
+
+    # TODO unfinished
+    def expression
+      eat(:id)
+      return Expression.new
     end
 
     def id
