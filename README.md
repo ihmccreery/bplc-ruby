@@ -43,8 +43,16 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - Unlike the BPL manual, a `Statement` does not produce an `ExpressionStatement`, etc., but rather can be one of several
     types of `Statements`
 - `ExpressionStatement ::= Expression; | ;`
+- `Expression > SimpleExpression`
+  - An `Expression` can be an `AssignmentExpression`, `ComparisonExpression`, or `SimpleExpression`.  This is just a way of
+    clarifying the grammar given in the BPL manual.
+  - `SimpleExpression ::= E`
 
 ### Not Implemented
 
-- Statement > CompoundStatement | IfStatement | WhileStatement | ReturnStatement | WriteStatement
+- `Statement > CompoundStatement | IfStatement | WhileStatement | ReturnStatement | WriteStatement`
+- `Expression > AssignmentExpression | ComparisonExpression`
+  - `AssignmentExpression ::= Var = Expression`
+  - `ComparisonExpression ::= E Relop E
+- `E ::=` stuff
 - everything else

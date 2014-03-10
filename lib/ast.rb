@@ -111,6 +111,23 @@ end
 class Expression < Ast
 end
 
+class SimpleExpression < Expression
+  attr_accessor :e
+
+  def initialize(e)
+    @e = e
+  end
+end
+
+class E < Ast
+  # TODO placeholder
+  attr_accessor :id
+
+  def initialize(id)
+    @id = id
+  end
+end
+
 ############################
 # general terminal classes #
 ############################

@@ -164,8 +164,12 @@ module Parsers
 
     # TODO unfinished
     def expression
-      eat(:id)
-      return Expression.new
+      return SimpleExpression.new(e)
+    end
+
+    # TODO unfinished
+    def e
+      return E.new(id)
     end
 
     def id

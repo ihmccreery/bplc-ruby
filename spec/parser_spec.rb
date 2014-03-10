@@ -397,5 +397,18 @@ describe Parser do
         expect(p.expression).to be_nil
       end
     end
+
+    context "a SimpleExpression" do
+      let(:p) { body("x;").statements[0].expression }
+
+      it "is a SimpleExpression that is also an Expression" do
+        expect(p).to be_a SimpleExpression
+        expect(p).to be_a Expression
+      end
+
+      it "has an e" do
+        expect(p.e).to be_a E
+      end
+    end
   end
 end
