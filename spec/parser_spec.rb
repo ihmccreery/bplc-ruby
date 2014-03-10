@@ -181,6 +181,12 @@ describe Parser do
 
           p = Parser.new(Scanner.new("int f( { }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got l_brace")
+
+          p = Parser.new(Scanner.new("int f(void) { "))
+          expect{p.parse}.to raise_error(SyntaxError, "expected r_brace, got eof")
+
+          p = Parser.new(Scanner.new("int f(void) } "))
+          expect{p.parse}.to raise_error(SyntaxError, "expected l_brace, got r_brace")
         end
       end
     end
@@ -302,20 +308,62 @@ describe Parser do
         expect(p).to be_a CompoundStatement
       end
 
-      it "has a local_declarations that is an Array of Declarations" do
+      it "has a local_declarations and a statements" do
         expect(p.local_declarations).to be_a Array
-        # TODO add declarations
-        expect(p.local_declarations[0]).to be_nil
-      end
-
-      it "has a statements that is an Array of Statements" do
         expect(p.statements).to be_a Array
-        # TODO add statements
-        expect(p.statements[0]).to be_nil
+      end
+    end
+
+    context "a local_declarations" do
+      let(:p) { body("int x; void y; string z;").local_declarations }
+
+      it "is an array of Declarations" do
+        expect(p).to be_a Array
+        expect(p[0]).to be_a Declaration
+        expect(p[1]).to be_a Declaration
+        expect(p[2]).to be_a Declaration
+        expect(p[3]).to be_nil
       end
 
-      # context "that is malformed" do
-      # end
+      it "is properly formed" do
+        x = p[0]
+        y = p[1]
+        z = p[2]
+
+        expect(x.type_specifier.token.type).to eq(:int)
+        expect(x.id.token.type).to eq(:id)
+        expect(x.id.token.value).to eq("x")
+
+        expect(y.type_specifier.token.type).to eq(:void)
+        expect(y.id.token.type).to eq(:id)
+        expect(y.id.token.value).to eq("y")
+
+        expect(z.type_specifier.token.type).to eq(:string)
+        expect(z.id.token.type).to eq(:id)
+        expect(z.id.token.value).to eq("z")
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int f(void) { int x void y; string z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got void")
+
+          p = Parser.new(Scanner.new("int f(void) { int x y; string z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
+        end
+      end
+    end
+
+    context "a statements" do
+      let(:p) { body("x; y; z;").statements }
+
+      it "is an array of Declarations" do
+        expect(p).to be_a Array
+        expect(p[0]).to be_a Statement
+        expect(p[1]).to be_a Statement
+        expect(p[2]).to be_a Statement
+        expect(p[3]).to be_nil
+      end
     end
   end
 end

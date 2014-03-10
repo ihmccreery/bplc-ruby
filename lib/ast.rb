@@ -84,9 +84,9 @@ end
 class ArrayParam < Param
 end
 
-#####################
-# CompoundStatement #
-#####################
+##############
+# Statements #
+##############
 
 class CompoundStatement < Ast
   attr_accessor :local_declarations, :statements
@@ -95,6 +95,9 @@ class CompoundStatement < Ast
     @local_declarations = local_declarations
     @statements = statements
   end
+end
+
+class Statement < Ast
 end
 
 ############################

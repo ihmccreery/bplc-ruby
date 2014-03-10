@@ -36,7 +36,6 @@ module Parsers
       return d
     end
 
-    # get a VariableDeclaration or a FunctionDeclaration
     def declaration
       t = type_specifier
       if current_token.type == :asterisk
@@ -105,8 +104,54 @@ module Parsers
 
     def compound_statement
       eat(:l_brace)
+      c = CompoundStatement.new(local_declarations, statements)
       eat(:r_brace)
-      return CompoundStatement.new([], [])
+      return c
+    end
+
+    def local_declarations
+      d = []
+      while is_type_specifier?(current_token)
+        d << local_declaration
+      end
+      return d
+    end
+
+    def local_declaration
+      t = type_specifier
+      if current_token.type == :asterisk
+        eat(:asterisk)
+        d = PointerDeclaration.new(t, id)
+        eat(:semicolon)
+      else
+        i = id
+        if current_token.type == :l_bracket
+          eat(:l_bracket)
+          d = ArrayDeclaration.new(t, i, num)
+          eat(:r_bracket)
+          eat(:semicolon)
+        else
+          d = SimpleDeclaration.new(t, i)
+          eat(:semicolon)
+        end
+      end
+      return d
+    end
+
+    def statements
+      s = []
+      # XXX let's check for things, not for absence of things
+      while !([:r_brace, :eof].include? current_token.type)
+        s << statement
+      end
+      return s
+    end
+
+    # TODO this is dumb
+    def statement
+      eat(:id)
+      eat(:semicolon)
+      return Statement.new
     end
 
     def id
