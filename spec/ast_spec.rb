@@ -246,14 +246,17 @@ describe FunctionDeclaration do
 
         expect(p.params[3]).to be_nil
 
+        expect(x).to be_a Param
         expect(x.type_specifier.token.type).to eq(:int)
         expect(x.id.token.type).to eq(:id)
         expect(x.id.token.value).to eq("x")
 
+        expect(y).to be_a Param
         expect(y.type_specifier.token.type).to eq(:int)
         expect(y.id.token.type).to eq(:id)
         expect(y.id.token.value).to eq("y")
 
+        expect(z).to be_a Param
         expect(z.type_specifier.token.type).to eq(:int)
         expect(z.id.token.type).to eq(:id)
         expect(z.id.token.value).to eq("z")
@@ -363,13 +366,24 @@ describe CompoundStatement do
     let(:p) { get_body("x; y; z;") }
 
     describe "#statements" do
-      # TODO that is properly formed
-      it "is an array of Statements" do
-        expect(p.statements).to be_a Array
-        expect(p.statements[0]).to be_a Statement
-        expect(p.statements[1]).to be_a Statement
-        expect(p.statements[2]).to be_a Statement
+      it "is an array of Statements that is properly formed" do
+        x = p.statements[0]
+        y = p.statements[1]
+        z = p.statements[2]
+
         expect(p.statements[3]).to be_nil
+
+        expect(x).to be_a Statement
+        expect(x.expression.e.t.f.factor.id.token.type).to eq(:id)
+        expect(x.expression.e.t.f.factor.id.token.value).to eq("x")
+
+        expect(y).to be_a Statement
+        expect(y.expression.e.t.f.factor.id.token.type).to eq(:id)
+        expect(y.expression.e.t.f.factor.id.token.value).to eq("y")
+
+        expect(z).to be_a Statement
+        expect(z.expression.e.t.f.factor.id.token.type).to eq(:id)
+        expect(z.expression.e.t.f.factor.id.token.value).to eq("z")
       end
     end
   end
