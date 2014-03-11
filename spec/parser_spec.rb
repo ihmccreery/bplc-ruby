@@ -8,10 +8,10 @@ describe Parser do
   end
 
   describe "#parse" do
-    it "returns an Ast that is also a Program" do
+    it "returns a Program that is also an Ast" do
       p = Parser.new(Scanner.new("int x;")).parse
-      expect(p).to be_a Ast
       expect(p).to be_a Program
+      expect(p).to be_a Ast
     end
 
     it "can be called multiple times" do
@@ -84,9 +84,9 @@ describe Parser do
     context "a SimpleDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0] }
 
-      it "is a VariableDeclaration that is also a SimpleDeclaration" do
-        expect(p).to be_a VariableDeclaration
+      it "is a SimpleDeclaration that is also a VariableDeclaration" do
         expect(p).to be_a SimpleDeclaration
+        expect(p).to be_a VariableDeclaration
       end
 
       it "has a type_specifier and an id" do
@@ -111,9 +111,9 @@ describe Parser do
     context "a PointerDeclaration" do
       let(:p) { Parser.new(Scanner.new("int *x;")).parse.declarations[0] }
 
-      it "is a VariableDeclaration that is also a PointerDeclaration" do
-        expect(p).to be_a VariableDeclaration
+      it "is a PointerDeclaration that is also a VariableDeclaration" do
         expect(p).to be_a PointerDeclaration
+        expect(p).to be_a VariableDeclaration
       end
 
       it "has a type_specifier and an id" do
@@ -138,9 +138,9 @@ describe Parser do
     context "an ArrayDeclaration" do
       let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0] }
 
-      it "is a VariableDeclaration that is also a ArrayDeclaration" do
-        expect(p).to be_a VariableDeclaration
+      it "is a ArrayDeclaration that is also a VariableDeclaration" do
         expect(p).to be_a ArrayDeclaration
+        expect(p).to be_a VariableDeclaration
       end
       it "is an ArrayDeclaration" do
         expect(p).to be_a ArrayDeclaration
