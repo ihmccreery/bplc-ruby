@@ -140,6 +140,31 @@ class T < Ast
 end
 
 class F < Ast
+  attr_accessor :factor
+
+  def initialize(factor)
+    @factor = factor
+  end
+end
+
+class MinusF < Ast
+  attr_accessor :f
+
+  def initialize(f)
+    @f = f
+  end
+end
+
+class AddressF < F
+end
+
+class PointerF < F
+end
+
+class SimpleF < F
+end
+
+class Factor
   # TODO placeholder
   include TokenAst
 end

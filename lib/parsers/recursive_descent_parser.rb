@@ -202,7 +202,22 @@ module Parsers
     end
 
     def f
-      return F.new(eat(:id))
+      if current_token.type == :minus
+        eat(:minus)
+        return MinusF.new(f)
+      elsif current_token.type == :ampersand
+        eat(:ampersand)
+        return AddressF.new(factor)
+      elsif current_token.type == :asterisk
+        eat(:asterisk)
+        return PointerF.new(factor)
+      else
+        return SimpleF.new(factor)
+      end
+    end
+
+    def factor
+      return Factor.new(eat(:id))
     end
 
     def id

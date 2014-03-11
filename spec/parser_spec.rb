@@ -428,20 +428,20 @@ describe Parser do
 
         expect(x.add_op).to be_nil
         # TODO F shouldn't actually act this way
-        expect(x.t.f.token.type).to eq(:id)
-        expect(x.t.f.token.value).to eq("x")
+        expect(x.t.f.factor.token.type).to eq(:id)
+        expect(x.t.f.factor.token.value).to eq("x")
 
         expect(y.add_op).to be_a AddOp
         expect(y.add_op.token.type).to eq(:plus)
         # TODO F shouldn't actually act this way
-        expect(y.t.f.token.type).to eq(:id)
-        expect(y.t.f.token.value).to eq("y")
+        expect(y.t.f.factor.token.type).to eq(:id)
+        expect(y.t.f.factor.token.value).to eq("y")
 
         expect(z.add_op).to be_a AddOp
         expect(z.add_op.token.type).to eq(:minus)
         # TODO F shouldn't actually act this way
-        expect(z.t.f.token.type).to eq(:id)
-        expect(z.t.f.token.value).to eq("z")
+        expect(z.t.f.factor.token.type).to eq(:id)
+        expect(z.t.f.factor.token.value).to eq("z")
       end
 
       context "that is malformed" do
@@ -449,8 +449,8 @@ describe Parser do
           p = Parser.new(Scanner.new("int f(void) { x + y z; }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
 
-          p = Parser.new(Scanner.new("int f(void) { x +- y + z; }"))
-          expect{p.parse}.to raise_error(SyntaxError, "expected id, got minus")
+          p = Parser.new(Scanner.new("int f(void) { x ++ y + z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected id, got plus")
         end
       end
     end
@@ -474,26 +474,26 @@ describe Parser do
 
         expect(x.mul_op).to be_nil
         # TODO F shouldn't actually act this way
-        expect(x.f.token.type).to eq(:id)
-        expect(x.f.token.value).to eq("x")
+        expect(x.f.factor.token.type).to eq(:id)
+        expect(x.f.factor.token.value).to eq("x")
 
         expect(y.mul_op).to be_a MulOp
         expect(y.mul_op.token.type).to eq(:asterisk)
         # TODO F shouldn't actually act this way
-        expect(y.f.token.type).to eq(:id)
-        expect(y.f.token.value).to eq("y")
+        expect(y.f.factor.token.type).to eq(:id)
+        expect(y.f.factor.token.value).to eq("y")
 
         expect(z.mul_op).to be_a MulOp
         expect(z.mul_op.token.type).to eq(:slash)
         # TODO F shouldn't actually act this way
-        expect(z.f.token.type).to eq(:id)
-        expect(z.f.token.value).to eq("z")
+        expect(z.f.factor.token.type).to eq(:id)
+        expect(z.f.factor.token.value).to eq("z")
 
         expect(w.mul_op).to be_a MulOp
         expect(w.mul_op.token.type).to eq(:percent)
         # TODO F shouldn't actually act this way
-        expect(w.f.token.type).to eq(:id)
-        expect(w.f.token.value).to eq("w")
+        expect(w.f.factor.token.type).to eq(:id)
+        expect(w.f.factor.token.value).to eq("w")
       end
 
       context "that is malformed" do
@@ -553,15 +553,66 @@ describe Parser do
         v = p.t.f
 
         # TODO F shouldn't actually act this way
-        expect(x.token.value).to eq("x")
+        expect(x.factor.token.value).to eq("x")
         # TODO F shouldn't actually act this way
-        expect(y.token.value).to eq("y")
+        expect(y.factor.token.value).to eq("y")
         # TODO F shouldn't actually act this way
-        expect(z.token.value).to eq("z")
+        expect(z.factor.token.value).to eq("z")
         # TODO F shouldn't actually act this way
-        expect(w.token.value).to eq("w")
+        expect(w.factor.token.value).to eq("w")
         # TODO F shouldn't actually act this way
-        expect(v.token.value).to eq("v")
+        expect(v.factor.token.value).to eq("v")
+      end
+    end
+
+    context "a MinusF" do
+      let(:p) { body("-x;").statements[0].expression.e.t.f }
+
+      it "is a MinusF" do
+        expect(p).to be_a MinusF
+      end
+
+      it "has an f" do
+        expect(p.f).to be_a F
+      end
+    end
+
+    context "a PointerF" do
+      let(:p) { body("*x;").statements[0].expression.e.t.f }
+
+      it "is a PointerF that is also an F" do
+        expect(p).to be_a PointerF
+        expect(p).to be_a F
+      end
+
+      it "has a factor" do
+        expect(p.factor).to be_a Factor
+      end
+    end
+
+    context "a AddressF" do
+      let(:p) { body("&x;").statements[0].expression.e.t.f }
+
+      it "is a AddressF that is also an F" do
+        expect(p).to be_a AddressF
+        expect(p).to be_a F
+      end
+
+      it "has a factor" do
+        expect(p.factor).to be_a Factor
+      end
+    end
+
+    context "a SimpleF" do
+      let(:p) { body("x;").statements[0].expression.e.t.f }
+
+      it "is a SimpleF that is also an F" do
+        expect(p).to be_a SimpleF
+        expect(p).to be_a F
+      end
+
+      it "has a factor" do
+        expect(p.factor).to be_a Factor
       end
     end
   end
