@@ -552,10 +552,15 @@ describe Parser do
         w = p.t.t.f
         v = p.t.f
 
+        # TODO F shouldn't actually act this way
         expect(x.token.value).to eq("x")
+        # TODO F shouldn't actually act this way
         expect(y.token.value).to eq("y")
+        # TODO F shouldn't actually act this way
         expect(z.token.value).to eq("z")
+        # TODO F shouldn't actually act this way
         expect(w.token.value).to eq("w")
+        # TODO F shouldn't actually act this way
         expect(v.token.value).to eq("v")
       end
     end
