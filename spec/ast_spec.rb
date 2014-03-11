@@ -294,38 +294,6 @@ describe TypeSpecifier do
   end
 end
 
-describe Id do
-  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
-
-  it "is a Id" do
-    expect(p).to be_a Id
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:id)
-      expect(p.token.value).to eq("x")
-    end
-  end
-end
-
-describe Num do
-  let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0].size }
-
-  it "is a Num" do
-    expect(p).to be_a Num
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:num)
-      expect(p.token.value).to eq("2")
-    end
-  end
-end
-
 ########
 # Body #
 ########
@@ -593,6 +561,38 @@ describe SimpleF do
   describe "#factor" do
     it "is a Factor" do
       expect(p.factor).to be_a Factor
+    end
+  end
+end
+
+describe Id do
+  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
+
+  it "is a Id" do
+    expect(p).to be_a Id
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:id)
+      expect(p.token.value).to eq("x")
+    end
+  end
+end
+
+describe Num do
+  let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0].size }
+
+  it "is a Num" do
+    expect(p).to be_a Num
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:num)
+      expect(p.token.value).to eq("2")
     end
   end
 end
