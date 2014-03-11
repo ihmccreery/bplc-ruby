@@ -12,17 +12,12 @@ describe Program do
       expect(p.declarations).to be_a Array
     end
 
-    it "is an array of Declarations" do
-      expect(p.declarations[0]).to be_a Declaration
-      expect(p.declarations[1]).to be_a Declaration
-      expect(p.declarations[2]).to be_a Declaration
-      expect(p.declarations[3]).to be_nil
-    end
-
     it "is properly formed" do
       x = p.declarations[0]
       y = p.declarations[1]
       z = p.declarations[2]
+
+      expect(p.declarations[3]).to be_nil
 
       expect(x).to be_a SimpleDeclaration
       expect(x.type_specifier.token.type).to eq(:int)
@@ -67,9 +62,16 @@ describe SimpleDeclaration do
     expect(p).to be_a VariableDeclaration
   end
 
-  it "has a type_specifier and an id" do
-    expect(p.type_specifier).to be_a TypeSpecifier
-    expect(p.id).to be_a Id
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
   end
 
   context "that is malformed" do
@@ -94,9 +96,16 @@ describe PointerDeclaration do
     expect(p).to be_a VariableDeclaration
   end
 
-  it "has a type_specifier and an id" do
-    expect(p.type_specifier).to be_a TypeSpecifier
-    expect(p.id).to be_a Id
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
   end
 
   context "that is malformed" do
@@ -124,10 +133,22 @@ describe  ArrayDeclaration do
     expect(p).to be_a ArrayDeclaration
   end
 
-  it "has a type_specifier, id, and size" do
-    expect(p.type_specifier).to be_a TypeSpecifier
-    expect(p.id).to be_a Id
-    expect(p.size).to be_a Num
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  describe "#size" do
+    it "is a Num" do
+      expect(p.size).to be_a Num
+    end
   end
 
   context "that is malformed" do
@@ -155,11 +176,28 @@ describe FunctionDeclaration do
     expect(p).to be_a FunctionDeclaration
   end
 
-  it "has a type_specifier, id, params, and body" do
-    expect(p.type_specifier).to be_a TypeSpecifier
-    expect(p.id).to be_a Id
-    expect(p.params).to be_a Array
-    expect(p.body).to be_a CompoundStatement
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  describe "#params" do
+    it "is a Array" do
+      expect(p.params).to be_a Array
+    end
+  end
+
+  describe "#body" do
+    it "is a CompoundStatement" do
+      expect(p.body).to be_a CompoundStatement
+    end
   end
 
   context "that is malformed" do
@@ -179,11 +217,11 @@ describe FunctionDeclaration do
   end
 
   context "with no params" do
-    let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declarations[0].params }
-
-    it "has no params" do
-      expect(p).to be_a Array
-      expect(p).to be_empty
+    describe "#params" do
+      it "is an empty array" do
+        expect(p.params).to be_a Array
+        expect(p.params).to be_empty
+      end
     end
 
     context "that is malformed" do
@@ -198,34 +236,31 @@ describe FunctionDeclaration do
   end
 
   context "with params" do
-    let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0].params }
+    let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0] }
 
-    it "has an array of Params" do
-      expect(p[0]).to be_a Param
-      expect(p[1]).to be_a Param
-      expect(p[2]).to be_a Param
-      expect(p[3]).to be_nil
+    describe "#params" do
+      it "is an array of Params that is properly formed" do
+        x = p.params[0]
+        y = p.params[1]
+        z = p.params[2]
+
+        expect(p.params[3]).to be_nil
+
+        expect(x.type_specifier.token.type).to eq(:int)
+        expect(x.id.token.type).to eq(:id)
+        expect(x.id.token.value).to eq("x")
+
+        expect(y.type_specifier.token.type).to eq(:int)
+        expect(y.id.token.type).to eq(:id)
+        expect(y.id.token.value).to eq("y")
+
+        expect(z.type_specifier.token.type).to eq(:int)
+        expect(z.id.token.type).to eq(:id)
+        expect(z.id.token.value).to eq("z")
+      end
     end
 
-    it "has an array of Params that is properly formed" do
-      x = p[0]
-      y = p[1]
-      z = p[2]
-
-      expect(x.type_specifier.token.type).to eq(:int)
-      expect(x.id.token.type).to eq(:id)
-      expect(x.id.token.value).to eq("x")
-
-      expect(y.type_specifier.token.type).to eq(:int)
-      expect(y.id.token.type).to eq(:id)
-      expect(y.id.token.value).to eq("y")
-
-      expect(z.type_specifier.token.type).to eq(:int)
-      expect(z.id.token.type).to eq(:id)
-      expect(z.id.token.value).to eq("z")
-    end
-
-    context "that is malformed" do
+    context "that are malformed" do
       it "raises SyntaxErrors" do
         p = Parser.new(Scanner.new("int f(int x, int y,, int z) { }"))
         expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got comma")
@@ -251,9 +286,11 @@ describe TypeSpecifier do
     expect(p).to be_a TypeSpecifier
   end
 
-  it "has a token of the appropriate type" do
-    expect(p.token).to be_a Token
-    expect(p.token.type).to eq(:int)
+  describe "#token" do
+    it "is a token of the appropriate type" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:int)
+    end
   end
 end
 
@@ -264,10 +301,12 @@ describe Id do
     expect(p).to be_a Id
   end
 
-  it "has a token of the appropriate type and value" do
-    expect(p.token).to be_a Token
-    expect(p.token.type).to eq(:id)
-    expect(p.token.value).to eq("x")
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:id)
+      expect(p.token.value).to eq("x")
+    end
   end
 end
 
@@ -278,10 +317,12 @@ describe Num do
     expect(p).to be_a Num
   end
 
-  it "has a token of the appropriate type and value" do
-    expect(p.token).to be_a Token
-    expect(p.token.type).to eq(:num)
-    expect(p.token.value).to eq("2")
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:num)
+      expect(p.token.value).to eq("2")
+    end
   end
 end
 
@@ -296,41 +337,44 @@ describe CompoundStatement do
     expect(p).to be_a CompoundStatement
   end
 
-  it "has a local_declarations and a statements" do
-    expect(p.local_declarations).to be_a Array
-    expect(p.statements).to be_a Array
+  describe "#local_declarations" do
+    it "is an array" do
+      expect(p.local_declarations).to be_a Array
+    end
+  end
+
+  describe "#statements" do
+    it "is an array" do
+      expect(p.statements).to be_a Array
+    end
   end
 
   context "with local_declarations" do
-    let(:p) { get_body("int x; void *y; string z[2];").local_declarations }
+    let(:p) { get_body("int x; void *y; string z[2];") }
 
-    it "has an array of Declarations" do
-      expect(p).to be_a Array
-      expect(p[0]).to be_a Declaration
-      expect(p[1]).to be_a Declaration
-      expect(p[2]).to be_a Declaration
-      expect(p[3]).to be_nil
-    end
+    describe "#local_declarations" do
+      it "is an array of Declarations that is properly formed" do
+        x = p.local_declarations[0]
+        y = p.local_declarations[1]
+        z = p.local_declarations[2]
 
-    it "has an array of Declarations that is properly formed" do
-      x = p[0]
-      y = p[1]
-      z = p[2]
+        expect(p.local_declarations[3]).to be_nil
 
-      expect(x).to be_a SimpleDeclaration
-      expect(x.type_specifier.token.type).to eq(:int)
-      expect(x.id.token.type).to eq(:id)
-      expect(x.id.token.value).to eq("x")
+        expect(x).to be_a SimpleDeclaration
+        expect(x.type_specifier.token.type).to eq(:int)
+        expect(x.id.token.type).to eq(:id)
+        expect(x.id.token.value).to eq("x")
 
-      expect(y).to be_a PointerDeclaration
-      expect(y.type_specifier.token.type).to eq(:void)
-      expect(y.id.token.type).to eq(:id)
-      expect(y.id.token.value).to eq("y")
+        expect(y).to be_a PointerDeclaration
+        expect(y.type_specifier.token.type).to eq(:void)
+        expect(y.id.token.type).to eq(:id)
+        expect(y.id.token.value).to eq("y")
 
-      expect(z).to be_a ArrayDeclaration
-      expect(z.type_specifier.token.type).to eq(:string)
-      expect(z.id.token.type).to eq(:id)
-      expect(z.id.token.value).to eq("z")
+        expect(z).to be_a ArrayDeclaration
+        expect(z.type_specifier.token.type).to eq(:string)
+        expect(z.id.token.type).to eq(:id)
+        expect(z.id.token.value).to eq("z")
+      end
     end
 
     context "that is malformed" do
@@ -348,14 +392,17 @@ describe CompoundStatement do
   end
 
   context "with statements" do
-    let(:p) { get_body("x; y; z;").statements }
+    let(:p) { get_body("x; y; z;") }
 
-    it "has an array of Statements" do
-      expect(p).to be_a Array
-      expect(p[0]).to be_a Statement
-      expect(p[1]).to be_a Statement
-      expect(p[2]).to be_a Statement
-      expect(p[3]).to be_nil
+    describe "#statements" do
+      # TODO that is properly formed
+      it "is an array of Statements" do
+        expect(p.statements).to be_a Array
+        expect(p.statements[0]).to be_a Statement
+        expect(p.statements[1]).to be_a Statement
+        expect(p.statements[2]).to be_a Statement
+        expect(p.statements[3]).to be_nil
+      end
     end
   end
 end
@@ -363,15 +410,19 @@ end
 describe ExpressionStatement do
   let(:p) { get_body("x;").statements[0] }
 
-  it "has an Expression" do
-    expect(p.expression).to be_a Expression
+  describe "#expression" do
+    it "is an Expression" do
+      expect(p.expression).to be_a Expression
+    end
   end
 
   context "that is empty" do
     let(:p) { get_body("x; ;").statements[1] }
 
-    it "has a nil expression" do
-      expect(p.expression).to be_nil
+    describe "#expression" do
+      it "is a nil expression" do
+        expect(p.expression).to be_nil
+      end
     end
   end
 end
@@ -384,8 +435,10 @@ describe SimpleExpression do
     expect(p).to be_a Expression
   end
 
-  it "has an e" do
-    expect(p.e).to be_a E
+  describe "#e" do
+    it "is an E" do
+      expect(p.e).to be_a E
+    end
   end
 end
 
@@ -492,8 +545,10 @@ describe MinusF do
     expect(p).to be_a MinusF
   end
 
-  it "has an f" do
-    expect(p.f).to be_a F
+  describe "#f" do
+    it "is an F" do
+      expect(p.f).to be_a F
+    end
   end
 end
 
@@ -505,8 +560,10 @@ describe PointerF do
     expect(p).to be_a F
   end
 
-  it "has a factor" do
-    expect(p.factor).to be_a Factor
+  describe "#factor" do
+    it "is a Factor" do
+      expect(p.factor).to be_a Factor
+    end
   end
 end
 
@@ -518,8 +575,10 @@ describe AddressF do
     expect(p).to be_a F
   end
 
-  it "has a factor" do
-    expect(p.factor).to be_a Factor
+  describe "#factor" do
+    it "is a Factor" do
+      expect(p.factor).to be_a Factor
+    end
   end
 end
 
@@ -531,7 +590,9 @@ describe SimpleF do
     expect(p).to be_a F
   end
 
-  it "has a factor" do
-    expect(p.factor).to be_a Factor
+  describe "#factor" do
+    it "is a Factor" do
+      expect(p.factor).to be_a Factor
+    end
   end
 end
