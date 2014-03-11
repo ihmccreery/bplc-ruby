@@ -312,7 +312,7 @@ describe Parser do
     ########
 
     context "a body" do
-      let(:p) { body("") }
+      let(:p) { get_body("") }
 
       it "is a CompoundStatement" do
         expect(p).to be_a CompoundStatement
@@ -325,7 +325,7 @@ describe Parser do
     end
 
     context "a local_declarations" do
-      let(:p) { body("int x; void *y; string z[2];").local_declarations }
+      let(:p) { get_body("int x; void *y; string z[2];").local_declarations }
 
       it "is an array of Declarations" do
         expect(p).to be_a Array
@@ -371,7 +371,7 @@ describe Parser do
     end
 
     context "a statements" do
-      let(:p) { body("x; y; z;").statements }
+      let(:p) { get_body("x; y; z;").statements }
 
       it "is an array of Declarations" do
         expect(p).to be_a Array
@@ -383,7 +383,7 @@ describe Parser do
     end
 
     context "an ExpressionStatement" do
-      let(:p) { body("x;").statements[0] }
+      let(:p) { get_body("x;").statements[0] }
 
       it "has an Expression" do
         expect(p.expression).to be_a Expression
@@ -391,7 +391,7 @@ describe Parser do
     end
 
     context "an empty ExpressionStatement" do
-      let(:p) { body("x; ;").statements[1] }
+      let(:p) { get_body("x; ;").statements[1] }
 
       it "has a nil expression" do
         expect(p.expression).to be_nil
@@ -399,7 +399,7 @@ describe Parser do
     end
 
     context "a SimpleExpression" do
-      let(:p) { body("x;").statements[0].expression }
+      let(:p) { get_body("x;").statements[0].expression }
 
       it "is a SimpleExpression that is also an Expression" do
         expect(p).to be_a SimpleExpression
@@ -412,7 +412,7 @@ describe Parser do
     end
 
     context "an E" do
-      let(:p) { body("x + y - z;").statements[0].expression.e }
+      let(:p) { get_body("x + y - z;").statements[0].expression.e }
 
       it "is a nested set of Es" do
         expect(p).to be_a E
@@ -456,7 +456,7 @@ describe Parser do
     end
 
     context "a T" do
-      let(:p) { body("x * y / z % w;").statements[0].expression.e.t }
+      let(:p) { get_body("x * y / z % w;").statements[0].expression.e.t }
 
       it "is a nested set of Ts" do
         expect(p).to be_a T
@@ -508,7 +508,7 @@ describe Parser do
     end
 
     context "arithmetic operations" do
-      let(:p) { body("x + y * z - w / v;").statements[0].expression.e }
+      let(:p) { get_body("x + y * z - w / v;").statements[0].expression.e }
 
       it "are properly nested" do
         # p:
@@ -566,7 +566,7 @@ describe Parser do
     end
 
     context "a MinusF" do
-      let(:p) { body("-x;").statements[0].expression.e.t.f }
+      let(:p) { get_body("-x;").statements[0].expression.e.t.f }
 
       it "is a MinusF" do
         expect(p).to be_a MinusF
@@ -578,7 +578,7 @@ describe Parser do
     end
 
     context "a PointerF" do
-      let(:p) { body("*x;").statements[0].expression.e.t.f }
+      let(:p) { get_body("*x;").statements[0].expression.e.t.f }
 
       it "is a PointerF that is also an F" do
         expect(p).to be_a PointerF
@@ -591,7 +591,7 @@ describe Parser do
     end
 
     context "a AddressF" do
-      let(:p) { body("&x;").statements[0].expression.e.t.f }
+      let(:p) { get_body("&x;").statements[0].expression.e.t.f }
 
       it "is a AddressF that is also an F" do
         expect(p).to be_a AddressF
@@ -604,7 +604,7 @@ describe Parser do
     end
 
     context "a SimpleF" do
-      let(:p) { body("x;").statements[0].expression.e.t.f }
+      let(:p) { get_body("x;").statements[0].expression.e.t.f }
 
       it "is a SimpleF that is also an F" do
         expect(p).to be_a SimpleF

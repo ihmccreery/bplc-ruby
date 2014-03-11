@@ -10,6 +10,6 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
-def body(s)
+def get_body(s)
   Parser.new(Scanner.new("int f(void) { #{s} }")).parse.declarations[0].body
 end
