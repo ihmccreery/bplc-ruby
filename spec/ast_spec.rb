@@ -426,21 +426,18 @@ describe E do
     z = p
 
     expect(x.add_op).to be_nil
-    # TODO F shouldn't actually act this way
-    expect(x.t.f.factor.token.type).to eq(:id)
-    expect(x.t.f.factor.token.value).to eq("x")
+    expect(x.t.f.factor.id.token.type).to eq(:id)
+    expect(x.t.f.factor.id.token.value).to eq("x")
 
     expect(y.add_op).to be_a AddOp
     expect(y.add_op.token.type).to eq(:plus)
-    # TODO F shouldn't actually act this way
-    expect(y.t.f.factor.token.type).to eq(:id)
-    expect(y.t.f.factor.token.value).to eq("y")
+    expect(y.t.f.factor.id.token.type).to eq(:id)
+    expect(y.t.f.factor.id.token.value).to eq("y")
 
     expect(z.add_op).to be_a AddOp
     expect(z.add_op.token.type).to eq(:minus)
-    # TODO F shouldn't actually act this way
-    expect(z.t.f.factor.token.type).to eq(:id)
-    expect(z.t.f.factor.token.value).to eq("z")
+    expect(z.t.f.factor.id.token.type).to eq(:id)
+    expect(z.t.f.factor.id.token.value).to eq("z")
   end
 
   context "that is malformed" do
@@ -472,27 +469,23 @@ describe T do
     w = p
 
     expect(x.mul_op).to be_nil
-    # TODO F shouldn't actually act this way
-    expect(x.f.factor.token.type).to eq(:id)
-    expect(x.f.factor.token.value).to eq("x")
+    expect(x.f.factor.id.token.type).to eq(:id)
+    expect(x.f.factor.id.token.value).to eq("x")
 
     expect(y.mul_op).to be_a MulOp
     expect(y.mul_op.token.type).to eq(:asterisk)
-    # TODO F shouldn't actually act this way
-    expect(y.f.factor.token.type).to eq(:id)
-    expect(y.f.factor.token.value).to eq("y")
+    expect(y.f.factor.id.token.type).to eq(:id)
+    expect(y.f.factor.id.token.value).to eq("y")
 
     expect(z.mul_op).to be_a MulOp
     expect(z.mul_op.token.type).to eq(:slash)
-    # TODO F shouldn't actually act this way
-    expect(z.f.factor.token.type).to eq(:id)
-    expect(z.f.factor.token.value).to eq("z")
+    expect(z.f.factor.id.token.type).to eq(:id)
+    expect(z.f.factor.id.token.value).to eq("z")
 
     expect(w.mul_op).to be_a MulOp
     expect(w.mul_op.token.type).to eq(:percent)
-    # TODO F shouldn't actually act this way
-    expect(w.f.factor.token.type).to eq(:id)
-    expect(w.f.factor.token.value).to eq("w")
+    expect(w.f.factor.id.token.type).to eq(:id)
+    expect(w.f.factor.id.token.value).to eq("w")
   end
 
   context "that is malformed" do
@@ -561,6 +554,21 @@ describe SimpleF do
   describe "#factor" do
     it "is a Factor" do
       expect(p.factor).to be_a Factor
+    end
+  end
+end
+
+describe SimpleFactor do
+  let(:p) { get_body("x;").statements[0].expression.e.t.f.factor }
+
+  it "is an SimpleFactor that is also a Factor" do
+    expect(p).to be_a SimpleFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
     end
   end
 end

@@ -58,6 +58,8 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `PointerF ::= * Factor`
   - `AddressF ::= & Factor`
   - `SimpleF ::= Factor`
+- `Factor > SimpleFactor`
+  - `SimpleFactor ::= <Id>`
 
 ### Not Implemented
 

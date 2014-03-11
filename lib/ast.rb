@@ -164,9 +164,15 @@ end
 class SimpleF < F
 end
 
-class Factor
-  # TODO placeholder
-  include TokenAst
+class Factor < Ast
+end
+
+class SimpleFactor < Factor
+  attr_accessor :id
+
+  def initialize(id)
+    @id = id
+  end
 end
 
 ############################

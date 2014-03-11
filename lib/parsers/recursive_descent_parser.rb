@@ -217,7 +217,7 @@ module Parsers
     end
 
     def factor
-      return Factor.new(eat(:id))
+      return SimpleFactor.new(id)
     end
 
     def id
