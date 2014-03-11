@@ -506,5 +506,58 @@ describe Parser do
         end
       end
     end
+
+    context "arithmetic operations" do
+      let(:p) { body("x + y * z - w / v;").statements[0].expression.e }
+
+      it "are properly nested" do
+        # p:
+        #   add_op: -
+        #   e:
+        #     add_op: +
+        #     e:
+        #       add_op: nil
+        #       e: nil
+        #       t:
+        #         mul_op: nil
+        #         t: nil
+        #         f: x
+        #     t:
+        #       mul_op: *
+        #       t:
+        #         mul_op: nil
+        #         t: nil
+        #         f: y
+        #       f: z
+        #   t:
+        #     mul_op: /
+        #     t:
+        #       mul_op: nil
+        #       t: nil
+        #       f: w
+        #     f: v
+        y_times_z = p.e.t
+        w_over_v = p.t
+        x_plus_y_z = p.e
+        minus = p
+
+        expect(y_times_z.mul_op.token.type).to eq(:asterisk)
+        expect(w_over_v.mul_op.token.type).to eq(:slash)
+        expect(x_plus_y_z.add_op.token.type).to eq(:plus)
+        expect(minus.add_op.token.type).to eq(:minus)
+
+        x = p.e.e.t.f
+        y = p.e.t.t.f
+        z = p.e.t.f
+        w = p.t.t.f
+        v = p.t.f
+
+        expect(x.token.value).to eq("x")
+        expect(y.token.value).to eq("y")
+        expect(z.token.value).to eq("z")
+        expect(w.token.value).to eq("w")
+        expect(v.token.value).to eq("v")
+      end
+    end
   end
 end
