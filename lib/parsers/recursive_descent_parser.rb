@@ -3,6 +3,7 @@ module Parsers
   class RecursiveDescentParser
     TYPE_SPECIFIERS = [:int, :void, :string].freeze
     ADD_OPS = [:plus, :minus].freeze
+    MUL_OPS = [:asterisk, :slash, :percent].freeze
 
     def initialize(source)
       @source = source
@@ -168,7 +169,6 @@ module Parsers
       return SimpleExpression.new(e)
     end
 
-    # TODO unfinished
     def e
       r = E.new(nil, nil, t)
       while is_add_op?(current_token)
@@ -186,7 +186,23 @@ module Parsers
     end
 
     def t
-      return T.new(eat(:id))
+      r = T.new(nil, nil, f)
+      while is_mul_op?(current_token)
+        r = T.new(mul_op, r, f)
+      end
+      return r
+    end
+
+    def mul_op
+      if is_mul_op?(current_token)
+        return MulOp.new(eat_token)
+      else
+        raise SyntaxError, "expected mul_op, got #{current_token.type.to_s}"
+      end
+    end
+
+    def f
+      return F.new(eat(:id))
     end
 
     def id
@@ -215,6 +231,10 @@ module Parsers
 
     def is_add_op?(token)
       ADD_OPS.include? token.type
+    end
+
+    def is_mul_op?(token)
+      MUL_OPS.include? token.type
     end
 
     def eat_token

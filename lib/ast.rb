@@ -130,6 +130,16 @@ class E < Ast
 end
 
 class T < Ast
+  attr_accessor :mul_op, :t, :f
+
+  def initialize(mul_op, t, f)
+    @mul_op = mul_op
+    @t = t
+    @f = f
+  end
+end
+
+class F < Ast
   # TODO placeholder
   include TokenAst
 end
@@ -143,6 +153,10 @@ class TypeSpecifier < Ast
 end
 
 class AddOp < Ast
+  include TokenAst
+end
+
+class MulOp < Ast
   include TokenAst
 end
 

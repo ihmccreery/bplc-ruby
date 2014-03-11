@@ -50,6 +50,9 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `E ::= E AddOp T | T`
   - Unlike other left-recursive rules, `E` is actually implemented left-recursively.  An `E` has children `add_op`, `e`, and
     `t`.  The left-most `E` of a nested set of `E`s has a nil `e` and a nil `add_op`.
+- `T ::= T MulOp F | F`
+  - Unlike other left-recursive rules, `T` is actually implemented left-recursively.  A `T` has children `mul_op`, `t`, and
+    `f`.  The left-most `T` of a nested set of `T`s has a nil `t` and a nil `mul_op`.
 
 ### Not Implemented
 
@@ -57,5 +60,5 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E Relop E
-- `T ::=` stuff
+- `F ::=` stuff
 - everything else

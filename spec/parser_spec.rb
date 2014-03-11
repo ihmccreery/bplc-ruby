@@ -427,21 +427,21 @@ describe Parser do
         z = p
 
         expect(x.add_op).to be_nil
-        # TODO T shouldn't actually act this way
-        expect(x.t.token.type).to eq(:id)
-        expect(x.t.token.value).to eq("x")
+        # TODO F shouldn't actually act this way
+        expect(x.t.f.token.type).to eq(:id)
+        expect(x.t.f.token.value).to eq("x")
 
         expect(y.add_op).to be_a AddOp
         expect(y.add_op.token.type).to eq(:plus)
-        # TODO T shouldn't actually act this way
-        expect(y.t.token.type).to eq(:id)
-        expect(y.t.token.value).to eq("y")
+        # TODO F shouldn't actually act this way
+        expect(y.t.f.token.type).to eq(:id)
+        expect(y.t.f.token.value).to eq("y")
 
         expect(z.add_op).to be_a AddOp
         expect(z.add_op.token.type).to eq(:minus)
-        # TODO T shouldn't actually act this way
-        expect(z.t.token.type).to eq(:id)
-        expect(z.t.token.value).to eq("z")
+        # TODO F shouldn't actually act this way
+        expect(z.t.f.token.type).to eq(:id)
+        expect(z.t.f.token.value).to eq("z")
       end
 
       context "that is malformed" do
@@ -451,6 +451,58 @@ describe Parser do
 
           p = Parser.new(Scanner.new("int f(void) { x +- y + z; }"))
           expect{p.parse}.to raise_error(SyntaxError, "expected id, got minus")
+        end
+      end
+    end
+
+    context "a T" do
+      let(:p) { body("x * y / z % w;").statements[0].expression.e.t }
+
+      it "is a nested set of Ts" do
+        expect(p).to be_a T
+        expect(p.t).to be_a T
+        expect(p.t.t).to be_a T
+        expect(p.t.t.t).to be_a T
+        expect(p.t.t.t.t).to be_nil
+      end
+
+      it "is properly nested" do
+        x = p.t.t.t
+        y = p.t.t
+        z = p.t
+        w = p
+
+        expect(x.mul_op).to be_nil
+        # TODO F shouldn't actually act this way
+        expect(x.f.token.type).to eq(:id)
+        expect(x.f.token.value).to eq("x")
+
+        expect(y.mul_op).to be_a MulOp
+        expect(y.mul_op.token.type).to eq(:asterisk)
+        # TODO F shouldn't actually act this way
+        expect(y.f.token.type).to eq(:id)
+        expect(y.f.token.value).to eq("y")
+
+        expect(z.mul_op).to be_a MulOp
+        expect(z.mul_op.token.type).to eq(:slash)
+        # TODO F shouldn't actually act this way
+        expect(z.f.token.type).to eq(:id)
+        expect(z.f.token.value).to eq("z")
+
+        expect(w.mul_op).to be_a MulOp
+        expect(w.mul_op.token.type).to eq(:percent)
+        # TODO F shouldn't actually act this way
+        expect(w.f.token.type).to eq(:id)
+        expect(w.f.token.value).to eq("w")
+      end
+
+      context "that is malformed" do
+        it "raises SyntaxErrors" do
+          p = Parser.new(Scanner.new("int f(void) { x * y z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
+
+          p = Parser.new(Scanner.new("int f(void) { x */ y + z; }"))
+          expect{p.parse}.to raise_error(SyntaxError, "expected id, got slash")
         end
       end
     end
