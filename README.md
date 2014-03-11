@@ -53,6 +53,11 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `T ::= T MulOp F | F`
   - Unlike other left-recursive rules, `T` is actually implemented left-recursively.  A `T` has children `mul_op`, `t`, and
     `f`.  The left-most `T` of a nested set of `T`s has a nil `t` and a nil `mul_op`.
+- `F > MinusF | PointerF | AddressF | SimpleF`
+  - `MinusF ::= - F`
+  - `PointerF ::= * Factor`
+  - `AddressF ::= & Factor`
+  - `SimpleF ::= Factor`
 
 ### Not Implemented
 
@@ -60,5 +65,5 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E Relop E
-- `F ::=` stuff
+- `Factor ::=` lots of stuff
 - everything else
