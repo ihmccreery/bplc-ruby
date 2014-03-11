@@ -119,6 +119,10 @@ class SimpleExpression < Expression
   end
 end
 
+##############
+# arithmetic #
+##############
+
 class E < Ast
   attr_accessor :add_op, :e, :t
 
@@ -163,6 +167,10 @@ end
 
 class SimpleF < F
 end
+
+###########
+# Factors #
+###########
 
 class Factor < Ast
 end
