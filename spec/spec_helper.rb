@@ -13,3 +13,7 @@ end
 def get_body(s)
   Parser.new(Scanner.new("int f(void) { #{s} }")).parse.declarations[0].body
 end
+
+def get_factor(s)
+  Parser.new(Scanner.new("int f(void) { #{s}; }")).parse.declarations[0].body.statements[0].expression.e.t.f.factor
+end

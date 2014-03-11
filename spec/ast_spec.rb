@@ -573,7 +573,7 @@ describe SimpleF do
 end
 
 describe SimpleFactor do
-  let(:p) { get_body("x;").statements[0].expression.e.t.f.factor }
+  let(:p) { get_factor("x") }
 
   it "is an SimpleFactor that is also a Factor" do
     expect(p).to be_a SimpleFactor
