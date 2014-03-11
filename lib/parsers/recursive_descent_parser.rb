@@ -217,7 +217,14 @@ module Parsers
     end
 
     def factor
-      return SimpleFactor.new(id)
+      if current_token.type == :l_paren
+        eat(:l_paren)
+        f = ExpressionFactor.new(expression)
+        eat(:r_paren)
+        return f
+      else
+        return SimpleFactor.new(id)
+      end
     end
 
     def id

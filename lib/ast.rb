@@ -108,6 +108,10 @@ class ExpressionStatement < Statement
   end
 end
 
+###############
+# Expressions #
+###############
+
 class Expression < Ast
 end
 
@@ -173,6 +177,14 @@ end
 ###########
 
 class Factor < Ast
+end
+
+class ExpressionFactor < Factor
+  attr_accessor :expression
+
+  def initialize(expression)
+    @expression = expression
+  end
 end
 
 class SimpleFactor < Factor

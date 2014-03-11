@@ -389,6 +389,10 @@ describe CompoundStatement do
   end
 end
 
+##############
+# Statements #
+##############
+
 describe ExpressionStatement do
   let(:p) { get_body("x;").statements[0] }
 
@@ -409,6 +413,10 @@ describe ExpressionStatement do
   end
 end
 
+###############
+# Expressions #
+###############
+
 describe SimpleExpression do
   let(:p) { get_body("x;").statements[0].expression }
 
@@ -423,6 +431,10 @@ describe SimpleExpression do
     end
   end
 end
+
+##############
+# arithmetic #
+##############
 
 describe E do
   let(:p) { get_body("x + y - z;").statements[0].expression.e }
@@ -572,10 +584,29 @@ describe SimpleF do
   end
 end
 
+###########
+# Factors #
+###########
+
+describe ExpressionFactor do
+  let(:p) { get_factor("(x)") }
+
+  it "is an ExpressionFactor that is also a Factor" do
+    expect(p).to be_a ExpressionFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#expression" do
+    it "is an expression" do
+      expect(p.expression).to be_a Expression
+    end
+  end
+end
+
 describe SimpleFactor do
   let(:p) { get_factor("x") }
 
-  it "is an SimpleFactor that is also a Factor" do
+  it "is a SimpleFactor that is also a Factor" do
     expect(p).to be_a SimpleFactor
     expect(p).to be_a Factor
   end
@@ -586,6 +617,10 @@ describe SimpleFactor do
     end
   end
 end
+
+############################
+# general terminal classes #
+############################
 
 describe Id do
   let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
