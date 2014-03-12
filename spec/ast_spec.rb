@@ -827,9 +827,37 @@ describe TypeSpecifier do
   end
 end
 
-# TODO AddOp
+describe AddOp do
+  let(:p) { get_body("x + y;").statements[0].expression.e.add_op }
 
-# TODO MulOp
+  it "is a AddOp" do
+    expect(p).to be_a AddOp
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:plus)
+      expect(p.token.value).to eq("+")
+    end
+  end
+end
+
+describe MulOp do
+  let(:p) { get_body("x * y;").statements[0].expression.e.t.mul_op }
+
+  it "is a MulOp" do
+    expect(p).to be_a MulOp
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:asterisk)
+      expect(p.token.value).to eq("*")
+    end
+  end
+end
 
 describe Id do
   let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
