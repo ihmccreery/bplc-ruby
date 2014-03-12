@@ -232,7 +232,15 @@ module Parsers
       elsif current_token.type == :str
         return StrFactor.new(str)
       else
-        return SimpleFactor.new(id)
+        i = id
+        if current_token.type == :l_bracket
+          eat(:l_bracket)
+          f = ArrayFactor.new(i, expression)
+          eat(:r_bracket)
+          return f
+        else
+          return SimpleFactor.new(i)
+        end
       end
     end
 

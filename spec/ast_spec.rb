@@ -633,6 +633,27 @@ describe SimpleFactor do
   end
 end
 
+describe ArrayFactor do
+  let(:p) { get_factor("x[y]") }
+
+  it "is a ArrayFactor that is also a Factor" do
+    expect(p).to be_a ArrayFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  describe "#index" do
+    it "is an Expression" do
+      expect(p.index).to be_a Expression
+    end
+  end
+end
+
 describe NumFactor do
   let(:p) { get_factor("2") }
 

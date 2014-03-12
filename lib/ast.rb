@@ -203,6 +203,15 @@ class SimpleFactor < Factor
   end
 end
 
+class ArrayFactor < Factor
+  attr_accessor :id, :index
+
+  def initialize(id, index)
+    @id = id
+    @index = index
+  end
+end
+
 class NumFactor < Factor
   attr_accessor :num
 

@@ -58,10 +58,11 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `PointerF ::= * Factor`
   - `AddressF ::= & Factor`
   - `SimpleF ::= Factor`
-- `Factor > ExpressionFactor | ReadFactor | SimpleFactor | NumFactor | StrFactor`
+- `Factor > ExpressionFactor | ReadFactor | SimpleFactor | ArrayFactor | NumFactor | StrFactor`
   - `ExpressionFactor ::= ( Expression )`
   - `ReadFactor ::= <Read> ( )`
   - `SimpleFactor ::= <Id>`
+  - `ArrayFactor ::= <Id> [ Expression ]`
   - `NumFactor ::= <Num>`
   - `StrFactor ::= <Str>`
 
@@ -72,6 +73,10 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E Relop E
 - `Factor > FunctionFactor`
-- `Factor > PointerFactor`
-- `Factor > ArrayFactor`
 - everything else
+
+### Notes
+
+- `Factor > PointerFactor`
+  - `PointerFactor ::= * <Id>`
+    - This is redundant with `PointerF` and is thus not implemented.
