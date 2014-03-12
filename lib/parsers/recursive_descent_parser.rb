@@ -227,6 +227,10 @@ module Parsers
         eat(:l_paren)
         eat(:r_paren)
         return f
+      elsif current_token.type == :num
+        return NumFactor.new(num)
+      elsif current_token.type == :str
+        return StrFactor.new(str)
       else
         return SimpleFactor.new(id)
       end
@@ -238,6 +242,10 @@ module Parsers
 
     def num
       Num.new(eat(:num))
+    end
+
+    def str
+      Str.new(eat(:str))
     end
 
     def read

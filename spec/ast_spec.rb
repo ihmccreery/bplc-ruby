@@ -633,6 +633,36 @@ describe SimpleFactor do
   end
 end
 
+describe NumFactor do
+  let(:p) { get_factor("2") }
+
+  it "is a NumFactor that is also a Factor" do
+    expect(p).to be_a NumFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#num" do
+    it "is an Num" do
+      expect(p.num).to be_a Num
+    end
+  end
+end
+
+describe StrFactor do
+  let(:p) { get_factor('"str"') }
+
+  it "is a StrFactor that is also a Factor" do
+    expect(p).to be_a StrFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#str" do
+    it "is an Str" do
+      expect(p.str).to be_a Str
+    end
+  end
+end
+
 ############################
 # general terminal classes #
 ############################
@@ -665,6 +695,22 @@ describe Num do
       expect(p.token).to be_a Token
       expect(p.token.type).to eq(:num)
       expect(p.token.value).to eq("2")
+    end
+  end
+end
+
+describe Str do
+  let(:p) { get_factor('"str"').str }
+
+  it "is a Str" do
+    expect(p).to be_a Str
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type and value" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:str)
+      expect(p.token.value).to eq("str")
     end
   end
 end

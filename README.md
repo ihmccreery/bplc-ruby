@@ -62,6 +62,8 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `ExpressionFactor ::= ( Expression )`
   - `ReadFactor ::= <Read> ( )`
   - `SimpleFactor ::= <Id>`
+  - `NumFactor ::= <Num>`
+  - `StringFactor ::= <String>`
 
 ### Not Implemented
 

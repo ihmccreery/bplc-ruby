@@ -203,6 +203,22 @@ class SimpleFactor < Factor
   end
 end
 
+class NumFactor < Factor
+  attr_accessor :num
+
+  def initialize(num)
+    @num = num
+  end
+end
+
+class StrFactor < Factor
+  attr_accessor :str
+
+  def initialize(str)
+    @str = str
+  end
+end
+
 ############################
 # general terminal classes #
 ############################
@@ -224,6 +240,10 @@ class Id < Ast
 end
 
 class Num < Ast
+  include TokenAst
+end
+
+class Str < Ast
   include TokenAst
 end
 
