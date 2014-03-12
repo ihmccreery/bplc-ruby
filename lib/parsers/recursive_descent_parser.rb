@@ -159,7 +159,11 @@ module Parsers
 
     # TODO unfinished
     def statement
-      return expression_statement
+      if current_token.type == :l_brace
+        return compound_statement
+      else
+        return expression_statement
+      end
     end
 
     def expression_statement

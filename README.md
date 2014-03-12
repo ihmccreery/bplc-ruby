@@ -39,10 +39,10 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - A `CompoundStatement` just has a `local_declarations`, which is just an array of `Declarations`, and a statements, which is
     just an array of `Statements`
   - `local_declarations` can only include `VariableDeclarations`, not `FunctionDeclarations`
-- `Statement > ExpressionStatement`
+- `Statement > ExpressionStatement | CompoundStatement`
   - Unlike the BPL manual, a `Statement` does not produce an `ExpressionStatement`, etc., but rather can be one of several
     types of `Statements`
-- `ExpressionStatement ::= Expression; | ;`
+  - `ExpressionStatement ::= Expression; | ;`
 - `Expression > SimpleExpression`
   - An `Expression` can be an `AssignmentExpression`, `ComparisonExpression`, or `SimpleExpression`.  This is just a way of
     clarifying the grammar given in the BPL manual.
@@ -71,7 +71,7 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 
 ### Not Implemented
 
-- `Statement > CompoundStatement | IfStatement | WhileStatement | ReturnStatement | WriteStatement`
+- `Statement > IfStatement | WhileStatement | ReturnStatement | WriteStatement`
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E RelOp E`
