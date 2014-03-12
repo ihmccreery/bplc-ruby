@@ -282,7 +282,95 @@ end
 # Params #
 ##########
 
-# TODO
+describe SimpleParam do
+  let(:p) { Parser.new(Scanner.new("int f(int x) { }")).parse.declarations[0].params[0] }
+
+  it "is a SimpleParam" do
+    expect(p).to be_a SimpleParam
+  end
+
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(x) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
+
+      p = Parser.new(Scanner.new("int f(int) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
+    end
+  end
+end
+
+describe PointerParam do
+  let(:p) { Parser.new(Scanner.new("int f(int *x) { }")).parse.declarations[0].params[0] }
+
+  it "is a PointerParam" do
+    expect(p).to be_a PointerParam
+  end
+
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(int x*) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got asterisk")
+
+      p = Parser.new(Scanner.new("int f(int*) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
+    end
+  end
+end
+
+describe ArrayParam do
+  let(:p) { Parser.new(Scanner.new("int f(int x[]) { }")).parse.declarations[0].params[0] }
+
+  it "is a ArrayParam" do
+    expect(p).to be_a ArrayParam
+  end
+
+  describe "#type_specifier" do
+    it "is a TypeSpecifier" do
+      expect(p.type_specifier).to be_a TypeSpecifier
+    end
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(int x[) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_bracket, got r_paren")
+
+      p = Parser.new(Scanner.new("int f(int[] x) { }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got l_bracket")
+    end
+  end
+end
 
 ##############
 # Statements #
