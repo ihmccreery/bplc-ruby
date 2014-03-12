@@ -24,11 +24,19 @@ module Parsers
     # parse methods #
     #################
 
+    ###########
+    # program #
+    ###########
+
     def program
       p = Program.new(declarations)
       eat(:eof)
       return p
     end
+
+    ################
+    # declarations #
+    ################
 
     def declarations
       d = [declaration]
@@ -64,6 +72,10 @@ module Parsers
       return d
     end
 
+    ##########
+    # params #
+    ##########
+
     def params
       if current_token.type == :void
         eat(:void)
@@ -96,13 +108,9 @@ module Parsers
       return p
     end
 
-    def type_specifier
-      if is_type_specifier?(current_token)
-        return TypeSpecifier.new(eat_token)
-      else
-        raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
-      end
-    end
+    ##############
+    # statements #
+    ##############
 
     def compound_statement
       eat(:l_brace)
@@ -164,10 +172,18 @@ module Parsers
       return s
     end
 
+    ###############
+    # expressions #
+    ###############
+
     # TODO unfinished
     def expression
       return SimpleExpression.new(e)
     end
+
+    ##############
+    # arithmetic #
+    ##############
 
     def e
       r = E.new(nil, nil, t)
@@ -177,28 +193,12 @@ module Parsers
       return r
     end
 
-    def add_op
-      if is_add_op?(current_token)
-        return AddOp.new(eat_token)
-      else
-        raise SyntaxError, "expected add_op, got #{current_token.type.to_s}"
-      end
-    end
-
     def t
       r = T.new(nil, nil, f)
       while is_mul_op?(current_token)
         r = T.new(mul_op, r, f)
       end
       return r
-    end
-
-    def mul_op
-      if is_mul_op?(current_token)
-        return MulOp.new(eat_token)
-      else
-        raise SyntaxError, "expected mul_op, got #{current_token.type.to_s}"
-      end
     end
 
     def f
@@ -215,6 +215,10 @@ module Parsers
         return SimpleF.new(factor)
       end
     end
+
+    ###########
+    # factors #
+    ###########
 
     def factor
       if current_token.type == :l_paren
@@ -259,6 +263,34 @@ module Parsers
         end
         eat(:r_paren)
         return p
+      end
+    end
+
+    #####################
+    # general terminals #
+    #####################
+
+    def type_specifier
+      if is_type_specifier?(current_token)
+        return TypeSpecifier.new(eat_token)
+      else
+        raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
+      end
+    end
+
+    def add_op
+      if is_add_op?(current_token)
+        return AddOp.new(eat_token)
+      else
+        raise SyntaxError, "expected add_op, got #{current_token.type.to_s}"
+      end
+    end
+
+    def mul_op
+      if is_mul_op?(current_token)
+        return MulOp.new(eat_token)
+      else
+        raise SyntaxError, "expected mul_op, got #{current_token.type.to_s}"
       end
     end
 

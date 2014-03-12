@@ -147,19 +147,19 @@ class T < Ast
   end
 end
 
-class F < Ast
-  attr_accessor :factor
-
-  def initialize(factor)
-    @factor = factor
-  end
-end
-
 class MinusF < Ast
   attr_accessor :f
 
   def initialize(f)
     @f = f
+  end
+end
+
+class F < Ast
+  attr_accessor :factor
+
+  def initialize(factor)
+    @factor = factor
   end
 end
 
@@ -237,9 +237,9 @@ class StrFactor < Factor
   end
 end
 
-############################
-# general terminal classes #
-############################
+#####################
+# general terminals #
+#####################
 
 class TypeSpecifier < Ast
   include TokenAst

@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+###########
+# Program #
+###########
+
 describe Program do
   let(:p) { Parser.new(Scanner.new("int x; void *y; string z[2];")).parse }
 
@@ -50,9 +54,9 @@ describe Program do
   end
 end
 
-#######################
-# VariableDeclaration #
-#######################
+################
+# Declarations #
+################
 
 describe SimpleDeclaration do
   let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0] }
@@ -165,10 +169,6 @@ describe  ArrayDeclaration do
   end
 end
 
-#######################
-# FunctionDeclaration #
-#######################
-
 describe FunctionDeclaration do
   let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declarations[0] }
 
@@ -278,28 +278,15 @@ describe FunctionDeclaration do
   end
 end
 
-########################
-# Declaration Children #
-########################
+##########
+# Params #
+##########
 
-describe TypeSpecifier do
-  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].type_specifier }
+# TODO
 
-  it "is a TypeSpecifier" do
-    expect(p).to be_a TypeSpecifier
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:int)
-    end
-  end
-end
-
-########
-# Body #
-########
+##############
+# Statements #
+##############
 
 describe CompoundStatement do
   let(:p) { get_body("") }
@@ -388,10 +375,6 @@ describe CompoundStatement do
     end
   end
 end
-
-##############
-# Statements #
-##############
 
 describe ExpressionStatement do
   let(:p) { get_body("x;").statements[0] }
@@ -539,11 +522,11 @@ describe MinusF do
   end
 end
 
-describe PointerF do
-  let(:p) { get_body("*x;").statements[0].expression.e.t.f }
+describe AddressF do
+  let(:p) { get_body("&x;").statements[0].expression.e.t.f }
 
-  it "is a PointerF that is also an F" do
-    expect(p).to be_a PointerF
+  it "is a AddressF that is also an F" do
+    expect(p).to be_a AddressF
     expect(p).to be_a F
   end
 
@@ -554,11 +537,11 @@ describe PointerF do
   end
 end
 
-describe AddressF do
-  let(:p) { get_body("&x;").statements[0].expression.e.t.f }
+describe PointerF do
+  let(:p) { get_body("*x;").statements[0].expression.e.t.f }
 
-  it "is a AddressF that is also an F" do
-    expect(p).to be_a AddressF
+  it "is a PointerF that is also an F" do
+    expect(p).to be_a PointerF
     expect(p).to be_a F
   end
 
@@ -737,9 +720,28 @@ describe StrFactor do
   end
 end
 
-############################
-# general terminal classes #
-############################
+#####################
+# general terminals #
+#####################
+
+describe TypeSpecifier do
+  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].type_specifier }
+
+  it "is a TypeSpecifier" do
+    expect(p).to be_a TypeSpecifier
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:int)
+    end
+  end
+end
+
+# TODO AddOp
+
+# TODO MulOp
 
 describe Id do
   let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
