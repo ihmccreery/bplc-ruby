@@ -603,6 +603,59 @@ describe ExpressionFactor do
   end
 end
 
+describe FunCallFactor do
+  let(:p) { get_factor("f()") }
+
+  it "is a FunCallFactor that is also a Factor" do
+    expect(p).to be_a FunCallFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  context "with no args" do
+    describe "#args" do
+      it "is an empty array" do
+        expect(p.args).to be_a Array
+        expect(p.args).to be_empty
+      end
+    end
+  end
+
+  context "with args" do
+    let(:p) { get_factor("f(x, 2, y+z)") }
+
+    describe "#args" do
+      it "is an array of Expressions that is properly formed" do
+        x = p.args[0]
+        two = p.args[1]
+        y_z = p.args[2]
+
+        expect(p.args[3]).to be_nil
+
+        expect(x).to be_a Expression
+        expect(x.e.t.f.factor.id.token.type).to eq(:id)
+        expect(x.e.t.f.factor.id.token.value).to eq("x")
+
+        expect(two).to be_a Expression
+        expect(two.e.t.f.factor.num.token.type).to eq(:num)
+        expect(two.e.t.f.factor.num.token.value).to eq("2")
+
+        expect(y_z).to be_a Expression
+        expect(y_z.e.e.t.f.factor.id.token.type).to eq(:id)
+        expect(y_z.e.e.t.f.factor.id.token.value).to eq("y")
+        expect(y_z.e.add_op.token.type).to eq(:plus)
+        expect(y_z.e.t.f.factor.id.token.type).to eq(:id)
+        expect(y_z.e.t.f.factor.id.token.value).to eq("z")
+      end
+    end
+  end
+end
+
 describe ReadFactor do
   let(:p) { get_factor("read()") }
 

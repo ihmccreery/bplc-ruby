@@ -238,9 +238,27 @@ module Parsers
           f = ArrayFactor.new(i, expression)
           eat(:r_bracket)
           return f
+        elsif current_token.type == :l_paren
+          return FunCallFactor.new(i, args)
         else
           return SimpleFactor.new(i)
         end
+      end
+    end
+
+    def args
+      eat(:l_paren)
+      if current_token.type == :r_paren
+        eat(:r_paren)
+        return []
+      else
+        p = [expression]
+        while current_token.type == :comma
+          eat(:comma)
+          p << expression
+        end
+        eat(:r_paren)
+        return p
       end
     end
 

@@ -58,8 +58,11 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `PointerF ::= * Factor`
   - `AddressF ::= & Factor`
   - `SimpleF ::= Factor`
-- `Factor > ExpressionFactor | ReadFactor | SimpleFactor | ArrayFactor | NumFactor | StrFactor`
+- `Factor > ExpressionFactor | FunCallFactor | ReadFactor | SimpleFactor | ArrayFactor | NumFactor | StrFactor`
   - `ExpressionFactor ::= ( Expression )`
+  - `FunCallFactor ::= <id> ([Expression, Expression, ..., Expression])`
+    - A `FunCallFactor` has a `args` child which is an array of Expressions.  This is different than the grammar given
+      in the BPL manual
   - `ReadFactor ::= <Read> ( )`
   - `SimpleFactor ::= <Id>`
   - `ArrayFactor ::= <Id> [ Expression ]`
@@ -72,8 +75,6 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
   - `ComparisonExpression ::= E Relop E
-- `Factor > FunctionFactor`
-- everything else
 
 ### Notes
 

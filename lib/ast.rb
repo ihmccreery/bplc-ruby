@@ -187,6 +187,15 @@ class ExpressionFactor < Factor
   end
 end
 
+class FunCallFactor < Factor
+  attr_accessor :id, :args
+
+  def initialize(id, args)
+    @id = id
+    @args = args
+  end
+end
+
 class ReadFactor < Factor
   attr_accessor :read
 
