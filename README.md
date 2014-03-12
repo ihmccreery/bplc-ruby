@@ -74,7 +74,7 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 - `Statement > CompoundStatement | IfStatement | WhileStatement | ReturnStatement | WriteStatement`
 - `Expression > AssignmentExpression | ComparisonExpression`
   - `AssignmentExpression ::= Var = Expression`
-  - `ComparisonExpression ::= E Relop E
+  - `ComparisonExpression ::= E RelOp E`
 
 ### Notes
 
