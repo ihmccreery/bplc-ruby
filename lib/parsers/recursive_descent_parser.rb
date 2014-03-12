@@ -222,6 +222,11 @@ module Parsers
         f = ExpressionFactor.new(expression)
         eat(:r_paren)
         return f
+      elsif current_token.type == :read
+        f = ReadFactor.new(read)
+        eat(:l_paren)
+        eat(:r_paren)
+        return f
       else
         return SimpleFactor.new(id)
       end
@@ -233,6 +238,10 @@ module Parsers
 
     def num
       Num.new(eat(:num))
+    end
+
+    def read
+      Read.new(eat(:read))
     end
 
     ###################

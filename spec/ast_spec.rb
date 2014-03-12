@@ -603,6 +603,21 @@ describe ExpressionFactor do
   end
 end
 
+describe ReadFactor do
+  let(:p) { get_factor("read()") }
+
+  it "is an ReadFactor that is also a Factor" do
+    expect(p).to be_a ReadFactor
+    expect(p).to be_a Factor
+  end
+
+  describe "#read" do
+    it "is a Read" do
+      expect(p.read).to be_a Read
+    end
+  end
+end
+
 describe SimpleFactor do
   let(:p) { get_factor("x") }
 
@@ -650,6 +665,21 @@ describe Num do
       expect(p.token).to be_a Token
       expect(p.token.type).to eq(:num)
       expect(p.token.value).to eq("2")
+    end
+  end
+end
+
+describe Read do
+  let(:p) { get_factor("read()").read }
+
+  it "is a Read" do
+    expect(p).to be_a Read
+  end
+
+  describe "#token" do
+    it "is a token of the appropriate type" do
+      expect(p.token).to be_a Token
+      expect(p.token.type).to eq(:read)
     end
   end
 end

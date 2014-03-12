@@ -187,6 +187,14 @@ class ExpressionFactor < Factor
   end
 end
 
+class ReadFactor < Factor
+  attr_accessor :read
+
+  def initialize(read)
+    @read = read
+  end
+end
+
 class SimpleFactor < Factor
   attr_accessor :id
 
@@ -216,5 +224,9 @@ class Id < Ast
 end
 
 class Num < Ast
+  include TokenAst
+end
+
+class Read < Ast
   include TokenAst
 end
