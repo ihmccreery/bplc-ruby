@@ -4,6 +4,9 @@ module Parsers
     TYPE_SPECIFIERS = [:int, :void, :string].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
+    FIRST_OF_STATEMENT = [:semicolon, :id, :asterisk, :minus, :ampersand,
+                          :l_paren, :read, :num, :str, :l_brace, :if,
+                          :while, :return, :write, :writeln].freeze
 
     def initialize(source)
       @source = source
@@ -48,18 +51,18 @@ module Parsers
 
     def declaration
       t = type_specifier
-      if current_token.type == :asterisk
+      if at? :asterisk
         eat(:asterisk)
         d = PointerDeclaration.new(t, id)
         eat(:semicolon)
       else
         i = id
-        if current_token.type == :l_bracket
+        if at? :l_bracket
           eat(:l_bracket)
           d = ArrayDeclaration.new(t, i, num)
           eat(:r_bracket)
           eat(:semicolon)
-        elsif current_token.type == :l_paren
+        elsif at? :l_paren
           eat(:l_paren)
           p = params
           eat(:r_paren)
@@ -77,12 +80,12 @@ module Parsers
     ##########
 
     def params
-      if current_token.type == :void
+      if at? :void
         eat(:void)
         return []
       else
         p = [param]
-        while current_token.type == :comma
+        while at? :comma
           eat(:comma)
           p << param
         end
@@ -92,12 +95,12 @@ module Parsers
 
     def param
       t = type_specifier
-      if current_token.type == :asterisk
+      if at? :asterisk
         eat(:asterisk)
         p = PointerParam.new(t, id)
       else
         i = id
-        if current_token.type == :l_bracket
+        if at? :l_bracket
           eat(:l_bracket)
           eat(:r_bracket)
           p = ArrayParam.new(t, i)
@@ -111,8 +114,7 @@ module Parsers
     ##############
     # statements #
     ##############
-
-    def compound_statement
+def compound_statement
       eat(:l_brace)
       c = CompoundStatement.new(local_declarations, statements)
       eat(:r_brace)
@@ -129,13 +131,13 @@ module Parsers
 
     def local_declaration
       t = type_specifier
-      if current_token.type == :asterisk
+      if at? :asterisk
         eat(:asterisk)
         d = PointerDeclaration.new(t, id)
         eat(:semicolon)
       else
         i = id
-        if current_token.type == :l_bracket
+        if at? :l_bracket
           eat(:l_bracket)
           d = ArrayDeclaration.new(t, i, num)
           eat(:r_bracket)
@@ -150,25 +152,24 @@ module Parsers
 
     def statements
       s = []
-      # XXX let's check for things, not for absence of things
-      while !([:r_brace, :eof].include? current_token.type)
+      while is_first_of_statement?(current_token)
         s << statement
       end
       return s
     end
 
     def statement
-      if current_token.type == :l_brace
+      if at? :l_brace
         return compound_statement
-      elsif current_token.type == :if
+      elsif at? :if
         return if_statement
-      elsif current_token.type == :while
+      elsif at? :while
         return while_statement
-      elsif current_token.type == :return
+      elsif at? :return
         return return_statement
-      elsif current_token.type == :write
+      elsif at? :write
         return write_statement
-      elsif current_token.type == :writeln
+      elsif at? :writeln
         return writeln_statement
       else
         return expression_statement
@@ -176,7 +177,7 @@ module Parsers
     end
 
     def expression_statement
-      if current_token.type == :semicolon
+      if at? :semicolon
         s = ExpressionStatement.new(nil)
       else
         s = ExpressionStatement.new(expression)
@@ -191,7 +192,7 @@ module Parsers
       c = expression
       eat(:r_paren)
       b = statement
-      if current_token.type == :else
+      if at? :else
         eat(:else)
         return IfStatement.new(c, b, statement)
       else
@@ -209,7 +210,7 @@ module Parsers
 
     def return_statement
       eat(:return)
-      if current_token.type == :semicolon
+      if at? :semicolon
         eat(:semicolon)
         return ReturnStatement.new(nil)
       else
@@ -266,13 +267,13 @@ module Parsers
     end
 
     def f
-      if current_token.type == :minus
+      if at? :minus
         eat(:minus)
         return MinusF.new(f)
-      elsif current_token.type == :ampersand
+      elsif at? :ampersand
         eat(:ampersand)
         return AddressF.new(factor)
-      elsif current_token.type == :asterisk
+      elsif at? :asterisk
         eat(:asterisk)
         return PointerF.new(factor)
       else
@@ -285,28 +286,28 @@ module Parsers
     ###########
 
     def factor
-      if current_token.type == :l_paren
+      if at? :l_paren
         eat(:l_paren)
         f = ExpressionFactor.new(expression)
         eat(:r_paren)
         return f
-      elsif current_token.type == :read
+      elsif at? :read
         f = ReadFactor.new(read)
         eat(:l_paren)
         eat(:r_paren)
         return f
-      elsif current_token.type == :num
+      elsif at? :num
         return NumFactor.new(num)
-      elsif current_token.type == :str
+      elsif at? :str
         return StrFactor.new(str)
       else
         i = id
-        if current_token.type == :l_bracket
+        if at? :l_bracket
           eat(:l_bracket)
           f = ArrayFactor.new(i, expression)
           eat(:r_bracket)
           return f
-        elsif current_token.type == :l_paren
+        elsif at? :l_paren
           return FunCallFactor.new(i, args)
         else
           return SimpleFactor.new(i)
@@ -316,12 +317,12 @@ module Parsers
 
     def args
       eat(:l_paren)
-      if current_token.type == :r_paren
+      if at? :r_paren
         eat(:r_paren)
         return []
       else
         p = [expression]
-        while current_token.type == :comma
+        while at? :comma
           eat(:comma)
           p << expression
         end
@@ -379,7 +380,7 @@ module Parsers
     ###################
 
     def eat(type)
-      if current_token.type == type
+      if at? type
         eat_token
       else
         raise SyntaxError, "expected #{type.to_s}, got #{current_token.type.to_s}"
@@ -396,6 +397,14 @@ module Parsers
 
     def is_mul_op?(token)
       MUL_OPS.include? token.type
+    end
+
+    def is_first_of_statement?(token)
+      FIRST_OF_STATEMENT.include? token.type
+    end
+
+    def at?(type)
+      current_token.type == type
     end
 
     def eat_token
