@@ -565,6 +565,19 @@ describe IfStatement do
       expect(p.else_body.statements[0].expression.e.t.f.factor.id.token.value).to eq("z")
     end
   end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { if x {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got id")
+
+      p = Parser.new(Scanner.new("int f(void) { if (x {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got l_brace")
+
+      p = Parser.new(Scanner.new("int f(void) { if (x;) {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
+    end
+  end
 end
 
 describe WhileStatement do
@@ -594,6 +607,19 @@ describe WhileStatement do
       it "is a CompoundStatement" do
         expect(p.body).to be_a CompoundStatement
       end
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { while x {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got id")
+
+      p = Parser.new(Scanner.new("int f(void) { while (x {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got l_brace")
+
+      p = Parser.new(Scanner.new("int f(void) { while (x;) {y;} }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
     end
   end
 end
