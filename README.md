@@ -49,10 +49,11 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `WriteStatement ::= write ( Expression );`
   - `WritelnStatement ::= writeln ( );`
     - Rather than having `WriteStatement` produce a `writeln();`, we have a different kind of statements: `WritelnStatement`.
-- `Expression > SimpleExpression`
+- `Expression > SimpleExpression | ComparisonExpression`
   - An `Expression` can be an `AssignmentExpression`, `ComparisonExpression`, or `SimpleExpression`.  This is just a way of
     clarifying the grammar given in the BPL manual.
   - `SimpleExpression ::= E`
+  - `ComparisonExpression ::= E RelOp E`
 - `E ::= E AddOp T | T`
   - Unlike other left-recursive rules, `E` is actually implemented left-recursively.  An `E` has children `add_op`, `e`, and
     `t`.  The left-most `E` of a nested set of `E`s has a nil `e` and a nil `add_op`.
@@ -77,9 +78,8 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 
 ### Not Implemented
 
-- `Expression > AssignmentExpression | ComparisonExpression`
+- `Expression > AssignmentExpression`
   - `AssignmentExpression ::= Var = Expression`
-  - `ComparisonExpression ::= E RelOp E`
 
 ### Notes
 

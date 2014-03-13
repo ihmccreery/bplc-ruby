@@ -737,6 +737,87 @@ describe SimpleExpression do
   end
 end
 
+describe ComparisonExpression do
+  let(:p) { get_body("x == y;").statements[0].expression }
+
+  it "is a ComparisonExpression that is also an Expression" do
+    expect(p).to be_a ComparisonExpression
+    expect(p).to be_a Expression
+  end
+
+  describe "#lhs" do
+    it "is an E" do
+      expect(p.lhs).to be_a E
+    end
+  end
+
+  describe "#rhs" do
+    it "is an E" do
+      expect(p.rhs).to be_a E
+    end
+  end
+
+  context "with a leq rel_op" do
+    let(:p) { get_body("x <= y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:leq)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+
+  context "with a lt rel_op" do
+    let(:p) { get_body("x < y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:lt)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+
+  context "with a eq rel_op" do
+    let(:p) { get_body("x == y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:eq)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+
+  context "with a neq rel_op" do
+    let(:p) { get_body("x != y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:neq)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+
+  context "with a gt rel_op" do
+    let(:p) { get_body("x > y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:gt)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+
+  context "with a geq rel_op" do
+    let(:p) { get_body("x >= y;").statements[0].expression }
+
+    it "is properly formed" do
+      expect(p.rel_op.token.type).to eq(:geq)
+      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+    end
+  end
+end
+
 ##############
 # arithmetic #
 ##############

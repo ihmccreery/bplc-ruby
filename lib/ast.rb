@@ -161,6 +161,16 @@ class SimpleExpression < Expression
   end
 end
 
+class ComparisonExpression < Expression
+  attr_accessor :rel_op, :lhs, :rhs
+
+  def initialize(rel_op, lhs, rhs)
+    @rel_op = rel_op
+    @lhs = lhs
+    @rhs = rhs
+  end
+end
+
 ##############
 # arithmetic #
 ##############
@@ -280,6 +290,10 @@ end
 #####################
 
 class TypeSpecifier < Ast
+  include TokenAst
+end
+
+class RelOp < Ast
   include TokenAst
 end
 

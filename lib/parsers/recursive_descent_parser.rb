@@ -2,6 +2,7 @@ module Parsers
   # a simple Parser
   class RecursiveDescentParser
     TYPE_SPECIFIERS = [:int, :void, :string].freeze
+    REL_OPS = [:leq, :lt, :eq, :neq, :gt, :geq].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
     FIRST_OF_STATEMENTS = [:semicolon, :id, :asterisk, :minus, :ampersand,
@@ -114,7 +115,8 @@ module Parsers
     ##############
     # statements #
     ##############
-def compound_statement
+
+    def compound_statement
       eat(:l_brace)
       c = CompoundStatement.new(local_declarations, statements)
       eat(:r_brace)
@@ -243,7 +245,12 @@ def compound_statement
 
     # TODO unfinished
     def expression
-      return SimpleExpression.new(e)
+      lhs = e
+      if at? REL_OPS
+        return ComparisonExpression.new(rel_op, lhs, e)
+      else
+        return SimpleExpression.new(lhs)
+      end
     end
 
     ##############
@@ -340,6 +347,14 @@ def compound_statement
         return TypeSpecifier.new(eat_token)
       else
         raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
+      end
+    end
+
+    def rel_op
+      if at? REL_OPS
+        return RelOp.new(eat_token)
+      else
+        raise SyntaxError, "expected rel_op, got #{current_token.type.to_s}"
       end
     end
 
