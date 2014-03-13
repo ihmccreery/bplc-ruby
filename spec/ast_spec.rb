@@ -659,6 +659,56 @@ describe ReturnStatement do
   end
 end
 
+describe WriteStatement do
+  let(:p) { get_body("write(x);").statements[0] }
+
+  it "is an WriteStatement that is also a Statement" do
+    expect(p).to be_a WriteStatement
+    expect(p).to be_a Statement
+  end
+
+  describe "#value" do
+    it "is an Expression" do
+      expect(p.value).to be_a Expression
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { write(); }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
+
+      p = Parser.new(Scanner.new("int f(void) { write(x) }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
+
+      p = Parser.new(Scanner.new("int f(void) { write(x;) }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
+    end
+  end
+end
+
+describe WritelnStatement do
+  let(:p) { get_body("writeln();").statements[0] }
+
+  it "is an WritelnStatement that is also a Statement" do
+    expect(p).to be_a WritelnStatement
+    expect(p).to be_a Statement
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { writeln() }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
+
+      p = Parser.new(Scanner.new("int f(void) { writeln(x); }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got id")
+
+      p = Parser.new(Scanner.new("int f(void) { writeln }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got r_brace")
+    end
+  end
+end
+
 ###############
 # Expressions #
 ###############

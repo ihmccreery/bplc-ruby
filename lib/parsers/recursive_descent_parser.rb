@@ -167,6 +167,10 @@ module Parsers
         return while_statement
       elsif current_token.type == :return
         return return_statement
+      elsif current_token.type == :write
+        return write_statement
+      elsif current_token.type == :writeln
+        return writeln_statement
       else
         return expression_statement
       end
@@ -214,6 +218,23 @@ module Parsers
         eat(:semicolon)
         return ReturnStatement.new(e)
       end
+    end
+
+    def write_statement
+      eat(:write)
+      eat(:l_paren)
+      c = expression
+      eat(:r_paren)
+      eat(:semicolon)
+      return WriteStatement.new(c)
+    end
+
+    def writeln_statement
+      eat(:writeln)
+      eat(:l_paren)
+      eat(:r_paren)
+      eat(:semicolon)
+      return WritelnStatement.new
     end
 
     ###############
