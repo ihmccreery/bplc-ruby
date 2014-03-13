@@ -157,7 +157,6 @@ module Parsers
       return s
     end
 
-    # TODO unfinished
     def statement
       if current_token.type == :l_brace
         return compound_statement
