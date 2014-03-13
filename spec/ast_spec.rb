@@ -737,6 +737,116 @@ describe SimpleExpression do
   end
 end
 
+describe AssignmentExpression do
+  let(:p) { get_body("x = y;").statements[0].expression }
+
+  it "is a AssignmentExpression that is also an Expression" do
+    expect(p).to be_a AssignmentExpression
+    expect(p).to be_a Expression
+  end
+
+  describe "#lhs" do
+    it "is a Var" do
+      expect(p.lhs).to be_a Var
+    end
+  end
+
+  describe "#rhs" do
+    it "is an Expression" do
+      expect(p.rhs).to be_a Expression
+    end
+  end
+
+  it "is properly formed" do
+    expect(p.lhs.id.token.value).to eq("x")
+    expect(p.rhs.e.t.f.factor.id.token.value).to eq("y")
+  end
+end
+
+describe Var do
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { x + y = z; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
+
+      p = Parser.new(Scanner.new("int f(void) { x * y = z; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
+
+      p = Parser.new(Scanner.new("int f(void) { &x = y; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
+
+      p = Parser.new(Scanner.new("int f(void) { read() = y; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
+    end
+  end
+end
+
+describe SimpleVar do
+  let(:p) { get_body("x = y;").statements[0].expression.lhs }
+
+  it "is a SimpleVar that is also a Var" do
+    expect(p).to be_a SimpleVar
+    expect(p).to be_a Var
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+end
+
+describe ArrayVar do
+  let(:p) { get_body("x[1] = y;").statements[0].expression.lhs }
+
+  it "is a ArrayVar that is also a Var" do
+    expect(p).to be_a ArrayVar
+    expect(p).to be_a Var
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  describe "#index" do
+    it "is an Expression" do
+      expect(p.index).to be_a Expression
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { x [] = z; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_bracket")
+    end
+  end
+end
+
+describe PointerVar do
+  let(:p) { get_body("*x = y;").statements[0].expression.lhs }
+
+  it "is a PointerVar that is also a Var" do
+    expect(p).to be_a PointerVar
+    expect(p).to be_a Var
+  end
+
+  describe "#id" do
+    it "is an Id" do
+      expect(p.id).to be_a Id
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { x* = z; }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got gets")
+    end
+  end
+end
+
+
 describe ComparisonExpression do
   let(:p) { get_body("x == y;").statements[0].expression }
 

@@ -41,7 +41,7 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `local_declarations` can only include `VariableDeclarations`, not `FunctionDeclarations`
 - `Statement > ExpressionStatement | CompoundStatement | IfStatement | WhileStatement | ReturnStatement | WriteStatement | WritelnStatement`
   - Unlike the BPL manual, a `Statement` does not produce an `ExpressionStatement`, etc., but rather can be one of several
-    types of `Statements`
+    types of `Statement`s.
   - `ExpressionStatement ::= Expression; | ;`
   - `IfStatement ::= if ( Expression ) Statement | if ( Expression ) Statement else Statement`
   - `WhileStatement ::= while ( Expression ) Statement`
@@ -49,11 +49,19 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `WriteStatement ::= write ( Expression );`
   - `WritelnStatement ::= writeln ( );`
     - Rather than having `WriteStatement` produce a `writeln();`, we have a different kind of statements: `WritelnStatement`.
-- `Expression > SimpleExpression | ComparisonExpression`
+- `Expression > AssignmentExpression | SimpleExpression | ComparisonExpression`
   - An `Expression` can be an `AssignmentExpression`, `ComparisonExpression`, or `SimpleExpression`.  This is just a way of
     clarifying the grammar given in the BPL manual.
+  - `AssignmentExpression ::= Var = Expression`
+    - In the recursive descent parser, we get an `E`, then if we see `=`, we try to convert the `E` to a Var and raise an
+      error if there's an issue.
   - `SimpleExpression ::= E`
   - `ComparisonExpression ::= E RelOp E`
+- `Var > SimpleVar | PointerVar | ArrayVar`
+  - Unlike the BPL manual, a `Var` does not produce anything, but rather can be one of several types of `Var`s.
+  - `SimpleVar ::= <Id>`
+  - `PointerVar ::= *<Id>`
+  - `ArrayVar ::= <Id> [ Expression ]`
 - `E ::= E AddOp T | T`
   - Unlike other left-recursive rules, `E` is actually implemented left-recursively.  An `E` has children `add_op`, `e`, and
     `t`.  The left-most `E` of a nested set of `E`s has a nil `e` and a nil `add_op`.
@@ -75,11 +83,6 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
   - `ArrayFactor ::= <Id> [ Expression ]`
   - `NumFactor ::= <Num>`
   - `StrFactor ::= <Str>`
-
-### Not Implemented
-
-- `Expression > AssignmentExpression`
-  - `AssignmentExpression ::= Var = Expression`
 
 ### Notes
 

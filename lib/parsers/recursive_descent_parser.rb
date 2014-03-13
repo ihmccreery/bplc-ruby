@@ -246,7 +246,10 @@ module Parsers
     # TODO unfinished
     def expression
       lhs = e
-      if at? REL_OPS
+      if at? :gets
+        eat(:gets)
+        return AssignmentExpression.new(convert_e_to_var(lhs), expression)
+      elsif at? REL_OPS
         return ComparisonExpression.new(rel_op, lhs, e)
       else
         return SimpleExpression.new(lhs)
@@ -393,6 +396,37 @@ module Parsers
     ###################
     # support methods #
     ###################
+
+    def convert_e_to_var(lhs)
+      # lhs.add_op and lhs.e should be nil
+      unless lhs.add_op.nil? and lhs.e.nil?
+        raise SyntaxError, "lhs not assignable"
+      end
+      # lhs.t.mul_op and lhs.t.t should be nil
+      unless lhs.t.mul_op.nil? and lhs.t.t.nil?
+        raise SyntaxError, "lhs not assignable"
+      end
+      # lhs.t.f should be a PointerF or SimpleF
+      unless lhs.t.f.is_a?(PointerF) or lhs.t.f.is_a?(SimpleF)
+        raise SyntaxError, "lhs not assignable"
+      end
+      # lhs.t.f.factor should be a SimpleFactor or ArrayFactor
+      unless lhs.t.f.factor.is_a?(SimpleFactor) or lhs.t.f.factor.is_a?(ArrayFactor)
+        raise SyntaxError, "lhs not assignable"
+      end
+
+      var_f = lhs.t.f
+
+      if var_f.is_a? PointerF
+        return PointerVar.new(var_f.factor.id)
+      elsif var_f.is_a? SimpleF
+        if var_f.factor.is_a? SimpleFactor
+          return SimpleVar.new(var_f.factor.id)
+        elsif var_f.factor.is_a? ArrayFactor
+          return ArrayVar.new(var_f.factor.id, var_f.factor.index)
+        end
+      end
+    end
 
     def eat(type)
       if at? type

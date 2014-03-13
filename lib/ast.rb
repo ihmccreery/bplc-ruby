@@ -161,6 +161,38 @@ class SimpleExpression < Expression
   end
 end
 
+class AssignmentExpression < Expression
+  attr_accessor :lhs, :rhs
+
+  def initialize(lhs, rhs)
+    @lhs = lhs
+    @rhs = rhs
+  end
+end
+
+class Var < Ast
+  attr_accessor :id
+
+  def initialize(id)
+    @id = id
+  end
+end
+
+class SimpleVar < Var
+end
+
+class PointerVar < Var
+end
+
+class ArrayVar < Var
+  attr_accessor :index
+
+  def initialize(id, index)
+    super(id)
+    @index = index
+  end
+end
+
 class ComparisonExpression < Expression
   attr_accessor :rel_op, :lhs, :rhs
 
