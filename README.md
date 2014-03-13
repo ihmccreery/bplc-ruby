@@ -80,4 +80,5 @@ it represents.  Any terminal symbol without angle brackets, (e.g. `;`,) is also 
 
 - `Factor > PointerFactor`
   - `PointerFactor ::= * <Id>`
-    - This is redundant with `PointerF` and is thus not implemented.
+    - This is redundant with `PointerF` and is thus not implemented.  We might want to change the way that `*`s and `&`s
+      are parsed.  The way it is parsed right now seems questionable.
