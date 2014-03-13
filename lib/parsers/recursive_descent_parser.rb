@@ -4,9 +4,9 @@ module Parsers
     TYPE_SPECIFIERS = [:int, :void, :string].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
-    FIRST_OF_STATEMENT = [:semicolon, :id, :asterisk, :minus, :ampersand,
-                          :l_paren, :read, :num, :str, :l_brace, :if,
-                          :while, :return, :write, :writeln].freeze
+    FIRST_OF_STATEMENTS = [:semicolon, :id, :asterisk, :minus, :ampersand,
+                           :l_paren, :read, :num, :str, :l_brace, :if,
+                           :while, :return, :write, :writeln].freeze
 
     def initialize(source)
       @source = source
@@ -43,7 +43,7 @@ module Parsers
 
     def declarations
       d = [declaration]
-      while is_type_specifier?(current_token)
+      while at? TYPE_SPECIFIERS
         d << declaration
       end
       return d
@@ -123,7 +123,7 @@ def compound_statement
 
     def local_declarations
       d = []
-      while is_type_specifier?(current_token)
+      while at? TYPE_SPECIFIERS
         d << local_declaration
       end
       return d
@@ -152,7 +152,7 @@ def compound_statement
 
     def statements
       s = []
-      while is_first_of_statement?(current_token)
+      while at? FIRST_OF_STATEMENTS
         s << statement
       end
       return s
@@ -252,7 +252,7 @@ def compound_statement
 
     def e
       r = E.new(nil, nil, t)
-      while is_add_op?(current_token)
+      while at? ADD_OPS
         r = E.new(add_op, r, t)
       end
       return r
@@ -260,7 +260,7 @@ def compound_statement
 
     def t
       r = T.new(nil, nil, f)
-      while is_mul_op?(current_token)
+      while at? MUL_OPS
         r = T.new(mul_op, r, f)
       end
       return r
@@ -336,7 +336,7 @@ def compound_statement
     #####################
 
     def type_specifier
-      if is_type_specifier?(current_token)
+      if at? TYPE_SPECIFIERS
         return TypeSpecifier.new(eat_token)
       else
         raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
@@ -344,7 +344,7 @@ def compound_statement
     end
 
     def add_op
-      if is_add_op?(current_token)
+      if at? ADD_OPS
         return AddOp.new(eat_token)
       else
         raise SyntaxError, "expected add_op, got #{current_token.type.to_s}"
@@ -352,7 +352,7 @@ def compound_statement
     end
 
     def mul_op
-      if is_mul_op?(current_token)
+      if at? MUL_OPS
         return MulOp.new(eat_token)
       else
         raise SyntaxError, "expected mul_op, got #{current_token.type.to_s}"
@@ -387,24 +387,12 @@ def compound_statement
       end
     end
 
-    def is_type_specifier?(token)
-      TYPE_SPECIFIERS.include? token.type
-    end
-
-    def is_add_op?(token)
-      ADD_OPS.include? token.type
-    end
-
-    def is_mul_op?(token)
-      MUL_OPS.include? token.type
-    end
-
-    def is_first_of_statement?(token)
-      FIRST_OF_STATEMENT.include? token.type
-    end
-
     def at?(type)
-      current_token.type == type
+      if type.is_a? Array
+        return type.include? current_token.type
+      else
+        return current_token.type == type
+      end
     end
 
     def eat_token
