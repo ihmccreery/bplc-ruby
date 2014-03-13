@@ -127,6 +127,14 @@ class WhileStatement < Statement
   end
 end
 
+class ReturnStatement < Statement
+  attr_accessor :value
+
+  def initialize(value)
+    @value = value
+  end
+end
+
 ###############
 # Expressions #
 ###############

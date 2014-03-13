@@ -624,6 +624,41 @@ describe WhileStatement do
   end
 end
 
+describe ReturnStatement do
+  let(:p) { get_body("return y;").statements[0] }
+
+  it "is an ReturnStatement that is also a Statement" do
+    expect(p).to be_a ReturnStatement
+    expect(p).to be_a Statement
+  end
+
+  describe "#value" do
+    it "is an Expression" do
+      expect(p.value).to be_a Expression
+    end
+  end
+
+  context "with no value" do
+    let(:p) { get_body("return;").statements[0] }
+
+    describe "#value" do
+      it "is nil" do
+        expect(p.value).to be_nil
+      end
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      p = Parser.new(Scanner.new("int f(void) { return }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_brace")
+
+      p = Parser.new(Scanner.new("int f(void) { return x }"))
+      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
+    end
+  end
+end
+
 ###############
 # Expressions #
 ###############

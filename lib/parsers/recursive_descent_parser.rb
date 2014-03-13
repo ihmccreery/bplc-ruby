@@ -165,6 +165,8 @@ module Parsers
         return if_statement
       elsif current_token.type == :while
         return while_statement
+      elsif current_token.type == :return
+        return return_statement
       else
         return expression_statement
       end
@@ -200,6 +202,18 @@ module Parsers
       c = expression
       eat(:r_paren)
       return WhileStatement.new(c, statement)
+    end
+
+    def return_statement
+      eat(:return)
+      if current_token.type == :semicolon
+        eat(:semicolon)
+        return ReturnStatement.new(nil)
+      else
+        e = expression
+        eat(:semicolon)
+        return ReturnStatement.new(e)
+      end
     end
 
     ###############
