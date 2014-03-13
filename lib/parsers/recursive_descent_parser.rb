@@ -163,6 +163,8 @@ module Parsers
         return compound_statement
       elsif current_token.type == :if
         return if_statement
+      elsif current_token.type == :while
+        return while_statement
       else
         return expression_statement
       end
@@ -190,6 +192,14 @@ module Parsers
       else
         return IfStatement.new(c, b, nil)
       end
+    end
+
+    def while_statement
+      eat(:while)
+      eat(:l_paren)
+      c = expression
+      eat(:r_paren)
+      return WhileStatement.new(c, statement)
     end
 
     ###############

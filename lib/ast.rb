@@ -118,6 +118,15 @@ class IfStatement < Statement
   end
 end
 
+class WhileStatement < Statement
+  attr_accessor :condition, :body
+
+  def initialize(condition, body)
+    @condition = condition
+    @body = body
+  end
+end
+
 ###############
 # Expressions #
 ###############

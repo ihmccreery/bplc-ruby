@@ -567,6 +567,37 @@ describe IfStatement do
   end
 end
 
+describe WhileStatement do
+  let(:p) { get_body("while (x) y;").statements[0] }
+
+  it "is an WhileStatement that is also a Statement" do
+    expect(p).to be_a WhileStatement
+    expect(p).to be_a Statement
+  end
+
+  describe "#condition" do
+    it "is an Expression" do
+      expect(p.condition).to be_a Expression
+    end
+  end
+
+  describe "#body" do
+    it "is a Statement" do
+      expect(p.body).to be_a Statement
+    end
+  end
+
+  context "with a compound body" do
+    let(:p) { get_body("while (x) {y;}").statements[0] }
+
+    describe "#body" do
+      it "is a CompoundStatement" do
+        expect(p.body).to be_a CompoundStatement
+      end
+    end
+  end
+end
+
 ###############
 # Expressions #
 ###############
