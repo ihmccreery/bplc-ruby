@@ -761,6 +761,16 @@ describe AssignmentExpression do
     expect(p.lhs.id.token.value).to eq("x")
     expect(p.rhs.e.t.f.factor.id.token.value).to eq("y")
   end
+
+  context "that are chained" do
+    let(:p) { get_body("x = y = z;").statements[0].expression }
+
+    it "are properly formed" do
+      expect(p.lhs.id.token.value).to eq("x")
+      expect(p.rhs.lhs.id.token.value).to eq("y")
+      expect(p.rhs.rhs.e.t.f.factor.id.token.value).to eq("z")
+    end
+  end
 end
 
 describe Var do
