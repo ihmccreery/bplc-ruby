@@ -379,8 +379,9 @@ end
 describe CompoundStatement do
   let(:p) { get_body("") }
 
-  it "is a CompoundStatement" do
+  it "is a CompoundStatement that is also a Statement" do
     expect(p).to be_a CompoundStatement
+    expect(p).to be_a Statement
   end
 
   describe "#local_declarations" do
@@ -491,8 +492,78 @@ end
 describe CompoundStatement do
   let(:p) { get_body("{x;}").statements[0] }
 
-  it "is an CompoundStatement" do
+  it "is an CompoundStatement that is also a Statement" do
     expect(p).to be_a CompoundStatement
+    expect(p).to be_a Statement
+  end
+end
+
+describe IfStatement do
+  let(:p) { get_body("if (x) y;").statements[0] }
+
+  it "is an IfStatement that is also a Statement" do
+    expect(p).to be_a IfStatement
+    expect(p).to be_a Statement
+  end
+
+  describe "#condition" do
+    it "is an Expression" do
+      expect(p.condition).to be_a Expression
+    end
+  end
+
+  describe "#body" do
+    it "is a Statement" do
+      expect(p.body).to be_a Statement
+    end
+  end
+
+  describe "#else_body" do
+    it "is nil" do
+      expect(p.else_body).to be_nil
+    end
+  end
+
+  context "with an else statement" do
+    let(:p) { get_body("if (x) y; else z;").statements[0] }
+
+    describe "#body" do
+      it "is a Statement" do
+        expect(p.body).to be_a Statement
+      end
+    end
+
+    describe "#else_body" do
+      it "is a Statement" do
+        expect(p.else_body).to be_a Statement
+      end
+    end
+
+    it "is properly formed" do
+      expect(p.body.expression.e.t.f.factor.id.token.value).to eq("y")
+      expect(p.else_body.expression.e.t.f.factor.id.token.value).to eq("z")
+    end
+  end
+
+  context "with a compound body and else_body" do
+    let(:p) { get_body("if (x) {y;} else {z;}").statements[0] }
+
+    describe "#body" do
+      it "is a CompoundStatement" do
+        expect(p.body).to be_a CompoundStatement
+      end
+    end
+
+    describe "#else_body" do
+      it "is a CompoundStatement" do
+        expect(p.else_body).to be_a CompoundStatement
+      end
+    end
+
+    it "is properly formed" do
+      expect(p.body.statements[0].expression.e.t.f.factor.id.token.value).to eq("y")
+      expect(p.else_body.statements[0].expression.e.t.f.factor.id.token.value).to eq("z")
+    end
   end
 end
 

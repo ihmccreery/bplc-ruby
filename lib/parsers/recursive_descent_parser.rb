@@ -161,6 +161,8 @@ module Parsers
     def statement
       if current_token.type == :l_brace
         return compound_statement
+      elsif current_token.type == :if
+        return if_statement
       else
         return expression_statement
       end
@@ -174,6 +176,20 @@ module Parsers
       end
       eat(:semicolon)
       return s
+    end
+
+    def if_statement
+      eat(:if)
+      eat(:l_paren)
+      c = expression
+      eat(:r_paren)
+      b = statement
+      if current_token.type == :else
+        eat(:else)
+        return IfStatement.new(c, b, statement)
+      else
+        return IfStatement.new(c, b, nil)
+      end
     end
 
     ###############

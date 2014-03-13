@@ -88,7 +88,10 @@ end
 # Statements #
 ##############
 
-class CompoundStatement < Ast
+class Statement < Ast
+end
+
+class CompoundStatement < Statement
   attr_accessor :local_declarations, :statements
 
   def initialize(local_declarations, statements)
@@ -97,14 +100,21 @@ class CompoundStatement < Ast
   end
 end
 
-class Statement < Ast
-end
-
 class ExpressionStatement < Statement
   attr_accessor :expression
 
   def initialize(expression)
     @expression = expression
+  end
+end
+
+class IfStatement < Statement
+  attr_accessor :condition, :body, :else_body
+
+  def initialize(condition, body, else_body)
+    @condition = condition
+    @body = body
+    @else_body = else_body
   end
 end
 
