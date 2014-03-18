@@ -71,4 +71,8 @@ describe Parser do
     expect(w.factor.id.token.value).to eq("w")
     expect(v.factor.id.token.value).to eq("v")
   end
+
+  it "parses ex1.bpl properly" do
+    expect(Parser.new(Scanner.new(File.new(EX1_FNAME))).parse).to be_a Ast
+  end
 end
