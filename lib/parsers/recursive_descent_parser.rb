@@ -243,7 +243,6 @@ module Parsers
     # expressions #
     ###############
 
-    # TODO unfinished
     def expression
       lhs = e
       if at? :gets
