@@ -62,10 +62,6 @@ describe SimpleDeclaration do
     expect(p).to be_a SimpleDeclaration
   end
 
-  it "extends VariableDeclaration" do
-    expect(p.class.superclass).to eq(VariableDeclaration)
-  end
-
   describe "#type_specifier" do
     it "is a TypeSpecifier" do
       expect(p.type_specifier).to be_a TypeSpecifier
@@ -99,10 +95,6 @@ describe PointerDeclaration do
     expect(p).to be_a PointerDeclaration
   end
 
-  it "extends VariableDeclaration" do
-    expect(p.class.superclass).to eq(VariableDeclaration)
-  end
-
   describe "#type_specifier" do
     it "is a TypeSpecifier" do
       expect(p.type_specifier).to be_a TypeSpecifier
@@ -134,10 +126,6 @@ describe  ArrayDeclaration do
 
   it "is a ArrayDeclaration " do
     expect(p).to be_a ArrayDeclaration
-  end
-
-  it "extends VariableDeclaration" do
-    expect(p.class.superclass).to eq(VariableDeclaration)
   end
 
   it "is an ArrayDeclaration" do
@@ -405,10 +393,6 @@ describe CompoundStatement do
     expect(p).to be_a CompoundStatement
   end
 
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
-  end
-
   describe "#local_declarations" do
     it "is an array" do
       expect(p.local_declarations).to be_a Array
@@ -489,10 +473,6 @@ describe CompoundStatement do
     it "is an CompoundStatement" do
       expect(p).to be_a CompoundStatement
     end
-
-    it "extends Statement" do
-      expect(p.class.superclass).to eq(Statement)
-    end
   end
 
   context "in another CompoundStatement in another CompoundStatement" do
@@ -500,10 +480,6 @@ describe CompoundStatement do
 
     it "is an CompoundStatement" do
       expect(p).to be_a CompoundStatement
-    end
-
-    it "extends Statement" do
-      expect(p.class.superclass).to eq(Statement)
     end
   end
 end
@@ -513,10 +489,6 @@ describe IfStatement do
 
   it "is an IfStatement" do
     expect(p).to be_a IfStatement
-  end
-
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#condition" do
@@ -600,10 +572,6 @@ describe WhileStatement do
     expect(p).to be_a WhileStatement
   end
 
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
-  end
-
   describe "#condition" do
     it "is an Expression" do
       expect(p.condition).to be_a Expression
@@ -647,10 +615,6 @@ describe ReturnStatement do
     expect(p).to be_a ReturnStatement
   end
 
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
-  end
-
   describe "#value" do
     it "is an Expression" do
       expect(p.value).to be_a Expression
@@ -685,10 +649,6 @@ describe WriteStatement do
     expect(p).to be_a WriteStatement
   end
 
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
-  end
-
   describe "#value" do
     it "is an Expression" do
       expect(p.value).to be_a Expression
@@ -716,10 +676,6 @@ describe WritelnStatement do
     expect(p).to be_a WritelnStatement
   end
 
-  it "extends Statement" do
-    expect(p.class.superclass).to eq(Statement)
-  end
-
   context "that is malformed" do
     it "raises SyntaxErrors" do
       p = Parser.new(Scanner.new("int f(void) { writeln() }"))
@@ -745,10 +701,6 @@ describe SimpleExpression do
     expect(p).to be_a SimpleExpression
   end
 
-  it "extends Expression" do
-    expect(p.class.superclass).to eq(Expression)
-  end
-
   describe "#e" do
     it "is an E" do
       expect(p.e).to be_a E
@@ -761,10 +713,6 @@ describe AssignmentExpression do
 
   it "is a AssignmentExpression" do
     expect(p).to be_a AssignmentExpression
-  end
-
-  it "extends Expression" do
-    expect(p.class.superclass).to eq(Expression)
   end
 
   describe "#lhs" do
@@ -820,10 +768,6 @@ describe SimpleVar do
     expect(p).to be_a SimpleVar
   end
 
-  it "extends Var" do
-    expect(p.class.superclass).to eq(Var)
-  end
-
   describe "#id" do
     it "is an Id" do
       expect(p.id).to be_a Id
@@ -836,10 +780,6 @@ describe ArrayVar do
 
   it "is a ArrayVar" do
     expect(p).to be_a ArrayVar
-  end
-
-  it "extends Var" do
-    expect(p.class.superclass).to eq(Var)
   end
 
   describe "#id" do
@@ -869,10 +809,6 @@ describe PointerVar do
     expect(p).to be_a PointerVar
   end
 
-  it "extends Var" do
-    expect(p.class.superclass).to eq(Var)
-  end
-
   describe "#id" do
     it "is an Id" do
       expect(p.id).to be_a Id
@@ -893,10 +829,6 @@ describe ComparisonExpression do
 
   it "is a ComparisonExpression" do
     expect(p).to be_a ComparisonExpression
-  end
-
-  it "extends Expression" do
-    expect(p.class.superclass).to eq(Expression)
   end
 
   describe "#lhs" do
@@ -1079,10 +1011,6 @@ describe AddressF do
     expect(p).to be_a AddressF
   end
 
-  it "extends F" do
-    expect(p.class.superclass).to eq(F)
-  end
-
   describe "#factor" do
     it "is a Factor" do
       expect(p.factor).to be_a Factor
@@ -1097,10 +1025,6 @@ describe PointerF do
     expect(p).to be_a PointerF
   end
 
-  it "extends F" do
-    expect(p.class.superclass).to eq(F)
-  end
-
   describe "#factor" do
     it "is a Factor" do
       expect(p.factor).to be_a Factor
@@ -1113,10 +1037,6 @@ describe SimpleF do
 
   it "is a SimpleF" do
     expect(p).to be_a SimpleF
-  end
-
-  it "extends F" do
-    expect(p.class.superclass).to eq(F)
   end
 
   describe "#factor" do
@@ -1137,10 +1057,6 @@ describe ExpressionFactor do
     expect(p).to be_a ExpressionFactor
   end
 
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
-  end
-
   describe "#expression" do
     it "is an expression" do
       expect(p.expression).to be_a Expression
@@ -1153,10 +1069,6 @@ describe FunCallFactor do
 
   it "is a FunCallFactor" do
     expect(p).to be_a FunCallFactor
-  end
-
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#id" do
@@ -1209,10 +1121,6 @@ describe ReadFactor do
     expect(p).to be_a ReadFactor
   end
 
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
-  end
-
   describe "#read" do
     it "is a Read" do
       expect(p.read).to be_a Read
@@ -1227,10 +1135,6 @@ describe SimpleFactor do
     expect(p).to be_a SimpleFactor
   end
 
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
-  end
-
   describe "#id" do
     it "is an Id" do
       expect(p.id).to be_a Id
@@ -1243,10 +1147,6 @@ describe ArrayFactor do
 
   it "is a ArrayFactor" do
     expect(p).to be_a ArrayFactor
-  end
-
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#id" do
@@ -1269,10 +1169,6 @@ describe NumFactor do
     expect(p).to be_a NumFactor
   end
 
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
-  end
-
   describe "#num" do
     it "is an Num" do
       expect(p.num).to be_a Num
@@ -1285,10 +1181,6 @@ describe StrFactor do
 
   it "is a StrFactor" do
     expect(p).to be_a StrFactor
-  end
-
-  it "extends Factor" do
-    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#str" do
