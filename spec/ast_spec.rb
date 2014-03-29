@@ -398,6 +398,19 @@ end
 # Exps #
 ########
 
+describe AssignmentExp do
+  let(:p) { parse_exp("x = y") }
+
+  it "is a AssignmentExp" do
+    expect(p).to be_a AssignmentExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.lhs.symbol).to eq("x")
+    expect(p.rhs.symbol).to eq("y")
+  end
+end
+
 describe RelExp do
   let(:p) { parse_exp("x<=y") }
 

@@ -244,7 +244,21 @@ module Parsers
     ########
 
     def exp
-      return rel_exp
+      e = rel_exp
+      if at? :gets
+        return assignment_exp(e)
+      else
+        return e
+      end
+    end
+
+    def assignment_exp(e)
+      if e.is_a? AssignableVarExp
+        eat(:gets)
+        return AssignmentExp.new(e, exp)
+      else
+        raise SyntaxError, "lhs not assignable"
+      end
     end
 
     def rel_exp
@@ -279,6 +293,10 @@ module Parsers
         return var_exp
       end
     end
+
+    ############
+    # var_exps #
+    ############
 
     def var_exp
       if at? :ampersand

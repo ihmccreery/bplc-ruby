@@ -184,6 +184,15 @@ class BinExp < Exp
   end
 end
 
+class AssignmentExp < Exp
+  attr_reader :lhs, :rhs
+
+  def initialize(lhs, rhs)
+    @lhs = lhs
+    @rhs = rhs
+  end
+end
+
 class RelExp < BinExp
 end
 
@@ -201,6 +210,10 @@ class NegExp < Exp
   end
 end
 
+###########
+# VarExps #
+###########
+
 class VarExp < Exp
   # @return [Id]
   attr_reader :id
@@ -215,16 +228,16 @@ class VarExp < Exp
   end
 end
 
-class SimpleVarExp < VarExp
+class AssignableVarExp < VarExp
 end
 
-class PointerVarExp < VarExp
+class SimpleVarExp < AssignableVarExp
 end
 
-class AddrVarExp < VarExp
+class PointerVarExp < AssignableVarExp
 end
 
-class ArrayVarExp < VarExp
+class ArrayVarExp < AssignableVarExp
   def initialize(id, index)
     super(id)
     @index = index
@@ -233,6 +246,9 @@ class ArrayVarExp < VarExp
   def index
     @index.value
   end
+end
+
+class AddrVarExp < VarExp
 end
 
 class AddrArrayVarExp < VarExp
