@@ -232,7 +232,6 @@ describe CompoundStmt do
     expect(p.local_declarations[3]).to be_nil
   end
 
-  # FIXME
   it "has properly formed stmts" do
     expect(p.stmts[0].exp.symbol).to eq("x")
     expect(p.stmts[1].exp.symbol).to eq("y")
@@ -289,7 +288,6 @@ describe IfStmt do
     expect(p.else_body).to be_a Stmt
   end
 
-  # FIXME
   it "is properly formed" do
     expect(p.body.exp.symbol).to eq("y")
     expect(p.else_body.exp.symbol).to eq("z")

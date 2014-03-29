@@ -33,10 +33,14 @@ end
 # Declarations #
 ################
 
-# FIXME this is a really unclear interface
 class Declaration < Ast
-  attr_reader :type_specifier, :id
+  # @return [TypeSpecifier]
+  attr_reader :type_specifier
+  # @return [Id]
+  attr_reader :id
 
+  # @param type_specifier [TypeSpecifier]
+  # @param id [Id]
   def initialize(type_specifier, id)
     @type_specifier = type_specifier
     @id = id
@@ -166,10 +170,11 @@ end
 class Exp < Ast
 end
 
-# FIXME this is a really unclear interface
 class VarExp < Exp
+  # @return [Id]
   attr_reader :id
 
+  # @param id [Id]
   def initialize(id)
     @id = id
   end
