@@ -10,8 +10,7 @@ describe Parser do
   end
 
   describe "#parse" do
-    it "returns a Program that is also an Ast" do
-      expect(p.parse).to be_a Program
+    it "returns an Ast" do
       expect(p.parse).to be_a Ast
     end
 

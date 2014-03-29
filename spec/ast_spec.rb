@@ -58,9 +58,12 @@ end
 describe SimpleDeclaration do
   let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0] }
 
-  it "is a SimpleDeclaration that is also a VariableDeclaration" do
+  it "is a SimpleDeclaration" do
     expect(p).to be_a SimpleDeclaration
-    expect(p).to be_a VariableDeclaration
+  end
+
+  it "extends VariableDeclaration" do
+    expect(p.class.superclass).to eq(VariableDeclaration)
   end
 
   describe "#type_specifier" do
@@ -92,9 +95,12 @@ end
 describe PointerDeclaration do
   let(:p) { Parser.new(Scanner.new("int *x;")).parse.declarations[0] }
 
-  it "is a PointerDeclaration that is also a VariableDeclaration" do
+  it "is a PointerDeclaration" do
     expect(p).to be_a PointerDeclaration
-    expect(p).to be_a VariableDeclaration
+  end
+
+  it "extends VariableDeclaration" do
+    expect(p.class.superclass).to eq(VariableDeclaration)
   end
 
   describe "#type_specifier" do
@@ -126,10 +132,14 @@ end
 describe  ArrayDeclaration do
   let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0] }
 
-  it "is a ArrayDeclaration that is also a VariableDeclaration" do
+  it "is a ArrayDeclaration " do
     expect(p).to be_a ArrayDeclaration
-    expect(p).to be_a VariableDeclaration
   end
+
+  it "extends VariableDeclaration" do
+    expect(p.class.superclass).to eq(VariableDeclaration)
+  end
+
   it "is an ArrayDeclaration" do
     expect(p).to be_a ArrayDeclaration
   end
@@ -391,9 +401,12 @@ end
 describe CompoundStatement do
   let(:p) { get_body("") }
 
-  it "is a CompoundStatement that is also a Statement" do
+  it "is a CompoundStatement" do
     expect(p).to be_a CompoundStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#local_declarations" do
@@ -473,18 +486,24 @@ describe CompoundStatement do
   context "in another CompoundStatement" do
     let(:p) { get_body("{x;}").statements[0] }
 
-    it "is an CompoundStatement that is also a Statement" do
+    it "is an CompoundStatement" do
       expect(p).to be_a CompoundStatement
-      expect(p).to be_a Statement
+    end
+
+    it "extends Statement" do
+      expect(p.class.superclass).to eq(Statement)
     end
   end
 
   context "in another CompoundStatement in another CompoundStatement" do
     let(:p) { get_body("{{x;}}").statements[0].statements[0] }
 
-    it "is an CompoundStatement that is also a Statement" do
+    it "is an CompoundStatement" do
       expect(p).to be_a CompoundStatement
-      expect(p).to be_a Statement
+    end
+
+    it "extends Statement" do
+      expect(p.class.superclass).to eq(Statement)
     end
   end
 end
@@ -492,9 +511,12 @@ end
 describe IfStatement do
   let(:p) { get_body("if (x) y;").statements[0] }
 
-  it "is an IfStatement that is also a Statement" do
+  it "is an IfStatement" do
     expect(p).to be_a IfStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#condition" do
@@ -574,9 +596,12 @@ end
 describe WhileStatement do
   let(:p) { get_body("while (x) y;").statements[0] }
 
-  it "is an WhileStatement that is also a Statement" do
+  it "is an WhileStatement" do
     expect(p).to be_a WhileStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#condition" do
@@ -618,9 +643,12 @@ end
 describe ReturnStatement do
   let(:p) { get_body("return y;").statements[0] }
 
-  it "is an ReturnStatement that is also a Statement" do
+  it "is an ReturnStatement" do
     expect(p).to be_a ReturnStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#value" do
@@ -653,9 +681,12 @@ end
 describe WriteStatement do
   let(:p) { get_body("write(x);").statements[0] }
 
-  it "is an WriteStatement that is also a Statement" do
+  it "is an WriteStatement" do
     expect(p).to be_a WriteStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   describe "#value" do
@@ -681,9 +712,12 @@ end
 describe WritelnStatement do
   let(:p) { get_body("writeln();").statements[0] }
 
-  it "is an WritelnStatement that is also a Statement" do
+  it "is an WritelnStatement" do
     expect(p).to be_a WritelnStatement
-    expect(p).to be_a Statement
+  end
+
+  it "extends Statement" do
+    expect(p.class.superclass).to eq(Statement)
   end
 
   context "that is malformed" do
@@ -707,9 +741,12 @@ end
 describe SimpleExpression do
   let(:p) { get_body("x;").statements[0].expression }
 
-  it "is a SimpleExpression that is also an Expression" do
+  it "is a SimpleExpression" do
     expect(p).to be_a SimpleExpression
-    expect(p).to be_a Expression
+  end
+
+  it "extends Expression" do
+    expect(p.class.superclass).to eq(Expression)
   end
 
   describe "#e" do
@@ -722,9 +759,12 @@ end
 describe AssignmentExpression do
   let(:p) { get_body("x = y;").statements[0].expression }
 
-  it "is a AssignmentExpression that is also an Expression" do
+  it "is a AssignmentExpression" do
     expect(p).to be_a AssignmentExpression
-    expect(p).to be_a Expression
+  end
+
+  it "extends Expression" do
+    expect(p.class.superclass).to eq(Expression)
   end
 
   describe "#lhs" do
@@ -776,9 +816,12 @@ end
 describe SimpleVar do
   let(:p) { get_body("x = y;").statements[0].expression.lhs }
 
-  it "is a SimpleVar that is also a Var" do
+  it "is a SimpleVar" do
     expect(p).to be_a SimpleVar
-    expect(p).to be_a Var
+  end
+
+  it "extends Var" do
+    expect(p.class.superclass).to eq(Var)
   end
 
   describe "#id" do
@@ -791,9 +834,12 @@ end
 describe ArrayVar do
   let(:p) { get_body("x[1] = y;").statements[0].expression.lhs }
 
-  it "is a ArrayVar that is also a Var" do
+  it "is a ArrayVar" do
     expect(p).to be_a ArrayVar
-    expect(p).to be_a Var
+  end
+
+  it "extends Var" do
+    expect(p.class.superclass).to eq(Var)
   end
 
   describe "#id" do
@@ -819,9 +865,12 @@ end
 describe PointerVar do
   let(:p) { get_body("*x = y;").statements[0].expression.lhs }
 
-  it "is a PointerVar that is also a Var" do
+  it "is a PointerVar" do
     expect(p).to be_a PointerVar
-    expect(p).to be_a Var
+  end
+
+  it "extends Var" do
+    expect(p.class.superclass).to eq(Var)
   end
 
   describe "#id" do
@@ -842,9 +891,12 @@ end
 describe ComparisonExpression do
   let(:p) { get_body("x == y;").statements[0].expression }
 
-  it "is a ComparisonExpression that is also an Expression" do
+  it "is a ComparisonExpression" do
     expect(p).to be_a ComparisonExpression
-    expect(p).to be_a Expression
+  end
+
+  it "extends Expression" do
+    expect(p.class.superclass).to eq(Expression)
   end
 
   describe "#lhs" do
@@ -1023,9 +1075,12 @@ end
 describe AddressF do
   let(:p) { get_body("&x;").statements[0].expression.e.t.f }
 
-  it "is a AddressF that is also an F" do
+  it "is a AddressF" do
     expect(p).to be_a AddressF
-    expect(p).to be_a F
+  end
+
+  it "extends F" do
+    expect(p.class.superclass).to eq(F)
   end
 
   describe "#factor" do
@@ -1038,9 +1093,12 @@ end
 describe PointerF do
   let(:p) { get_body("*x;").statements[0].expression.e.t.f }
 
-  it "is a PointerF that is also an F" do
+  it "is a PointerF" do
     expect(p).to be_a PointerF
-    expect(p).to be_a F
+  end
+
+  it "extends F" do
+    expect(p.class.superclass).to eq(F)
   end
 
   describe "#factor" do
@@ -1053,9 +1111,12 @@ end
 describe SimpleF do
   let(:p) { get_body("x;").statements[0].expression.e.t.f }
 
-  it "is a SimpleF that is also an F" do
+  it "is a SimpleF" do
     expect(p).to be_a SimpleF
-    expect(p).to be_a F
+  end
+
+  it "extends F" do
+    expect(p.class.superclass).to eq(F)
   end
 
   describe "#factor" do
@@ -1072,9 +1133,12 @@ end
 describe ExpressionFactor do
   let(:p) { get_factor("(x)") }
 
-  it "is an ExpressionFactor that is also a Factor" do
+  it "is an ExpressionFactor" do
     expect(p).to be_a ExpressionFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#expression" do
@@ -1087,9 +1151,12 @@ end
 describe FunCallFactor do
   let(:p) { get_factor("f()") }
 
-  it "is a FunCallFactor that is also a Factor" do
+  it "is a FunCallFactor" do
     expect(p).to be_a FunCallFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#id" do
@@ -1138,9 +1205,12 @@ end
 describe ReadFactor do
   let(:p) { get_factor("read()") }
 
-  it "is an ReadFactor that is also a Factor" do
+  it "is an ReadFactor" do
     expect(p).to be_a ReadFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#read" do
@@ -1153,9 +1223,12 @@ end
 describe SimpleFactor do
   let(:p) { get_factor("x") }
 
-  it "is a SimpleFactor that is also a Factor" do
+  it "is a SimpleFactor" do
     expect(p).to be_a SimpleFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#id" do
@@ -1168,9 +1241,12 @@ end
 describe ArrayFactor do
   let(:p) { get_factor("x[y]") }
 
-  it "is a ArrayFactor that is also a Factor" do
+  it "is a ArrayFactor" do
     expect(p).to be_a ArrayFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#id" do
@@ -1189,9 +1265,12 @@ end
 describe NumFactor do
   let(:p) { get_factor("2") }
 
-  it "is a NumFactor that is also a Factor" do
+  it "is a NumFactor" do
     expect(p).to be_a NumFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#num" do
@@ -1204,9 +1283,12 @@ end
 describe StrFactor do
   let(:p) { get_factor('"str"') }
 
-  it "is a StrFactor that is also a Factor" do
+  it "is a StrFactor" do
     expect(p).to be_a StrFactor
-    expect(p).to be_a Factor
+  end
+
+  it "extends Factor" do
+    expect(p.class.superclass).to eq(Factor)
   end
 
   describe "#str" do
