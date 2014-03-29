@@ -5,7 +5,7 @@ module Parsers
     REL_OPS = [:leq, :lt, :eq, :neq, :gt, :geq].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
-    LITERALS = [:read, :num, :string].freeze
+    LITERALS = [:read, :num, :str].freeze
     FIRST_OF_STATEMENTS = [:semicolon, :id, :asterisk, :minus, :ampersand,
                            :l_paren, :read, :num, :str, :l_brace, :if,
                            :while, :return, :write, :writeln].freeze
@@ -340,7 +340,12 @@ module Parsers
         eat(:r_paren)
         return ReadLitExp.new(r)
       elsif at? :num
-        return NumLitExp.new(num)
+        return NumLitExp.new(eat(:num))
+      elsif at? :str
+        return StrLitExp.new(eat(:str))
+      # TODO this should be tested
+      else
+        raise SyntaxError, "expecting expression, got #{current_token.type.to_s}"
       end
     end
 

@@ -279,6 +279,9 @@ class NumLitExp < LitExp
   end
 end
 
+class StrLitExp < LitExp
+end
+
 #####################
 # general terminals #
 #####################

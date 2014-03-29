@@ -600,6 +600,18 @@ describe NumLitExp do
   end
 end
 
+describe StrLitExp do
+  let(:p) { parse_exp('"bob"') }
+
+  it "is a StrLitExp" do
+    expect(p).to be_a StrLitExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.value).to eq("bob")
+  end
+end
+
 #####################
 # general terminals #
 #####################
