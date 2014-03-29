@@ -234,9 +234,9 @@ describe CompoundStatement do
 
   # FIXME
   it "has properly formed statements" do
-    expect(p.statements[0].expression.e.t.f.factor.id.value).to eq("x")
-    expect(p.statements[1].expression.e.t.f.factor.id.value).to eq("y")
-    expect(p.statements[2].expression.e.t.f.factor.id.value).to eq("z")
+    expect(p.statements[0].expression.value).to eq("x")
+    expect(p.statements[1].expression.value).to eq("y")
+    expect(p.statements[2].expression.value).to eq("z")
     expect(p.statements[3]).to be_nil
   end
 
@@ -249,7 +249,7 @@ describe CompoundStatement do
     it "raises SyntaxErrors" do
       expect_syntax_error("int f(void) { int x void y; }", "expected semicolon, got void")
       expect_syntax_error("int f(void) { int x; void y(void) { } string z[2]; }", "expected semicolon, got l_paren")
-      expect_syntax_error("int f(void) { int x; *y; string z[2]; }", "expected r_brace, got string")
+      expect_syntax_error("int f(void) { x; void y; }", "expected r_brace, got void")
     end
   end
 end
@@ -289,9 +289,10 @@ describe IfStatement do
     expect(p.else_body).to be_a Statement
   end
 
+  # FIXME
   it "is properly formed" do
-    expect(p.body.expression.e.t.f.factor.id.value).to eq("y")
-    expect(p.else_body.expression.e.t.f.factor.id.value).to eq("z")
+    expect(p.body.expression.value).to eq("y")
+    expect(p.else_body.expression.value).to eq("z")
   end
 
   context "with no else statement" do
@@ -399,487 +400,6 @@ end
 # Expressions #
 ###############
 
-describe SimpleExpression do
-  let(:p) { get_body("x;").statements[0].expression }
-
-  it "is a SimpleExpression" do
-    expect(p).to be_a SimpleExpression
-  end
-
-  describe "#e" do
-    it "is an E" do
-      expect(p.e).to be_a E
-    end
-  end
-end
-
-describe AssignmentExpression do
-  let(:p) { get_body("x = y;").statements[0].expression }
-
-  it "is a AssignmentExpression" do
-    expect(p).to be_a AssignmentExpression
-  end
-
-  describe "#lhs" do
-    it "is a Var" do
-      expect(p.lhs).to be_a Var
-    end
-  end
-
-  describe "#rhs" do
-    it "is an Expression" do
-      expect(p.rhs).to be_a Expression
-    end
-  end
-
-  it "is properly formed" do
-    expect(p.lhs.id.value).to eq("x")
-    expect(p.rhs.e.t.f.factor.id.value).to eq("y")
-  end
-
-  context "that are chained" do
-    let(:p) { get_body("x = y = z;").statements[0].expression }
-
-    it "are properly formed" do
-      expect(p.lhs.id.value).to eq("x")
-      expect(p.rhs.lhs.id.value).to eq("y")
-      expect(p.rhs.rhs.e.t.f.factor.id.value).to eq("z")
-    end
-  end
-end
-
-describe Var do
-  context "that is malformed" do
-    it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { x + y = z; }", "lhs not assignable")
-      expect_syntax_error("int f(void) { x * y = z; }", "lhs not assignable")
-      expect_syntax_error("int f(void) { &x = y; }", "lhs not assignable")
-      expect_syntax_error("int f(void) { read() = y; }", "lhs not assignable")
-    end
-  end
-end
-
-describe SimpleVar do
-  let(:p) { get_body("x = y;").statements[0].expression.lhs }
-
-  it "is a SimpleVar" do
-    expect(p).to be_a SimpleVar
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-end
-
-describe ArrayVar do
-  let(:p) { get_body("x[1] = y;").statements[0].expression.lhs }
-
-  it "is a ArrayVar" do
-    expect(p).to be_a ArrayVar
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-
-  describe "#index" do
-    it "is an Expression" do
-      expect(p.index).to be_a Expression
-    end
-  end
-
-  context "that is malformed" do
-    it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { x [] = z; }", "expected id, got r_bracket")
-    end
-  end
-end
-
-describe PointerVar do
-  let(:p) { get_body("*x = y;").statements[0].expression.lhs }
-
-  it "is a PointerVar" do
-    expect(p).to be_a PointerVar
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-
-  context "that is malformed" do
-    it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { x* = z; }", "expected id, got gets")
-    end
-  end
-end
-
-
-describe ComparisonExpression do
-  let(:p) { get_body("x == y;").statements[0].expression }
-
-  it "is a ComparisonExpression" do
-    expect(p).to be_a ComparisonExpression
-  end
-
-  describe "#lhs" do
-    it "is an E" do
-      expect(p.lhs).to be_a E
-    end
-  end
-
-  describe "#rhs" do
-    it "is an E" do
-      expect(p.rhs).to be_a E
-    end
-  end
-
-  context "with a leq rel_op" do
-    let(:p) { get_body("x <= y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:leq)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-
-  context "with a lt rel_op" do
-    let(:p) { get_body("x < y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:lt)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-
-  context "with a eq rel_op" do
-    let(:p) { get_body("x == y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:eq)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-
-  context "with a neq rel_op" do
-    let(:p) { get_body("x != y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:neq)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-
-  context "with a gt rel_op" do
-    let(:p) { get_body("x > y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:gt)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-
-  context "with a geq rel_op" do
-    let(:p) { get_body("x >= y;").statements[0].expression }
-
-    it "is properly formed" do
-      expect(p.rel_op.type).to eq(:geq)
-      expect(p.lhs.t.f.factor.id.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.value).to eq("y")
-    end
-  end
-end
-
-##############
-# arithmetic #
-##############
-
-describe E do
-  let(:p) { get_body("x + y - z;").statements[0].expression.e }
-
-  it "is a nested set of Es" do
-    expect(p).to be_a E
-    expect(p.e).to be_a E
-    expect(p.e.e).to be_a E
-    expect(p.e.e.e).to be_nil
-  end
-
-  it "is properly nested" do
-    x = p.e.e
-    y = p.e
-    z = p
-
-    expect(x.add_op).to be_nil
-    expect(x.t.f.factor.id.value).to eq("x")
-
-    expect(y.add_op).to be_a AddOp
-    expect(y.add_op.type).to eq(:plus)
-    expect(y.t.f.factor.id.value).to eq("y")
-
-    expect(z.add_op).to be_a AddOp
-    expect(z.add_op.type).to eq(:minus)
-    expect(z.t.f.factor.id.value).to eq("z")
-  end
-
-  context "that is malformed" do
-    it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { x + y z; }", "expected semicolon, got id")
-      expect_syntax_error("int f(void) { x ++ y + z; }", "expected id, got plus")
-    end
-  end
-end
-
-describe T do
-  let(:p) { get_body("x * y / z % w;").statements[0].expression.e.t }
-
-  it "is a nested set of Ts" do
-    expect(p).to be_a T
-    expect(p.t).to be_a T
-    expect(p.t.t).to be_a T
-    expect(p.t.t.t).to be_a T
-    expect(p.t.t.t.t).to be_nil
-  end
-
-  it "is properly nested" do
-    x = p.t.t.t
-    y = p.t.t
-    z = p.t
-    w = p
-
-    expect(x.mul_op).to be_nil
-    expect(x.f.factor.id.value).to eq("x")
-
-    expect(y.mul_op).to be_a MulOp
-    expect(y.mul_op.type).to eq(:asterisk)
-    expect(y.f.factor.id.value).to eq("y")
-
-    expect(z.mul_op).to be_a MulOp
-    expect(z.mul_op.type).to eq(:slash)
-    expect(z.f.factor.id.value).to eq("z")
-
-    expect(w.mul_op).to be_a MulOp
-    expect(w.mul_op.type).to eq(:percent)
-    expect(w.f.factor.id.value).to eq("w")
-  end
-
-  context "that is malformed" do
-    it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { x * y z; }", "expected semicolon, got id")
-      expect_syntax_error("int f(void) { x */ y + z; }", "expected id, got slash")
-    end
-  end
-end
-
-describe MinusF do
-  let(:p) { get_body("-x;").statements[0].expression.e.t.f }
-
-  it "is a MinusF" do
-    expect(p).to be_a MinusF
-  end
-
-  describe "#f" do
-    it "is an F" do
-      expect(p.f).to be_a F
-    end
-  end
-end
-
-describe AddressF do
-  let(:p) { get_body("&x;").statements[0].expression.e.t.f }
-
-  it "is a AddressF" do
-    expect(p).to be_a AddressF
-  end
-
-  describe "#factor" do
-    it "is a Factor" do
-      expect(p.factor).to be_a Factor
-    end
-  end
-end
-
-describe PointerF do
-  let(:p) { get_body("*x;").statements[0].expression.e.t.f }
-
-  it "is a PointerF" do
-    expect(p).to be_a PointerF
-  end
-
-  describe "#factor" do
-    it "is a Factor" do
-      expect(p.factor).to be_a Factor
-    end
-  end
-end
-
-describe SimpleF do
-  let(:p) { get_body("x;").statements[0].expression.e.t.f }
-
-  it "is a SimpleF" do
-    expect(p).to be_a SimpleF
-  end
-
-  describe "#factor" do
-    it "is a Factor" do
-      expect(p.factor).to be_a Factor
-    end
-  end
-end
-
-###########
-# Factors #
-###########
-
-describe ExpressionFactor do
-  let(:p) { get_factor("(x)") }
-
-  it "is an ExpressionFactor" do
-    expect(p).to be_a ExpressionFactor
-  end
-
-  describe "#expression" do
-    it "is an expression" do
-      expect(p.expression).to be_a Expression
-    end
-  end
-end
-
-describe FunCallFactor do
-  let(:p) { get_factor("f()") }
-
-  it "is a FunCallFactor" do
-    expect(p).to be_a FunCallFactor
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-
-  context "with no args" do
-    describe "#args" do
-      it "is an empty array" do
-        expect(p.args).to be_a Array
-        expect(p.args).to be_empty
-      end
-    end
-  end
-
-  context "with args" do
-    let(:p) { get_factor("f(x, 2, y+z)") }
-
-    describe "#args" do
-      it "is an array of Expressions that is properly formed" do
-        x = p.args[0]
-        two = p.args[1]
-        y_z = p.args[2]
-
-        expect(p.args[3]).to be_nil
-
-        expect(x).to be_a Expression
-        expect(x.e.t.f.factor.id.type).to eq(:id)
-        expect(x.e.t.f.factor.id.value).to eq("x")
-
-        expect(two).to be_a Expression
-        expect(two.e.t.f.factor.num.type).to eq(:num)
-        expect(two.e.t.f.factor.num.token.value).to eq("2")
-
-        expect(y_z).to be_a Expression
-        expect(y_z.e.e.t.f.factor.id.value).to eq("y")
-        expect(y_z.e.add_op.type).to eq(:plus)
-        expect(y_z.e.t.f.factor.id.value).to eq("z")
-      end
-    end
-  end
-end
-
-describe ReadFactor do
-  let(:p) { get_factor("read()") }
-
-  it "is an ReadFactor" do
-    expect(p).to be_a ReadFactor
-  end
-
-  describe "#read" do
-    it "is a Read" do
-      expect(p.read).to be_a Read
-    end
-  end
-end
-
-describe SimpleFactor do
-  let(:p) { get_factor("x") }
-
-  it "is a SimpleFactor" do
-    expect(p).to be_a SimpleFactor
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-end
-
-describe ArrayFactor do
-  let(:p) { get_factor("x[y]") }
-
-  it "is a ArrayFactor" do
-    expect(p).to be_a ArrayFactor
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-
-  describe "#index" do
-    it "is an Expression" do
-      expect(p.index).to be_a Expression
-    end
-  end
-end
-
-describe NumFactor do
-  let(:p) { get_factor("2") }
-
-  it "is a NumFactor" do
-    expect(p).to be_a NumFactor
-  end
-
-  describe "#num" do
-    it "is an Num" do
-      expect(p.num).to be_a Num
-    end
-  end
-end
-
-describe StrFactor do
-  let(:p) { get_factor('"str"') }
-
-  it "is a StrFactor" do
-    expect(p).to be_a StrFactor
-  end
-
-  describe "#str" do
-    it "is an Str" do
-      expect(p.str).to be_a Str
-    end
-  end
-end
-
 #####################
 # general terminals #
 #####################
@@ -895,38 +415,6 @@ describe TypeSpecifier do
     it "is a token of the appropriate type" do
       expect(p.token).to be_a Token
       expect(p.token.type).to eq(:int)
-    end
-  end
-end
-
-describe AddOp do
-  let(:p) { get_body("x + y;").statements[0].expression.e.add_op }
-
-  it "is a AddOp" do
-    expect(p).to be_a AddOp
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:plus)
-      expect(p.token.value).to eq("+")
-    end
-  end
-end
-
-describe MulOp do
-  let(:p) { get_body("x * y;").statements[0].expression.e.t.mul_op }
-
-  it "is a MulOp" do
-    expect(p).to be_a MulOp
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:asterisk)
-      expect(p.token.value).to eq("*")
     end
   end
 end
@@ -947,49 +435,19 @@ describe Id do
   end
 end
 
-describe Num do
-  let(:p) { get_factor('2').num }
+# TODO
+# describe Num do
+#   let(:p) { get_factor('2').num }
 
-  it "is a Num" do
-    expect(p).to be_a Num
-  end
+#   it "is a Num" do
+#     expect(p).to be_a Num
+#   end
 
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:num)
-      expect(p.token.value).to eq("2")
-    end
-  end
-end
-
-describe Str do
-  let(:p) { get_factor('"str"').str }
-
-  it "is a Str" do
-    expect(p).to be_a Str
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:str)
-      expect(p.token.value).to eq("str")
-    end
-  end
-end
-
-describe Read do
-  let(:p) { get_factor("read()").read }
-
-  it "is a Read" do
-    expect(p).to be_a Read
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:read)
-    end
-  end
-end
+#   describe "#token" do
+#     it "is a token of the appropriate type and value" do
+#       expect(p.token).to be_a Token
+#       expect(p.token.type).to eq(:num)
+#       expect(p.token.value).to eq("2")
+#     end
+#   end
+# end

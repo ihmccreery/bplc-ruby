@@ -244,100 +244,7 @@ module Parsers
     ###############
 
     def expression
-      lhs = e
-      if at? :gets
-        eat(:gets)
-        return AssignmentExpression.new(convert_e_to_var(lhs), expression)
-      elsif at? REL_OPS
-        return ComparisonExpression.new(rel_op, lhs, e)
-      else
-        return SimpleExpression.new(lhs)
-      end
-    end
-
-    ##############
-    # arithmetic #
-    ##############
-
-    def e
-      r = E.new(nil, nil, t)
-      while at? ADD_OPS
-        r = E.new(add_op, r, t)
-      end
-      return r
-    end
-
-    def t
-      r = T.new(nil, nil, f)
-      while at? MUL_OPS
-        r = T.new(mul_op, r, f)
-      end
-      return r
-    end
-
-    def f
-      if at? :minus
-        eat(:minus)
-        return MinusF.new(f)
-      elsif at? :ampersand
-        eat(:ampersand)
-        return AddressF.new(factor)
-      elsif at? :asterisk
-        eat(:asterisk)
-        return PointerF.new(factor)
-      else
-        return SimpleF.new(factor)
-      end
-    end
-
-    ###########
-    # factors #
-    ###########
-
-    def factor
-      if at? :l_paren
-        eat(:l_paren)
-        f = ExpressionFactor.new(expression)
-        eat(:r_paren)
-        return f
-      elsif at? :read
-        f = ReadFactor.new(read)
-        eat(:l_paren)
-        eat(:r_paren)
-        return f
-      elsif at? :num
-        return NumFactor.new(num)
-      elsif at? :str
-        return StrFactor.new(str)
-      else
-        i = id
-        if at? :l_bracket
-          eat(:l_bracket)
-          f = ArrayFactor.new(i, expression)
-          eat(:r_bracket)
-          return f
-        elsif at? :l_paren
-          return FunCallFactor.new(i, args)
-        else
-          return SimpleFactor.new(i)
-        end
-      end
-    end
-
-    def args
-      eat(:l_paren)
-      if at? :r_paren
-        eat(:r_paren)
-        return []
-      else
-        p = [expression]
-        while at? :comma
-          eat(:comma)
-          p << expression
-        end
-        eat(:r_paren)
-        return p
-      end
+      return Expression.new(eat(:id))
     end
 
     #####################
@@ -352,30 +259,6 @@ module Parsers
       end
     end
 
-    def rel_op
-      if at? REL_OPS
-        return RelOp.new(eat_token)
-      else
-        raise SyntaxError, "expected rel_op, got #{current_token.type.to_s}"
-      end
-    end
-
-    def add_op
-      if at? ADD_OPS
-        return AddOp.new(eat_token)
-      else
-        raise SyntaxError, "expected add_op, got #{current_token.type.to_s}"
-      end
-    end
-
-    def mul_op
-      if at? MUL_OPS
-        return MulOp.new(eat_token)
-      else
-        raise SyntaxError, "expected mul_op, got #{current_token.type.to_s}"
-      end
-    end
-
     def id
       Id.new(eat(:id))
     end
@@ -384,48 +267,9 @@ module Parsers
       Num.new(eat(:num))
     end
 
-    def str
-      Str.new(eat(:str))
-    end
-
-    def read
-      Read.new(eat(:read))
-    end
-
     ###################
     # support methods #
     ###################
-
-    def convert_e_to_var(lhs)
-      # lhs.add_op and lhs.e should be nil
-      unless lhs.add_op.nil? and lhs.e.nil?
-        raise SyntaxError, "lhs not assignable"
-      end
-      # lhs.t.mul_op and lhs.t.t should be nil
-      unless lhs.t.mul_op.nil? and lhs.t.t.nil?
-        raise SyntaxError, "lhs not assignable"
-      end
-      # lhs.t.f should be a PointerF or SimpleF
-      unless lhs.t.f.is_a?(PointerF) or lhs.t.f.is_a?(SimpleF)
-        raise SyntaxError, "lhs not assignable"
-      end
-      # lhs.t.f.factor should be a SimpleFactor or ArrayFactor
-      unless lhs.t.f.factor.is_a?(SimpleFactor) or lhs.t.f.factor.is_a?(ArrayFactor)
-        raise SyntaxError, "lhs not assignable"
-      end
-
-      var_f = lhs.t.f
-
-      if var_f.is_a? PointerF
-        return PointerVar.new(var_f.factor.id)
-      elsif var_f.is_a? SimpleF
-        if var_f.factor.is_a? SimpleFactor
-          return SimpleVar.new(var_f.factor.id)
-        elsif var_f.factor.is_a? ArrayFactor
-          return ArrayVar.new(var_f.factor.id, var_f.factor.index)
-        end
-      end
-    end
 
     def eat(type)
       if at? type
