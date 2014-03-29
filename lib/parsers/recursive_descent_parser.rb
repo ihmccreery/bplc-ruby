@@ -244,6 +244,10 @@ module Parsers
     ########
 
     def exp
+      return neg_exp
+    end
+
+    def neg_exp
       if at? :minus
         eat(:minus)
         return NegExp.new(exp)
