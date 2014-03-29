@@ -234,30 +234,6 @@ end
 # Statements #
 ##############
 
-describe ExpressionStatement do
-  let(:p) { get_body("x;").statements[0] }
-
-  it "is an ExpressionStatement" do
-    expect(p).to be_a ExpressionStatement
-  end
-
-  describe "#expression" do
-    it "is an Expression" do
-      expect(p.expression).to be_a Expression
-    end
-  end
-
-  context "that is empty" do
-    let(:p) { get_body("x; ;").statements[1] }
-
-    describe "#expression" do
-      it "is a nil expression" do
-        expect(p.expression).to be_nil
-      end
-    end
-  end
-end
-
 describe CompoundStatement do
   let(:p) { get_body("") }
 
@@ -347,6 +323,30 @@ describe CompoundStatement do
 
     it "is an CompoundStatement" do
       expect(p).to be_a CompoundStatement
+    end
+  end
+end
+
+describe ExpressionStatement do
+  let(:p) { get_body("x;").statements[0] }
+
+  it "is an ExpressionStatement" do
+    expect(p).to be_a ExpressionStatement
+  end
+
+  describe "#expression" do
+    it "is an Expression" do
+      expect(p.expression).to be_a Expression
+    end
+  end
+
+  context "that is empty" do
+    let(:p) { get_body("x; ;").statements[1] }
+
+    describe "#expression" do
+      it "is a nil expression" do
+        expect(p.expression).to be_nil
+      end
     end
   end
 end
