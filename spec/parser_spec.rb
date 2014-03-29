@@ -19,6 +19,7 @@ describe Parser do
     end
   end
 
+  # FIXME
   it "properly nests arithmetic expressions" do
     p = get_body("x + y * z - w / v;").statements[0].expression.e
 
