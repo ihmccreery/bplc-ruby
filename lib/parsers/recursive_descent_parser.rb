@@ -334,11 +334,25 @@ module Parsers
           return ArrayVarExp.new(i, n)
         elsif at? :l_paren
           eat(:l_paren)
+          a = args
           eat(:r_paren)
-          return FunCallExp.new(i)
+          return FunCallExp.new(i, a)
         else
           return SimpleVarExp.new(i)
         end
+      end
+    end
+
+    def args
+      if at? :r_paren
+        return []
+      else
+        a = [exp]
+        while at? :comma
+          eat(:comma)
+          a << exp
+        end
+        return a
       end
     end
 

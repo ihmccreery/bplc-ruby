@@ -579,6 +579,33 @@ describe FunCallExp do
   it "has the correct attributes" do
     expect(p.symbol).to eq("f")
   end
+
+  # #args
+
+  context "with no args" do
+    it "has no args" do
+      expect(p.args).to be_a Array
+      expect(p.args).to be_empty
+    end
+  end
+
+  context "with args" do
+    let(:p) { parse_exp("f(x, *y + z, 2)") }
+
+    it "has properly formed args" do
+      expect(p.args[0].symbol).to eq("x")
+      expect(p.args[1].op).to eq(:plus)
+      expect(p.args[2].value).to eq(2)
+      expect(p.args[3]).to be_nil
+    end
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(int x) { f(; }", "expected expression, got semicolon")
+      expect_syntax_error("int f(int x) { f(x,); }", "expected expression, got r_paren")
+    end
+  end
 end
 
 ###########

@@ -263,6 +263,12 @@ class AddrArrayVarExp < VarExp
 end
 
 class FunCallExp < VarExp
+  attr_reader :args
+
+  def initialize(id, args)
+    super(id)
+    @args = args
+  end
 end
 
 ###########
