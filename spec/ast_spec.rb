@@ -11,19 +11,13 @@ describe Program do
     expect(p).to be_a Program
   end
 
+  # #declarations
+
   describe "#declarations" do
     it "is properly formed" do
-      x = p.declarations[0]
-      y = p.declarations[1]
-      z = p.declarations[2]
-
-      expect(x).to be_a Declaration
-      expect(x.symbol).to eq("x")
-      expect(y).to be_a Declaration
-      expect(y.symbol).to eq("y")
-      expect(z).to be_a Declaration
-      expect(z.symbol).to eq("z")
-
+      expect(p.declarations[0].symbol).to eq("x")
+      expect(p.declarations[1].symbol).to eq("y")
+      expect(p.declarations[2].symbol).to eq("z")
       expect(p.declarations[3]).to be_nil
     end
   end
@@ -127,6 +121,8 @@ describe FunctionDeclaration do
     end
   end
 
+  # #params
+
   describe "#params" do
     context "with no params" do
       it "is an empty array" do
@@ -136,20 +132,12 @@ describe FunctionDeclaration do
     end
 
     context "with params" do
-      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0] }
+      let(:p) { Parser.new(Scanner.new("int f(int x, int *y, int z[]) { }")).parse.declarations[0] }
 
       it "is properly formed" do
-        x = p.params[0]
-        y = p.params[1]
-        z = p.params[2]
-
-        expect(x).to be_a Param
-        expect(x.symbol).to eq("x")
-        expect(y).to be_a Param
-        expect(y.symbol).to eq("y")
-        expect(z).to be_a Param
-        expect(z.symbol).to eq("z")
-
+        expect(p.params[0].symbol).to eq("x")
+        expect(p.params[1].symbol).to eq("y")
+        expect(p.params[2].symbol).to eq("z")
         expect(p.params[3]).to be_nil
       end
     end
@@ -235,94 +223,40 @@ end
 ##############
 
 describe CompoundStatement do
-  let(:p) { get_body("") }
+  let(:p) { get_body("int x; void *y; string z[2]; x; y; z;") }
 
   it "is a CompoundStatement" do
     expect(p).to be_a CompoundStatement
   end
 
   describe "#local_declarations" do
-    it "is an array" do
-      expect(p.local_declarations).to be_a Array
+    it "is an array of Declarations that is properly formed" do
+      expect(p.local_declarations[0].symbol).to eq("x")
+      expect(p.local_declarations[1].symbol).to eq("y")
+      expect(p.local_declarations[2].symbol).to eq("z")
+      expect(p.local_declarations[3]).to be_nil
     end
   end
 
   describe "#statements" do
-    it "is an array" do
-      expect(p.statements).to be_a Array
+    it "is an array of Statements that is properly formed" do
+      expect(p.statements[0].expression.e.t.f.factor.id.value).to eq("x")
+      expect(p.statements[1].expression.e.t.f.factor.id.value).to eq("y")
+      expect(p.statements[2].expression.e.t.f.factor.id.value).to eq("z")
+      expect(p.statements[3]).to be_nil
     end
   end
 
-  context "with local_declarations" do
-    let(:p) { get_body("int x; void *y; string z[2];") }
-
-    describe "#local_declarations" do
-      it "is an array of Declarations that is properly formed" do
-        x = p.local_declarations[0]
-        y = p.local_declarations[1]
-        z = p.local_declarations[2]
-
-        expect(p.local_declarations[3]).to be_nil
-
-        expect(x).to be_a SimpleDeclaration
-        expect(x.type).to eq(:int)
-        expect(x.symbol).to eq("x")
-
-        expect(y).to be_a PointerDeclaration
-        expect(y.type).to eq(:void)
-        expect(y.symbol).to eq("y")
-
-        expect(z).to be_a ArrayDeclaration
-        expect(z.type).to eq(:string)
-        expect(z.symbol).to eq("z")
-      end
-    end
-
-    context "that is malformed" do
-      it "raises SyntaxErrors" do
-        expect_syntax_error("int f(void) { int x void y; string z[2]; }", "expected semicolon, got void")
-        expect_syntax_error("int f(void) { int x *y; string z[2]; }", "expected semicolon, got asterisk")
-        expect_syntax_error("int f(void) { int x; void y(void) { } string z[2]; }", "expected semicolon, got l_paren")
-      end
-    end
+  it "properly nests" do
+    expect(get_body("{x;}").statements[0]).to be_a CompoundStatement
+    expect(get_body("{{x;}}").statements[0].statements[0]).to be_a CompoundStatement
   end
 
-  context "with statements" do
-    let(:p) { get_body("x; y; z;") }
-
-    describe "#statements" do
-      it "is an array of Statements that is properly formed" do
-        x = p.statements[0]
-        y = p.statements[1]
-        z = p.statements[2]
-
-        expect(p.statements[3]).to be_nil
-
-        expect(x).to be_a Statement
-        expect(x.expression.e.t.f.factor.id.value).to eq("x")
-
-        expect(y).to be_a Statement
-        expect(y.expression.e.t.f.factor.id.value).to eq("y")
-
-        expect(z).to be_a Statement
-        expect(z.expression.e.t.f.factor.id.value).to eq("z")
-      end
-    end
-  end
-
-  context "in another CompoundStatement" do
-    let(:p) { get_body("{x;}").statements[0] }
-
-    it "is an CompoundStatement" do
-      expect(p).to be_a CompoundStatement
-    end
-  end
-
-  context "in another CompoundStatement in another CompoundStatement" do
-    let(:p) { get_body("{{x;}}").statements[0].statements[0] }
-
-    it "is an CompoundStatement" do
-      expect(p).to be_a CompoundStatement
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(void) { int x void y; }", "expected semicolon, got void")
+      expect_syntax_error("int f(void) { int x; void y(void) { } string z[2]; }", "expected semicolon, got l_paren")
+      expect_syntax_error("int f(void) { int x; *y; string z[2]; }", "expected r_brace, got string")
     end
   end
 end
