@@ -569,6 +569,25 @@ describe AddrArrayVarExp do
   end
 end
 
+###########
+# LitExps #
+###########
+
+describe ReadLitExp do
+  let(:p) { parse_exp("read()") }
+
+  it "is a ReadLitExp" do
+    expect(p).to be_a ReadLitExp
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(int x) { read) }", "expected l_paren, got r_paren")
+      expect_syntax_error("int f(int x) { read( }", "expected r_paren, got r_brace")
+    end
+  end
+end
+
 #####################
 # general terminals #
 #####################

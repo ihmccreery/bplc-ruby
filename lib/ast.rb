@@ -262,6 +262,16 @@ class AddrArrayVarExp < VarExp
   end
 end
 
+###########
+# LitExps #
+###########
+
+class LitExp < Ast
+end
+
+class ReadLitExp < LitExp
+end
+
 #####################
 # general terminals #
 #####################

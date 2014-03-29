@@ -5,6 +5,7 @@ module Parsers
     REL_OPS = [:leq, :lt, :eq, :neq, :gt, :geq].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
+    LITERALS = [:read, :num, :string].freeze
     FIRST_OF_STATEMENTS = [:semicolon, :id, :asterisk, :minus, :ampersand,
                            :l_paren, :read, :num, :str, :l_brace, :if,
                            :while, :return, :write, :writeln].freeze
@@ -299,7 +300,9 @@ module Parsers
     ############
 
     def var_exp
-      if at? :ampersand
+      if at? LITERALS
+        return lit_exp
+      elsif at? :ampersand
         eat(:ampersand)
         i = id
         if at? :l_bracket
@@ -324,6 +327,21 @@ module Parsers
           return SimpleVarExp.new(i)
         end
       end
+    end
+
+    ############
+    # lit_exps #
+    ############
+
+    def lit_exp
+      return read_lit_exp
+    end
+
+    def read_lit_exp
+      eat(:read)
+      eat(:l_paren)
+      eat(:r_paren)
+      return ReadLitExp.new
     end
 
     #####################
