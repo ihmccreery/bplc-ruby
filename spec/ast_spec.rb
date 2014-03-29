@@ -582,9 +582,21 @@ describe ReadLitExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { read) }", "expected l_paren, got r_paren")
-      expect_syntax_error("int f(int x) { read( }", "expected r_paren, got r_brace")
+      expect_syntax_error("int f(int x) { read); }", "expected l_paren, got r_paren")
+      expect_syntax_error("int f(int x) { read(; }", "expected r_paren, got semicolon")
     end
+  end
+end
+
+describe NumLitExp do
+  let(:p) { parse_exp("2") }
+
+  it "is a NumLitExp" do
+    expect(p).to be_a NumLitExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.value).to eq(2)
   end
 end
 

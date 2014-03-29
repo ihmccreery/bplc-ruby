@@ -334,14 +334,14 @@ module Parsers
     ############
 
     def lit_exp
-      return read_lit_exp
-    end
-
-    def read_lit_exp
-      eat(:read)
-      eat(:l_paren)
-      eat(:r_paren)
-      return ReadLitExp.new
+      if at? :read
+        r = eat(:read)
+        eat(:l_paren)
+        eat(:r_paren)
+        return ReadLitExp.new(r)
+      elsif at? :num
+        return NumLitExp.new(num)
+      end
     end
 
     #####################

@@ -267,9 +267,16 @@ end
 ###########
 
 class LitExp < Ast
+  include TokenAst
 end
 
 class ReadLitExp < LitExp
+end
+
+class NumLitExp < LitExp
+  def value
+    @token.value.to_i
+  end
 end
 
 #####################
