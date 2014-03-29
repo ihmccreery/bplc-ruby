@@ -174,15 +174,15 @@ module Parsers
       elsif at? :writeln
         return writeln_statement
       else
-        return expression_statement
+        return exp_statement
       end
     end
 
-    def expression_statement
+    def exp_statement
       if at? :semicolon
-        s = ExpressionStatement.new(nil)
+        s = ExpStatement.new(nil)
       else
-        s = ExpressionStatement.new(expression)
+        s = ExpStatement.new(exp)
       end
       eat(:semicolon)
       return s
@@ -191,7 +191,7 @@ module Parsers
     def if_statement
       eat(:if)
       eat(:l_paren)
-      c = expression
+      c = exp
       eat(:r_paren)
       b = statement
       if at? :else
@@ -205,7 +205,7 @@ module Parsers
     def while_statement
       eat(:while)
       eat(:l_paren)
-      c = expression
+      c = exp
       eat(:r_paren)
       return WhileStatement.new(c, statement)
     end
@@ -216,7 +216,7 @@ module Parsers
         eat(:semicolon)
         return ReturnStatement.new(nil)
       else
-        e = expression
+        e = exp
         eat(:semicolon)
         return ReturnStatement.new(e)
       end
@@ -225,7 +225,7 @@ module Parsers
     def write_statement
       eat(:write)
       eat(:l_paren)
-      c = expression
+      c = exp
       eat(:r_paren)
       eat(:semicolon)
       return WriteStatement.new(c)
@@ -240,11 +240,11 @@ module Parsers
     end
 
     ###############
-    # expressions #
+    # exps #
     ###############
 
-    def expression
-      return Expression.new(eat(:id))
+    def exp
+      return Exp.new(eat(:id))
     end
 
     #####################

@@ -234,9 +234,9 @@ describe CompoundStatement do
 
   # FIXME
   it "has properly formed statements" do
-    expect(p.statements[0].expression.value).to eq("x")
-    expect(p.statements[1].expression.value).to eq("y")
-    expect(p.statements[2].expression.value).to eq("z")
+    expect(p.statements[0].exp.value).to eq("x")
+    expect(p.statements[1].exp.value).to eq("y")
+    expect(p.statements[2].exp.value).to eq("z")
     expect(p.statements[3]).to be_nil
   end
 
@@ -254,24 +254,24 @@ describe CompoundStatement do
   end
 end
 
-describe ExpressionStatement do
+describe ExpStatement do
   let(:p) { parse_statement("x;") }
 
-  it "is an ExpressionStatement" do
-    expect(p).to be_a ExpressionStatement
+  it "is an ExpStatement" do
+    expect(p).to be_a ExpStatement
   end
 
-  context "with an expression" do
-    it "has an expression" do
-      expect(p.expression).to be_a Expression
+  context "with an exp" do
+    it "has an exp" do
+      expect(p.exp).to be_a Exp
     end
   end
 
   context "that is empty" do
     let(:p) { parse_statement(";") }
 
-    it "has a nil expression" do
-      expect(p.expression).to be_nil
+    it "has a nil exp" do
+      expect(p.exp).to be_nil
     end
   end
 end
@@ -284,15 +284,15 @@ describe IfStatement do
   end
 
   it "has the correct attributes" do
-    expect(p.condition).to be_a Expression
+    expect(p.condition).to be_a Exp
     expect(p.body).to be_a Statement
     expect(p.else_body).to be_a Statement
   end
 
   # FIXME
   it "is properly formed" do
-    expect(p.body.expression.value).to eq("y")
-    expect(p.else_body.expression.value).to eq("z")
+    expect(p.body.exp.value).to eq("y")
+    expect(p.else_body.exp.value).to eq("z")
   end
 
   context "with no else statement" do
@@ -320,7 +320,7 @@ describe WhileStatement do
   end
 
   it "has the correct attributes" do
-    expect(p.condition).to be_a Expression
+    expect(p.condition).to be_a Exp
     expect(p.body).to be_a Statement
   end
 
@@ -341,7 +341,7 @@ describe ReturnStatement do
   end
 
   it "has the correct attributes" do
-    expect(p.value).to be_a Expression
+    expect(p.value).to be_a Exp
   end
 
   context "with no value" do
@@ -368,7 +368,7 @@ describe WriteStatement do
   end
 
   it "has the correct attributes" do
-    expect(p.value).to be_a Expression
+    expect(p.value).to be_a Exp
   end
 
   context "that is malformed" do
@@ -396,9 +396,9 @@ describe WritelnStatement do
   end
 end
 
-###############
-# Expressions #
-###############
+########
+# Exps #
+########
 
 #####################
 # general terminals #

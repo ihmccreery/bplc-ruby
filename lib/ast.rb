@@ -112,11 +112,11 @@ class CompoundStatement < Statement
   end
 end
 
-class ExpressionStatement < Statement
-  attr_reader :expression
+class ExpStatement < Statement
+  attr_reader :exp
 
-  def initialize(expression)
-    @expression = expression
+  def initialize(exp)
+    @exp = exp
   end
 end
 
@@ -158,11 +158,11 @@ end
 class WritelnStatement < Statement
 end
 
-###############
-# Expressions #
-###############
+########
+# Exps #
+########
 
-class Expression < Ast
+class Exp < Ast
   include TokenAst
 end
 
