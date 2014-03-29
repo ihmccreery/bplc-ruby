@@ -170,7 +170,7 @@ end
 class Exp < Ast
 end
 
-class AddExp < Exp
+class BinExp < Exp
   attr_reader :op, :lhs, :rhs
 
   def initialize(op, lhs, rhs)
@@ -184,18 +184,10 @@ class AddExp < Exp
   end
 end
 
-class MulExp < Exp
-  attr_reader :op, :lhs, :rhs
+class AddExp < BinExp
+end
 
-  def initialize(op, lhs, rhs)
-    @op = op
-    @lhs = lhs
-    @rhs = rhs
-  end
-
-  def op
-    @op.type
-  end
+class MulExp < BinExp
 end
 
 class NegExp < Exp
