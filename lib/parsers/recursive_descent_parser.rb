@@ -5,8 +5,9 @@ module Parsers
     REL_OPS = [:leq, :lt, :eq, :neq, :gt, :geq].freeze
     ADD_OPS = [:plus, :minus].freeze
     MUL_OPS = [:asterisk, :slash, :percent].freeze
-    LITERALS = [:read, :num, :str].freeze
-    FIRST_OF_STATEMENTS = [:semicolon, :id, :asterisk, :minus, :ampersand,
+    FIRST_OF_LIT_EXP = [:read, :num, :str].freeze
+    FIRST_OF_VAR_EXP = [:ampersand, :asterisk, :id].freeze
+    FIRST_OF_STATEMENT = [:semicolon, :id, :asterisk, :minus, :ampersand,
                            :l_paren, :read, :num, :str, :l_brace, :if,
                            :while, :return, :write, :writeln].freeze
 
@@ -155,7 +156,7 @@ module Parsers
 
     def stmts
       s = []
-      while at? FIRST_OF_STATEMENTS
+      while at? FIRST_OF_STATEMENT
         s << stmt
       end
       return s
@@ -291,7 +292,17 @@ module Parsers
         eat(:minus)
         return NegExp.new(neg_exp)
       else
+        return factor_exp
+      end
+    end
+
+    def factor_exp
+      if at? FIRST_OF_LIT_EXP
+        return lit_exp
+      elsif at? FIRST_OF_VAR_EXP
         return var_exp
+      else
+        raise SyntaxError, "expected expression, got #{current_token.type.to_s}"
       end
     end
 
@@ -300,9 +311,7 @@ module Parsers
     ############
 
     def var_exp
-      if at? LITERALS
-        return lit_exp
-      elsif at? :ampersand
+      if at? :ampersand
         eat(:ampersand)
         i = id
         if at? :l_bracket
@@ -341,11 +350,8 @@ module Parsers
         return ReadLitExp.new(r)
       elsif at? :num
         return NumLitExp.new(eat(:num))
-      elsif at? :str
-        return StrLitExp.new(eat(:str))
-      # TODO this should be tested
       else
-        raise SyntaxError, "expecting expression, got #{current_token.type.to_s}"
+        return StrLitExp.new(eat(:str))
       end
     end
 

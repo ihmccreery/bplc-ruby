@@ -352,7 +352,7 @@ describe ReturnStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { return }", "expected id, got r_brace")
+      expect_syntax_error("int f(void) { return }", "expected expression, got r_brace")
       expect_syntax_error("int f(void) { return x }", "expected semicolon, got r_brace")
     end
   end
@@ -371,7 +371,7 @@ describe WriteStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { write(); }", "expected id, got r_paren")
+      expect_syntax_error("int f(void) { write(); }", "expected expression, got r_paren")
       expect_syntax_error("int f(void) { write(x) }", "expected semicolon, got r_brace")
       expect_syntax_error("int f(void) { write(x;) }", "expected r_paren, got semicolon")
     end
