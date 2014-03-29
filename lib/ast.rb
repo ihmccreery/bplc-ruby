@@ -2,7 +2,7 @@ class Ast
 end
 
 module TokenAst
-  attr_accessor :token
+  attr_reader :token
 
   def initialize(token)
     @token = token
@@ -22,7 +22,7 @@ end
 ###########
 
 class Program < Ast
-  attr_accessor :declarations
+  attr_reader :declarations
 
   def initialize(declarations)
     @declarations = declarations
@@ -34,7 +34,7 @@ end
 ################
 
 class Declaration < Ast
-  attr_accessor :type_specifier, :id
+  attr_reader :type_specifier, :id
 
   def initialize(type_specifier, id)
     @type_specifier = type_specifier
@@ -71,7 +71,7 @@ class ArrayDeclaration < VariableDeclaration
 end
 
 class FunctionDeclaration < Declaration
-  attr_accessor :params, :body
+  attr_reader :params, :body
 
   def initialize(type_specifier, id, params, body)
     super(type_specifier, id)
@@ -104,7 +104,7 @@ class Statement < Ast
 end
 
 class CompoundStatement < Statement
-  attr_accessor :local_declarations, :statements
+  attr_reader :local_declarations, :statements
 
   def initialize(local_declarations, statements)
     @local_declarations = local_declarations
@@ -113,7 +113,7 @@ class CompoundStatement < Statement
 end
 
 class ExpressionStatement < Statement
-  attr_accessor :expression
+  attr_reader :expression
 
   def initialize(expression)
     @expression = expression
@@ -121,7 +121,7 @@ class ExpressionStatement < Statement
 end
 
 class IfStatement < Statement
-  attr_accessor :condition, :body, :else_body
+  attr_reader :condition, :body, :else_body
 
   def initialize(condition, body, else_body)
     @condition = condition
@@ -131,7 +131,7 @@ class IfStatement < Statement
 end
 
 class WhileStatement < Statement
-  attr_accessor :condition, :body
+  attr_reader :condition, :body
 
   def initialize(condition, body)
     @condition = condition
@@ -140,7 +140,7 @@ class WhileStatement < Statement
 end
 
 class ReturnStatement < Statement
-  attr_accessor :value
+  attr_reader :value
 
   def initialize(value)
     @value = value
@@ -148,7 +148,7 @@ class ReturnStatement < Statement
 end
 
 class WriteStatement < Statement
-  attr_accessor :value
+  attr_reader :value
 
   def initialize(value)
     @value = value
@@ -166,7 +166,7 @@ class Expression < Ast
 end
 
 class SimpleExpression < Expression
-  attr_accessor :e
+  attr_reader :e
 
   def initialize(e)
     @e = e
@@ -174,7 +174,7 @@ class SimpleExpression < Expression
 end
 
 class AssignmentExpression < Expression
-  attr_accessor :lhs, :rhs
+  attr_reader :lhs, :rhs
 
   def initialize(lhs, rhs)
     @lhs = lhs
@@ -183,7 +183,7 @@ class AssignmentExpression < Expression
 end
 
 class Var < Ast
-  attr_accessor :id
+  attr_reader :id
 
   def initialize(id)
     @id = id
@@ -197,7 +197,7 @@ class PointerVar < Var
 end
 
 class ArrayVar < Var
-  attr_accessor :index
+  attr_reader :index
 
   def initialize(id, index)
     super(id)
@@ -206,7 +206,7 @@ class ArrayVar < Var
 end
 
 class ComparisonExpression < Expression
-  attr_accessor :rel_op, :lhs, :rhs
+  attr_reader :rel_op, :lhs, :rhs
 
   def initialize(rel_op, lhs, rhs)
     @rel_op = rel_op
@@ -220,7 +220,7 @@ end
 ##############
 
 class E < Ast
-  attr_accessor :add_op, :e, :t
+  attr_reader :add_op, :e, :t
 
   def initialize(add_op, e, t)
     @add_op = add_op
@@ -230,7 +230,7 @@ class E < Ast
 end
 
 class T < Ast
-  attr_accessor :mul_op, :t, :f
+  attr_reader :mul_op, :t, :f
 
   def initialize(mul_op, t, f)
     @mul_op = mul_op
@@ -240,7 +240,7 @@ class T < Ast
 end
 
 class MinusF < Ast
-  attr_accessor :f
+  attr_reader :f
 
   def initialize(f)
     @f = f
@@ -248,7 +248,7 @@ class MinusF < Ast
 end
 
 class F < Ast
-  attr_accessor :factor
+  attr_reader :factor
 
   def initialize(factor)
     @factor = factor
@@ -272,7 +272,7 @@ class Factor < Ast
 end
 
 class ExpressionFactor < Factor
-  attr_accessor :expression
+  attr_reader :expression
 
   def initialize(expression)
     @expression = expression
@@ -280,7 +280,7 @@ class ExpressionFactor < Factor
 end
 
 class FunCallFactor < Factor
-  attr_accessor :id, :args
+  attr_reader :id, :args
 
   def initialize(id, args)
     @id = id
@@ -289,7 +289,7 @@ class FunCallFactor < Factor
 end
 
 class ReadFactor < Factor
-  attr_accessor :read
+  attr_reader :read
 
   def initialize(read)
     @read = read
@@ -297,7 +297,7 @@ class ReadFactor < Factor
 end
 
 class SimpleFactor < Factor
-  attr_accessor :id
+  attr_reader :id
 
   def initialize(id)
     @id = id
@@ -305,7 +305,7 @@ class SimpleFactor < Factor
 end
 
 class ArrayFactor < Factor
-  attr_accessor :id, :index
+  attr_reader :id, :index
 
   def initialize(id, index)
     @id = id
@@ -314,7 +314,7 @@ class ArrayFactor < Factor
 end
 
 class NumFactor < Factor
-  attr_accessor :num
+  attr_reader :num
 
   def initialize(num)
     @num = num
@@ -322,7 +322,7 @@ class NumFactor < Factor
 end
 
 class StrFactor < Factor
-  attr_accessor :str
+  attr_reader :str
 
   def initialize(str)
     @str = str

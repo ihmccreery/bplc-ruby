@@ -43,7 +43,7 @@ module Scanners
                 'read' => :read}
 
     # the current Token in the source
-    attr_accessor :current_token
+    attr_reader :current_token
 
     def initialize(source)
       configure_source(source)
