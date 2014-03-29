@@ -339,19 +339,15 @@ describe ReturnStatement do
     expect(p).to be_a ReturnStatement
   end
 
-  describe "#value" do
-    it "is an Expression" do
-      expect(p.value).to be_a Expression
-    end
+  it "has the correct attributes" do
+    expect(p.value).to be_a Expression
   end
 
   context "with no value" do
     let(:p) { get_body("return;").statements[0] }
 
-    describe "#value" do
-      it "is nil" do
-        expect(p.value).to be_nil
-      end
+    it "has a nil value" do
+      expect(p.value).to be_nil
     end
   end
 
@@ -370,10 +366,8 @@ describe WriteStatement do
     expect(p).to be_a WriteStatement
   end
 
-  describe "#value" do
-    it "is an Expression" do
-      expect(p.value).to be_a Expression
-    end
+  it "has the correct attributes" do
+    expect(p.value).to be_a Expression
   end
 
   context "that is malformed" do
