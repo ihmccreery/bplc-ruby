@@ -65,11 +65,11 @@ describe Parser do
     w = p.t.t.f
     v = p.t.f
 
-    expect(x.factor.id.token.value).to eq("x")
-    expect(y.factor.id.token.value).to eq("y")
-    expect(z.factor.id.token.value).to eq("z")
-    expect(w.factor.id.token.value).to eq("w")
-    expect(v.factor.id.token.value).to eq("v")
+    expect(x.factor.id.value).to eq("x")
+    expect(y.factor.id.value).to eq("y")
+    expect(z.factor.id.value).to eq("z")
+    expect(w.factor.id.value).to eq("w")
+    expect(v.factor.id.value).to eq("v")
   end
 
   it "parses ex1.bpl properly" do

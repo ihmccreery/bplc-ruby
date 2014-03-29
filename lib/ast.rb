@@ -7,6 +7,14 @@ module TokenAst
   def initialize(token)
     @token = token
   end
+
+  def type
+    @token.type
+  end
+
+  def value
+    @token.value
+  end
 end
 
 ###########
@@ -31,6 +39,14 @@ class Declaration < Ast
   def initialize(type_specifier, id)
     @type_specifier = type_specifier
     @id = id
+  end
+
+  def type
+    @type_specifier.type
+  end
+
+  def symbol
+    @id.value
   end
 end
 

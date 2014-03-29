@@ -24,19 +24,16 @@ describe Program do
       expect(p.declarations[3]).to be_nil
 
       expect(x).to be_a SimpleDeclaration
-      expect(x.type_specifier.token.type).to eq(:int)
-      expect(x.id.token.type).to eq(:id)
-      expect(x.id.token.value).to eq("x")
+      expect(x.type).to eq(:int)
+      expect(x.symbol).to eq("x")
 
       expect(y).to be_a PointerDeclaration
-      expect(y.type_specifier.token.type).to eq(:void)
-      expect(y.id.token.type).to eq(:id)
-      expect(y.id.token.value).to eq("y")
+      expect(y.type).to eq(:void)
+      expect(y.symbol).to eq("y")
 
       expect(z).to be_a ArrayDeclaration
-      expect(z.type_specifier.token.type).to eq(:string)
-      expect(z.id.token.type).to eq(:id)
-      expect(z.id.token.value).to eq("z")
+      expect(z.type).to eq(:string)
+      expect(z.symbol).to eq("z")
     end
   end
 
@@ -247,19 +244,16 @@ describe FunctionDeclaration do
         expect(p.params[3]).to be_nil
 
         expect(x).to be_a Param
-        expect(x.type_specifier.token.type).to eq(:int)
-        expect(x.id.token.type).to eq(:id)
-        expect(x.id.token.value).to eq("x")
+        expect(x.type_specifier.type).to eq(:int)
+        expect(x.id.value).to eq("x")
 
         expect(y).to be_a Param
-        expect(y.type_specifier.token.type).to eq(:int)
-        expect(y.id.token.type).to eq(:id)
-        expect(y.id.token.value).to eq("y")
+        expect(y.type_specifier.type).to eq(:int)
+        expect(y.id.value).to eq("y")
 
         expect(z).to be_a Param
-        expect(z.type_specifier.token.type).to eq(:int)
-        expect(z.id.token.type).to eq(:id)
-        expect(z.id.token.value).to eq("z")
+        expect(z.type_specifier.type).to eq(:int)
+        expect(z.id.value).to eq("z")
       end
     end
 
@@ -432,19 +426,16 @@ describe CompoundStatement do
         expect(p.local_declarations[3]).to be_nil
 
         expect(x).to be_a SimpleDeclaration
-        expect(x.type_specifier.token.type).to eq(:int)
-        expect(x.id.token.type).to eq(:id)
-        expect(x.id.token.value).to eq("x")
+        expect(x.type).to eq(:int)
+        expect(x.symbol).to eq("x")
 
         expect(y).to be_a PointerDeclaration
-        expect(y.type_specifier.token.type).to eq(:void)
-        expect(y.id.token.type).to eq(:id)
-        expect(y.id.token.value).to eq("y")
+        expect(y.type).to eq(:void)
+        expect(y.symbol).to eq("y")
 
         expect(z).to be_a ArrayDeclaration
-        expect(z.type_specifier.token.type).to eq(:string)
-        expect(z.id.token.type).to eq(:id)
-        expect(z.id.token.value).to eq("z")
+        expect(z.type).to eq(:string)
+        expect(z.symbol).to eq("z")
       end
     end
 
@@ -474,16 +465,13 @@ describe CompoundStatement do
         expect(p.statements[3]).to be_nil
 
         expect(x).to be_a Statement
-        expect(x.expression.e.t.f.factor.id.token.type).to eq(:id)
-        expect(x.expression.e.t.f.factor.id.token.value).to eq("x")
+        expect(x.expression.e.t.f.factor.id.value).to eq("x")
 
         expect(y).to be_a Statement
-        expect(y.expression.e.t.f.factor.id.token.type).to eq(:id)
-        expect(y.expression.e.t.f.factor.id.token.value).to eq("y")
+        expect(y.expression.e.t.f.factor.id.value).to eq("y")
 
         expect(z).to be_a Statement
-        expect(z.expression.e.t.f.factor.id.token.type).to eq(:id)
-        expect(z.expression.e.t.f.factor.id.token.value).to eq("z")
+        expect(z.expression.e.t.f.factor.id.value).to eq("z")
       end
     end
   end
@@ -549,8 +537,8 @@ describe IfStatement do
     end
 
     it "is properly formed" do
-      expect(p.body.expression.e.t.f.factor.id.token.value).to eq("y")
-      expect(p.else_body.expression.e.t.f.factor.id.token.value).to eq("z")
+      expect(p.body.expression.e.t.f.factor.id.value).to eq("y")
+      expect(p.else_body.expression.e.t.f.factor.id.value).to eq("z")
     end
   end
 
@@ -570,8 +558,8 @@ describe IfStatement do
     end
 
     it "is properly formed" do
-      expect(p.body.statements[0].expression.e.t.f.factor.id.token.value).to eq("y")
-      expect(p.else_body.statements[0].expression.e.t.f.factor.id.token.value).to eq("z")
+      expect(p.body.statements[0].expression.e.t.f.factor.id.value).to eq("y")
+      expect(p.else_body.statements[0].expression.e.t.f.factor.id.value).to eq("z")
     end
   end
 
@@ -758,17 +746,17 @@ describe AssignmentExpression do
   end
 
   it "is properly formed" do
-    expect(p.lhs.id.token.value).to eq("x")
-    expect(p.rhs.e.t.f.factor.id.token.value).to eq("y")
+    expect(p.lhs.id.value).to eq("x")
+    expect(p.rhs.e.t.f.factor.id.value).to eq("y")
   end
 
   context "that are chained" do
     let(:p) { get_body("x = y = z;").statements[0].expression }
 
     it "are properly formed" do
-      expect(p.lhs.id.token.value).to eq("x")
-      expect(p.rhs.lhs.id.token.value).to eq("y")
-      expect(p.rhs.rhs.e.t.f.factor.id.token.value).to eq("z")
+      expect(p.lhs.id.value).to eq("x")
+      expect(p.rhs.lhs.id.value).to eq("y")
+      expect(p.rhs.rhs.e.t.f.factor.id.value).to eq("z")
     end
   end
 end
@@ -881,9 +869,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x <= y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:leq)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:leq)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 
@@ -891,9 +879,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x < y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:lt)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:lt)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 
@@ -901,9 +889,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x == y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:eq)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:eq)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 
@@ -911,9 +899,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x != y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:neq)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:neq)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 
@@ -921,9 +909,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x > y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:gt)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:gt)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 
@@ -931,9 +919,9 @@ describe ComparisonExpression do
     let(:p) { get_body("x >= y;").statements[0].expression }
 
     it "is properly formed" do
-      expect(p.rel_op.token.type).to eq(:geq)
-      expect(p.lhs.t.f.factor.id.token.value).to eq("x")
-      expect(p.rhs.t.f.factor.id.token.value).to eq("y")
+      expect(p.rel_op.type).to eq(:geq)
+      expect(p.lhs.t.f.factor.id.value).to eq("x")
+      expect(p.rhs.t.f.factor.id.value).to eq("y")
     end
   end
 end
@@ -958,18 +946,15 @@ describe E do
     z = p
 
     expect(x.add_op).to be_nil
-    expect(x.t.f.factor.id.token.type).to eq(:id)
-    expect(x.t.f.factor.id.token.value).to eq("x")
+    expect(x.t.f.factor.id.value).to eq("x")
 
     expect(y.add_op).to be_a AddOp
-    expect(y.add_op.token.type).to eq(:plus)
-    expect(y.t.f.factor.id.token.type).to eq(:id)
-    expect(y.t.f.factor.id.token.value).to eq("y")
+    expect(y.add_op.type).to eq(:plus)
+    expect(y.t.f.factor.id.value).to eq("y")
 
     expect(z.add_op).to be_a AddOp
-    expect(z.add_op.token.type).to eq(:minus)
-    expect(z.t.f.factor.id.token.type).to eq(:id)
-    expect(z.t.f.factor.id.token.value).to eq("z")
+    expect(z.add_op.type).to eq(:minus)
+    expect(z.t.f.factor.id.value).to eq("z")
   end
 
   context "that is malformed" do
@@ -1001,23 +986,19 @@ describe T do
     w = p
 
     expect(x.mul_op).to be_nil
-    expect(x.f.factor.id.token.type).to eq(:id)
-    expect(x.f.factor.id.token.value).to eq("x")
+    expect(x.f.factor.id.value).to eq("x")
 
     expect(y.mul_op).to be_a MulOp
-    expect(y.mul_op.token.type).to eq(:asterisk)
-    expect(y.f.factor.id.token.type).to eq(:id)
-    expect(y.f.factor.id.token.value).to eq("y")
+    expect(y.mul_op.type).to eq(:asterisk)
+    expect(y.f.factor.id.value).to eq("y")
 
     expect(z.mul_op).to be_a MulOp
-    expect(z.mul_op.token.type).to eq(:slash)
-    expect(z.f.factor.id.token.type).to eq(:id)
-    expect(z.f.factor.id.token.value).to eq("z")
+    expect(z.mul_op.type).to eq(:slash)
+    expect(z.f.factor.id.value).to eq("z")
 
     expect(w.mul_op).to be_a MulOp
-    expect(w.mul_op.token.type).to eq(:percent)
-    expect(w.f.factor.id.token.type).to eq(:id)
-    expect(w.f.factor.id.token.value).to eq("w")
+    expect(w.mul_op.type).to eq(:percent)
+    expect(w.f.factor.id.value).to eq("w")
   end
 
   context "that is malformed" do
@@ -1144,19 +1125,17 @@ describe FunCallFactor do
         expect(p.args[3]).to be_nil
 
         expect(x).to be_a Expression
-        expect(x.e.t.f.factor.id.token.type).to eq(:id)
-        expect(x.e.t.f.factor.id.token.value).to eq("x")
+        expect(x.e.t.f.factor.id.type).to eq(:id)
+        expect(x.e.t.f.factor.id.value).to eq("x")
 
         expect(two).to be_a Expression
-        expect(two.e.t.f.factor.num.token.type).to eq(:num)
+        expect(two.e.t.f.factor.num.type).to eq(:num)
         expect(two.e.t.f.factor.num.token.value).to eq("2")
 
         expect(y_z).to be_a Expression
-        expect(y_z.e.e.t.f.factor.id.token.type).to eq(:id)
-        expect(y_z.e.e.t.f.factor.id.token.value).to eq("y")
-        expect(y_z.e.add_op.token.type).to eq(:plus)
-        expect(y_z.e.t.f.factor.id.token.type).to eq(:id)
-        expect(y_z.e.t.f.factor.id.token.value).to eq("z")
+        expect(y_z.e.e.t.f.factor.id.value).to eq("y")
+        expect(y_z.e.add_op.type).to eq(:plus)
+        expect(y_z.e.t.f.factor.id.value).to eq("z")
       end
     end
   end
