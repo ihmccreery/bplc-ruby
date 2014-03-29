@@ -247,7 +247,6 @@ module Parsers
       return rel_exp
     end
 
-    # TODO refactor these out?
     def rel_exp
       e = add_exp
       while at? REL_OPS
