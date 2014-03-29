@@ -13,13 +13,11 @@ describe Program do
 
   # #declarations
 
-  describe "#declarations" do
-    it "is properly formed" do
-      expect(p.declarations[0].symbol).to eq("x")
-      expect(p.declarations[1].symbol).to eq("y")
-      expect(p.declarations[2].symbol).to eq("z")
-      expect(p.declarations[3]).to be_nil
-    end
+  it "has properly formed declarations" do
+    expect(p.declarations[0].symbol).to eq("x")
+    expect(p.declarations[1].symbol).to eq("y")
+    expect(p.declarations[2].symbol).to eq("z")
+    expect(p.declarations[3]).to be_nil
   end
 
   context "that is malformed" do
@@ -123,33 +121,31 @@ describe FunctionDeclaration do
 
   # #params
 
-  describe "#params" do
-    context "with no params" do
-      it "is an empty array" do
-        expect(p.params).to be_a Array
-        expect(p.params).to be_empty
-      end
+  context "with no params" do
+    it "has no params" do
+      expect(p.params).to be_a Array
+      expect(p.params).to be_empty
     end
+  end
 
-    context "with params" do
-      let(:p) { Parser.new(Scanner.new("int f(int x, int *y, int z[]) { }")).parse.declarations[0] }
+  context "with params" do
+    let(:p) { Parser.new(Scanner.new("int f(int x, int *y, int z[]) { }")).parse.declarations[0] }
 
-      it "is properly formed" do
-        expect(p.params[0].symbol).to eq("x")
-        expect(p.params[1].symbol).to eq("y")
-        expect(p.params[2].symbol).to eq("z")
-        expect(p.params[3]).to be_nil
-      end
+    it "has properly formed params" do
+      expect(p.params[0].symbol).to eq("x")
+      expect(p.params[1].symbol).to eq("y")
+      expect(p.params[2].symbol).to eq("z")
+      expect(p.params[3]).to be_nil
     end
+  end
 
-    context "that is malformed" do
-      it "raises SyntaxErrors" do
-        expect_syntax_error("int f() { }", "expected type_specifier, got r_paren")
-        expect_syntax_error("int f(void void) { }", "expected r_paren, got void")
-        expect_syntax_error("int f(int x, int y,, int z) { }", "expected type_specifier, got comma")
-        expect_syntax_error("int f(int x, y, int z) { }", "expected type_specifier, got id")
-        expect_syntax_error("int f(int x, int y int z) { }", "expected r_paren, got int")
-      end
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f() { }", "expected type_specifier, got r_paren")
+      expect_syntax_error("int f(void void) { }", "expected r_paren, got void")
+      expect_syntax_error("int f(int x, int y,, int z) { }", "expected type_specifier, got comma")
+      expect_syntax_error("int f(int x, y, int z) { }", "expected type_specifier, got id")
+      expect_syntax_error("int f(int x, int y int z) { }", "expected r_paren, got int")
     end
   end
 end
@@ -229,23 +225,19 @@ describe CompoundStatement do
     expect(p).to be_a CompoundStatement
   end
 
-  describe "#local_declarations" do
-    it "is an array of Declarations that is properly formed" do
-      expect(p.local_declarations[0].symbol).to eq("x")
-      expect(p.local_declarations[1].symbol).to eq("y")
-      expect(p.local_declarations[2].symbol).to eq("z")
-      expect(p.local_declarations[3]).to be_nil
-    end
+  it "has properly formed declarations" do
+    expect(p.local_declarations[0].symbol).to eq("x")
+    expect(p.local_declarations[1].symbol).to eq("y")
+    expect(p.local_declarations[2].symbol).to eq("z")
+    expect(p.local_declarations[3]).to be_nil
   end
 
   # FIXME
-  describe "#statements" do
-    it "is an array of Statements that is properly formed" do
-      expect(p.statements[0].expression.e.t.f.factor.id.value).to eq("x")
-      expect(p.statements[1].expression.e.t.f.factor.id.value).to eq("y")
-      expect(p.statements[2].expression.e.t.f.factor.id.value).to eq("z")
-      expect(p.statements[3]).to be_nil
-    end
+  it "has properly formed statements" do
+    expect(p.statements[0].expression.e.t.f.factor.id.value).to eq("x")
+    expect(p.statements[1].expression.e.t.f.factor.id.value).to eq("y")
+    expect(p.statements[2].expression.e.t.f.factor.id.value).to eq("z")
+    expect(p.statements[3]).to be_nil
   end
 
   it "properly nests" do
@@ -269,19 +261,17 @@ describe ExpressionStatement do
     expect(p).to be_a ExpressionStatement
   end
 
-  describe "#expression" do
-    context "with an expression" do
-      it "is an Expression" do
-        expect(p.expression).to be_a Expression
-      end
+  context "with an expression" do
+    it "has an expression" do
+      expect(p.expression).to be_a Expression
     end
+  end
 
-    context "that is empty" do
-      let(:p) { get_body(";").statements[0] }
+  context "that is empty" do
+    let(:p) { get_body(";").statements[0] }
 
-      it "is a nil expression" do
-        expect(p.expression).to be_nil
-      end
+    it "has a nil expression" do
+      expect(p.expression).to be_nil
     end
   end
 end
