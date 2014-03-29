@@ -332,6 +332,10 @@ module Parsers
           n = num
           eat(:r_bracket)
           return ArrayVarExp.new(i, n)
+        elsif at? :l_paren
+          eat(:l_paren)
+          eat(:r_paren)
+          return FunCallExp.new(i)
         else
           return SimpleVarExp.new(i)
         end

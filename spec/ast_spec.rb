@@ -569,6 +569,18 @@ describe AddrArrayVarExp do
   end
 end
 
+describe FunCallExp do
+  let(:p) { parse_exp("f()") }
+
+  it "is a FunCallExp" do
+    expect(p).to be_a FunCallExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("f")
+  end
+end
+
 ###########
 # LitExps #
 ###########

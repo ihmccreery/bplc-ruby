@@ -262,6 +262,9 @@ class AddrArrayVarExp < VarExp
   end
 end
 
+class FunCallExp < VarExp
+end
+
 ###########
 # LitExps #
 ###########
