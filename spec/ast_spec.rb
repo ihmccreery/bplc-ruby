@@ -12,18 +12,18 @@ describe Program do
   end
 
   describe "#declarations" do
-    it "is an array" do
-      expect(p.declarations).to be_a Array
-    end
-
     it "is properly formed" do
       x = p.declarations[0]
       y = p.declarations[1]
       z = p.declarations[2]
 
+      expect(x).to be_a Declaration
       expect(x.symbol).to eq("x")
+      expect(y).to be_a Declaration
       expect(y.symbol).to eq("y")
+      expect(z).to be_a Declaration
       expect(z.symbol).to eq("z")
+
       expect(p.declarations[3]).to be_nil
     end
   end
@@ -115,12 +115,7 @@ describe FunctionDeclaration do
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
     expect(p.symbol).to eq("f")
-  end
-
-  describe "#body" do
-    it "is a CompoundStatement" do
-      expect(p.body).to be_a CompoundStatement
-    end
+    expect(p.body).to be_a CompoundStatement
   end
 
   context "that is malformed" do
@@ -132,11 +127,30 @@ describe FunctionDeclaration do
     end
   end
 
-  context "with no params" do
-    describe "#params" do
+  describe "#params" do
+    context "with no params" do
       it "is an empty array" do
         expect(p.params).to be_a Array
         expect(p.params).to be_empty
+      end
+    end
+
+    context "with params" do
+      let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0] }
+
+      it "is properly formed" do
+        x = p.params[0]
+        y = p.params[1]
+        z = p.params[2]
+
+        expect(x).to be_a Param
+        expect(x.symbol).to eq("x")
+        expect(y).to be_a Param
+        expect(y.symbol).to eq("y")
+        expect(z).to be_a Param
+        expect(z.symbol).to eq("z")
+
+        expect(p.params[3]).to be_nil
       end
     end
 
@@ -144,37 +158,6 @@ describe FunctionDeclaration do
       it "raises SyntaxErrors" do
         expect_syntax_error("int f() { }", "expected type_specifier, got r_paren")
         expect_syntax_error("int f(void void) { }", "expected r_paren, got void")
-      end
-    end
-  end
-
-  context "with params" do
-    let(:p) { Parser.new(Scanner.new("int f(int x, int y, int z) { }")).parse.declarations[0] }
-
-    describe "#params" do
-      it "is an array of Params that is properly formed" do
-        x = p.params[0]
-        y = p.params[1]
-        z = p.params[2]
-
-        expect(p.params[3]).to be_nil
-
-        expect(x).to be_a Param
-        expect(x.type).to eq(:int)
-        expect(x.symbol).to eq("x")
-
-        expect(y).to be_a Param
-        expect(y.type).to eq(:int)
-        expect(y.symbol).to eq("y")
-
-        expect(z).to be_a Param
-        expect(z.type).to eq(:int)
-        expect(z.symbol).to eq("z")
-      end
-    end
-
-    context "that are malformed" do
-      it "raises SyntaxErrors" do
         expect_syntax_error("int f(int x, int y,, int z) { }", "expected type_specifier, got comma")
         expect_syntax_error("int f(int x, y, int z) { }", "expected type_specifier, got id")
         expect_syntax_error("int f(int x, int y int z) { }", "expected r_paren, got int")
