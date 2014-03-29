@@ -10,12 +10,24 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
-def get_body(s)
-  Parser.new(Scanner.new("int f(void) { #{s} }")).parse.declarations[0].body
+def parse_program(s)
+  parse(s)
 end
 
-def get_factor(s)
-  Parser.new(Scanner.new("int f(void) { #{s}; }")).parse.declarations[0].body.statements[0].expression.e.t.f.factor
+def parse_declaration(s)
+  parse(s).declarations[0]
+end
+
+def parse_param(s)
+  parse("int f(#{s}) { }").declarations[0].params[0]
+end
+
+def parse_statement(s)
+  parse("int f(void) { #{s} }").declarations[0].body.statements[0]
+end
+
+def parse(s)
+  Parser.new(Scanner.new(s)).parse
 end
 
 def expect_syntax_error(s, message)

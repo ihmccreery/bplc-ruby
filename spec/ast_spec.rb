@@ -5,7 +5,7 @@ require 'spec_helper'
 ###########
 
 describe Program do
-  let(:p) { Parser.new(Scanner.new("int x; void *y; string z[2];")).parse }
+  let(:p) { parse_program("int x; void *y; string z[2];") }
 
   it "is a Program" do
     expect(p).to be_a Program
@@ -34,7 +34,7 @@ end
 ################
 
 describe SimpleDeclaration do
-  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0] }
+  let(:p) { parse_declaration("int x;") }
 
   it "is a SimpleDeclaration" do
     expect(p).to be_a SimpleDeclaration
@@ -55,7 +55,7 @@ describe SimpleDeclaration do
 end
 
 describe PointerDeclaration do
-  let(:p) { Parser.new(Scanner.new("int *x;")).parse.declarations[0] }
+  let(:p) { parse_declaration("int *x;") }
 
   it "is a PointerDeclaration" do
     expect(p).to be_a PointerDeclaration
@@ -76,7 +76,7 @@ describe PointerDeclaration do
 end
 
 describe  ArrayDeclaration do
-  let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0] }
+  let(:p) { parse_declaration("int x[2];") }
 
   it "is a ArrayDeclaration " do
     expect(p).to be_a ArrayDeclaration
@@ -98,7 +98,7 @@ describe  ArrayDeclaration do
 end
 
 describe FunctionDeclaration do
-  let(:p) { Parser.new(Scanner.new("int f(void) { }")).parse.declarations[0] }
+  let(:p) { parse_declaration("int f(void) { }") }
 
   it "is a FunctionDeclaration" do
     expect(p).to be_a FunctionDeclaration
@@ -129,7 +129,7 @@ describe FunctionDeclaration do
   end
 
   context "with params" do
-    let(:p) { Parser.new(Scanner.new("int f(int x, int *y, int z[]) { }")).parse.declarations[0] }
+    let(:p) { parse_declaration("int f(int x, int *y, int z[]) { }") }
 
     it "has properly formed params" do
       expect(p.params[0].symbol).to eq("x")
@@ -155,7 +155,7 @@ end
 ##########
 
 describe SimpleParam do
-  let(:p) { Parser.new(Scanner.new("int f(int x) { }")).parse.declarations[0].params[0] }
+  let(:p) { parse_param("int x") }
 
   it "is a SimpleParam" do
     expect(p).to be_a SimpleParam
@@ -175,7 +175,7 @@ describe SimpleParam do
 end
 
 describe PointerParam do
-  let(:p) { Parser.new(Scanner.new("int f(int *x) { }")).parse.declarations[0].params[0] }
+  let(:p) { parse_param("int *x") }
 
   it "is a PointerParam" do
     expect(p).to be_a PointerParam
@@ -195,7 +195,7 @@ describe PointerParam do
 end
 
 describe ArrayParam do
-  let(:p) { Parser.new(Scanner.new("int f(int x[]) { }")).parse.declarations[0].params[0] }
+  let(:p) { parse_param("int x[]") }
 
   it "is a ArrayParam" do
     expect(p).to be_a ArrayParam
@@ -219,7 +219,7 @@ end
 ##############
 
 describe CompoundStatement do
-  let(:p) { get_body("int x; void *y; string z[2]; x; y; z;") }
+  let(:p) { parse_statement("{int x; void *y; string z[2]; x; y; z;}") }
 
   it "is a CompoundStatement" do
     expect(p).to be_a CompoundStatement
@@ -241,8 +241,8 @@ describe CompoundStatement do
   end
 
   it "properly nests" do
-    expect(get_body("{x;}").statements[0]).to be_a CompoundStatement
-    expect(get_body("{{x;}}").statements[0].statements[0]).to be_a CompoundStatement
+    expect(parse_statement("{{x;}}").statements[0]).to be_a CompoundStatement
+    expect(parse_statement("{{{x;}}}").statements[0].statements[0]).to be_a CompoundStatement
   end
 
   context "that is malformed" do
@@ -255,7 +255,7 @@ describe CompoundStatement do
 end
 
 describe ExpressionStatement do
-  let(:p) { get_body("x;").statements[0] }
+  let(:p) { parse_statement("x;") }
 
   it "is an ExpressionStatement" do
     expect(p).to be_a ExpressionStatement
@@ -268,7 +268,7 @@ describe ExpressionStatement do
   end
 
   context "that is empty" do
-    let(:p) { get_body(";").statements[0] }
+    let(:p) { parse_statement(";") }
 
     it "has a nil expression" do
       expect(p.expression).to be_nil
@@ -277,7 +277,7 @@ describe ExpressionStatement do
 end
 
 describe IfStatement do
-  let(:p) { get_body("if (x) y; else z;").statements[0] }
+  let(:p) { parse_statement("if (x) y; else z;") }
 
   it "is an IfStatement" do
     expect(p).to be_a IfStatement
@@ -296,7 +296,7 @@ describe IfStatement do
   end
 
   context "with no else statement" do
-    let(:p) { get_body("if (x) y;").statements[0] }
+    let(:p) { parse_statement("if (x) y;") }
 
     it "has no else_body" do
       expect(p.else_body).to be_nil
@@ -313,7 +313,7 @@ describe IfStatement do
 end
 
 describe WhileStatement do
-  let(:p) { get_body("while (x) y;").statements[0] }
+  let(:p) { parse_statement("while (x) y;") }
 
   it "is an WhileStatement" do
     expect(p).to be_a WhileStatement
@@ -334,7 +334,7 @@ describe WhileStatement do
 end
 
 describe ReturnStatement do
-  let(:p) { get_body("return y;").statements[0] }
+  let(:p) { parse_statement("return y;") }
 
   it "is an ReturnStatement" do
     expect(p).to be_a ReturnStatement
@@ -345,7 +345,7 @@ describe ReturnStatement do
   end
 
   context "with no value" do
-    let(:p) { get_body("return;").statements[0] }
+    let(:p) { parse_statement("return;") }
 
     it "has a nil value" do
       expect(p.value).to be_nil
@@ -361,7 +361,7 @@ describe ReturnStatement do
 end
 
 describe WriteStatement do
-  let(:p) { get_body("write(x);").statements[0] }
+  let(:p) { parse_statement("write(x);") }
 
   it "is an WriteStatement" do
     expect(p).to be_a WriteStatement
@@ -381,7 +381,7 @@ describe WriteStatement do
 end
 
 describe WritelnStatement do
-  let(:p) { get_body("writeln();").statements[0] }
+  let(:p) { parse_statement("writeln();") }
 
   it "is an WritelnStatement" do
     expect(p).to be_a WritelnStatement
@@ -405,7 +405,7 @@ end
 #####################
 
 describe TypeSpecifier do
-  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].type_specifier }
+  let(:p) { parse_declaration("int x;").type_specifier }
 
   it "is a TypeSpecifier" do
     expect(p).to be_a TypeSpecifier
@@ -420,7 +420,7 @@ describe TypeSpecifier do
 end
 
 describe Id do
-  let(:p) { Parser.new(Scanner.new("int x;")).parse.declarations[0].id }
+  let(:p) { parse_declaration("int x;").id }
 
   it "is a Id" do
     expect(p).to be_a Id
