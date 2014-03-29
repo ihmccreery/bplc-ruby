@@ -170,6 +170,14 @@ end
 class Exp < Ast
 end
 
+class NegExp < Exp
+  attr_reader :exp
+
+  def initialize(exp)
+    @exp = exp
+  end
+end
+
 class VarExp < Exp
   # @return [Id]
   attr_reader :id

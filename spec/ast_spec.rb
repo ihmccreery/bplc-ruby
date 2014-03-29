@@ -398,6 +398,22 @@ end
 # Exps #
 ########
 
+describe NegExp do
+  let(:p) { parse_exp("-x") }
+
+  it "is a NegExp" do
+    expect(p).to be_a NegExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.exp).to be_a Exp
+  end
+end
+
+###########
+# VarExps #
+###########
+
 describe SimpleVarExp do
   let(:p) { parse_exp("x") }
 

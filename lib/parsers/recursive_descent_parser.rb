@@ -244,6 +244,15 @@ module Parsers
     ########
 
     def exp
+      if at? :minus
+        eat(:minus)
+        return NegExp.new(exp)
+      else
+        return var_exp
+      end
+    end
+
+    def var_exp
       if at? :ampersand
         eat(:ampersand)
         i = id
