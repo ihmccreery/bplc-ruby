@@ -53,10 +53,10 @@ describe Parser do
     x_plus_y_z = p.e
     minus = p
 
-    expect(y_times_z.mul_op.token.type).to eq(:asterisk)
-    expect(w_over_v.mul_op.token.type).to eq(:slash)
-    expect(x_plus_y_z.add_op.token.type).to eq(:plus)
-    expect(minus.add_op.token.type).to eq(:minus)
+    expect(y_times_z.mul_op.type).to eq(:asterisk)
+    expect(w_over_v.mul_op.type).to eq(:slash)
+    expect(x_plus_y_z.add_op.type).to eq(:plus)
+    expect(minus.add_op.type).to eq(:minus)
 
     x = p.e.e.t.f
     y = p.e.t.t.f

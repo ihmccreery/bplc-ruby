@@ -185,12 +185,6 @@ describe FunctionDeclaration do
     end
   end
 
-  describe "#params" do
-    it "is a Array" do
-      expect(p.params).to be_a Array
-    end
-  end
-
   describe "#body" do
     it "is a CompoundStatement" do
       expect(p.body).to be_a CompoundStatement
