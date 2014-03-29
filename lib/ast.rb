@@ -184,6 +184,9 @@ class BinExp < Exp
   end
 end
 
+class RelExp < BinExp
+end
+
 class AddExp < BinExp
 end
 

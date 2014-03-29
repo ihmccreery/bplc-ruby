@@ -398,6 +398,29 @@ end
 # Exps #
 ########
 
+describe RelExp do
+  let(:p) { parse_exp("x<=y") }
+
+  it "is a RelExp" do
+    expect(p).to be_a RelExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.op).to eq(:leq)
+    expect(p.lhs.symbol).to eq("x")
+    expect(p.rhs.symbol).to eq("y")
+  end
+
+  it "handles <=, <, ==, !=, >, and >=" do
+    expect(parse_exp("x<=y").op).to eq(:leq)
+    expect(parse_exp("x<y").op).to eq(:lt)
+    expect(parse_exp("x==y").op).to eq(:eq)
+    expect(parse_exp("x!=y").op).to eq(:neq)
+    expect(parse_exp("x>y").op).to eq(:gt)
+    expect(parse_exp("x>=y").op).to eq(:geq)
+  end
+end
+
 describe AddExp do
   let(:p) { parse_exp("x+y") }
 

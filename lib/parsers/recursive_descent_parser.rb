@@ -244,7 +244,16 @@ module Parsers
     ########
 
     def exp
-      return add_exp
+      return rel_exp
+    end
+
+    # TODO refactor these out?
+    def rel_exp
+      e = add_exp
+      while at? REL_OPS
+        e = RelExp.new(eat_token, e, add_exp)
+      end
+      return e
     end
 
     def add_exp
