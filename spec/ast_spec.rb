@@ -107,7 +107,7 @@ describe FunctionDeclaration do
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
     expect(p.symbol).to eq("f")
-    expect(p.body).to be_a CompoundStatement
+    expect(p.body).to be_a CompoundStmt
   end
 
   context "that is malformed" do
@@ -215,14 +215,14 @@ describe ArrayParam do
 end
 
 ##############
-# Statements #
+# Stmts #
 ##############
 
-describe CompoundStatement do
-  let(:p) { parse_statement("{int x; void *y; string z[2]; x; y; z;}") }
+describe CompoundStmt do
+  let(:p) { parse_stmt("{int x; void *y; string z[2]; x; y; z;}") }
 
-  it "is a CompoundStatement" do
-    expect(p).to be_a CompoundStatement
+  it "is a CompoundStmt" do
+    expect(p).to be_a CompoundStmt
   end
 
   it "has properly formed declarations" do
@@ -233,16 +233,16 @@ describe CompoundStatement do
   end
 
   # FIXME
-  it "has properly formed statements" do
-    expect(p.statements[0].exp.value).to eq("x")
-    expect(p.statements[1].exp.value).to eq("y")
-    expect(p.statements[2].exp.value).to eq("z")
-    expect(p.statements[3]).to be_nil
+  it "has properly formed stmts" do
+    expect(p.stmts[0].exp.value).to eq("x")
+    expect(p.stmts[1].exp.value).to eq("y")
+    expect(p.stmts[2].exp.value).to eq("z")
+    expect(p.stmts[3]).to be_nil
   end
 
   it "properly nests" do
-    expect(parse_statement("{{x;}}").statements[0]).to be_a CompoundStatement
-    expect(parse_statement("{{{x;}}}").statements[0].statements[0]).to be_a CompoundStatement
+    expect(parse_stmt("{{x;}}").stmts[0]).to be_a CompoundStmt
+    expect(parse_stmt("{{{x;}}}").stmts[0].stmts[0]).to be_a CompoundStmt
   end
 
   context "that is malformed" do
@@ -254,11 +254,11 @@ describe CompoundStatement do
   end
 end
 
-describe ExpStatement do
-  let(:p) { parse_statement("x;") }
+describe ExpStmt do
+  let(:p) { parse_stmt("x;") }
 
-  it "is an ExpStatement" do
-    expect(p).to be_a ExpStatement
+  it "is an ExpStmt" do
+    expect(p).to be_a ExpStmt
   end
 
   context "with an exp" do
@@ -268,7 +268,7 @@ describe ExpStatement do
   end
 
   context "that is empty" do
-    let(:p) { parse_statement(";") }
+    let(:p) { parse_stmt(";") }
 
     it "has a nil exp" do
       expect(p.exp).to be_nil
@@ -276,17 +276,17 @@ describe ExpStatement do
   end
 end
 
-describe IfStatement do
-  let(:p) { parse_statement("if (x) y; else z;") }
+describe IfStmt do
+  let(:p) { parse_stmt("if (x) y; else z;") }
 
-  it "is an IfStatement" do
-    expect(p).to be_a IfStatement
+  it "is an IfStmt" do
+    expect(p).to be_a IfStmt
   end
 
   it "has the correct attributes" do
     expect(p.condition).to be_a Exp
-    expect(p.body).to be_a Statement
-    expect(p.else_body).to be_a Statement
+    expect(p.body).to be_a Stmt
+    expect(p.else_body).to be_a Stmt
   end
 
   # FIXME
@@ -295,8 +295,8 @@ describe IfStatement do
     expect(p.else_body.exp.value).to eq("z")
   end
 
-  context "with no else statement" do
-    let(:p) { parse_statement("if (x) y;") }
+  context "with no else stmt" do
+    let(:p) { parse_stmt("if (x) y;") }
 
     it "has no else_body" do
       expect(p.else_body).to be_nil
@@ -312,16 +312,16 @@ describe IfStatement do
   end
 end
 
-describe WhileStatement do
-  let(:p) { parse_statement("while (x) y;") }
+describe WhileStmt do
+  let(:p) { parse_stmt("while (x) y;") }
 
-  it "is an WhileStatement" do
-    expect(p).to be_a WhileStatement
+  it "is an WhileStmt" do
+    expect(p).to be_a WhileStmt
   end
 
   it "has the correct attributes" do
     expect(p.condition).to be_a Exp
-    expect(p.body).to be_a Statement
+    expect(p.body).to be_a Stmt
   end
 
   context "that is malformed" do
@@ -333,11 +333,11 @@ describe WhileStatement do
   end
 end
 
-describe ReturnStatement do
-  let(:p) { parse_statement("return y;") }
+describe ReturnStmt do
+  let(:p) { parse_stmt("return y;") }
 
-  it "is an ReturnStatement" do
-    expect(p).to be_a ReturnStatement
+  it "is an ReturnStmt" do
+    expect(p).to be_a ReturnStmt
   end
 
   it "has the correct attributes" do
@@ -345,7 +345,7 @@ describe ReturnStatement do
   end
 
   context "with no value" do
-    let(:p) { parse_statement("return;") }
+    let(:p) { parse_stmt("return;") }
 
     it "has a nil value" do
       expect(p.value).to be_nil
@@ -360,11 +360,11 @@ describe ReturnStatement do
   end
 end
 
-describe WriteStatement do
-  let(:p) { parse_statement("write(x);") }
+describe WriteStmt do
+  let(:p) { parse_stmt("write(x);") }
 
-  it "is an WriteStatement" do
-    expect(p).to be_a WriteStatement
+  it "is an WriteStmt" do
+    expect(p).to be_a WriteStmt
   end
 
   it "has the correct attributes" do
@@ -380,11 +380,11 @@ describe WriteStatement do
   end
 end
 
-describe WritelnStatement do
-  let(:p) { parse_statement("writeln();") }
+describe WritelnStmt do
+  let(:p) { parse_stmt("writeln();") }
 
-  it "is an WritelnStatement" do
-    expect(p).to be_a WritelnStatement
+  it "is an WritelnStmt" do
+    expect(p).to be_a WritelnStmt
   end
 
   context "that is malformed" do

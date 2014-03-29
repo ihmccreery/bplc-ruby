@@ -67,7 +67,7 @@ module Parsers
           eat(:l_paren)
           p = params
           eat(:r_paren)
-          d = FunctionDeclaration.new(t, i, p, compound_statement)
+          d = FunctionDeclaration.new(t, i, p, compound_stmt)
         else
           d = SimpleDeclaration.new(t, i)
           eat(:semicolon)
@@ -113,12 +113,12 @@ module Parsers
     end
 
     ##############
-    # statements #
+    # stmts #
     ##############
 
-    def compound_statement
+    def compound_stmt
       eat(:l_brace)
-      c = CompoundStatement.new(local_declarations, statements)
+      c = CompoundStmt.new(local_declarations, stmts)
       eat(:r_brace)
       return c
     end
@@ -152,91 +152,91 @@ module Parsers
       return d
     end
 
-    def statements
+    def stmts
       s = []
       while at? FIRST_OF_STATEMENTS
-        s << statement
+        s << stmt
       end
       return s
     end
 
-    def statement
+    def stmt
       if at? :l_brace
-        return compound_statement
+        return compound_stmt
       elsif at? :if
-        return if_statement
+        return if_stmt
       elsif at? :while
-        return while_statement
+        return while_stmt
       elsif at? :return
-        return return_statement
+        return return_stmt
       elsif at? :write
-        return write_statement
+        return write_stmt
       elsif at? :writeln
-        return writeln_statement
+        return writeln_stmt
       else
-        return exp_statement
+        return exp_stmt
       end
     end
 
-    def exp_statement
+    def exp_stmt
       if at? :semicolon
-        s = ExpStatement.new(nil)
+        s = ExpStmt.new(nil)
       else
-        s = ExpStatement.new(exp)
+        s = ExpStmt.new(exp)
       end
       eat(:semicolon)
       return s
     end
 
-    def if_statement
+    def if_stmt
       eat(:if)
       eat(:l_paren)
       c = exp
       eat(:r_paren)
-      b = statement
+      b = stmt
       if at? :else
         eat(:else)
-        return IfStatement.new(c, b, statement)
+        return IfStmt.new(c, b, stmt)
       else
-        return IfStatement.new(c, b, nil)
+        return IfStmt.new(c, b, nil)
       end
     end
 
-    def while_statement
+    def while_stmt
       eat(:while)
       eat(:l_paren)
       c = exp
       eat(:r_paren)
-      return WhileStatement.new(c, statement)
+      return WhileStmt.new(c, stmt)
     end
 
-    def return_statement
+    def return_stmt
       eat(:return)
       if at? :semicolon
         eat(:semicolon)
-        return ReturnStatement.new(nil)
+        return ReturnStmt.new(nil)
       else
         e = exp
         eat(:semicolon)
-        return ReturnStatement.new(e)
+        return ReturnStmt.new(e)
       end
     end
 
-    def write_statement
+    def write_stmt
       eat(:write)
       eat(:l_paren)
       c = exp
       eat(:r_paren)
       eat(:semicolon)
-      return WriteStatement.new(c)
+      return WriteStmt.new(c)
     end
 
-    def writeln_statement
+    def writeln_stmt
       eat(:writeln)
       eat(:l_paren)
       eat(:r_paren)
       eat(:semicolon)
-      return WritelnStatement.new
+      return WritelnStmt.new
     end
 
     ###############

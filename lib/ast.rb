@@ -97,22 +97,22 @@ class ArrayParam < Param
 end
 
 ##############
-# Statements #
+# Stmts #
 ##############
 
-class Statement < Ast
+class Stmt < Ast
 end
 
-class CompoundStatement < Statement
-  attr_reader :local_declarations, :statements
+class CompoundStmt < Stmt
+  attr_reader :local_declarations, :stmts
 
-  def initialize(local_declarations, statements)
+  def initialize(local_declarations, stmts)
     @local_declarations = local_declarations
-    @statements = statements
+    @stmts = stmts
   end
 end
 
-class ExpStatement < Statement
+class ExpStmt < Stmt
   attr_reader :exp
 
   def initialize(exp)
@@ -120,7 +120,7 @@ class ExpStatement < Statement
   end
 end
 
-class IfStatement < Statement
+class IfStmt < Stmt
   attr_reader :condition, :body, :else_body
 
   def initialize(condition, body, else_body)
@@ -130,7 +130,7 @@ class IfStatement < Statement
   end
 end
 
-class WhileStatement < Statement
+class WhileStmt < Stmt
   attr_reader :condition, :body
 
   def initialize(condition, body)
@@ -139,7 +139,7 @@ class WhileStatement < Statement
   end
 end
 
-class ReturnStatement < Statement
+class ReturnStmt < Stmt
   attr_reader :value
 
   def initialize(value)
@@ -147,7 +147,7 @@ class ReturnStatement < Statement
   end
 end
 
-class WriteStatement < Statement
+class WriteStmt < Stmt
   attr_reader :value
 
   def initialize(value)
@@ -155,7 +155,7 @@ class WriteStatement < Statement
   end
 end
 
-class WritelnStatement < Statement
+class WritelnStmt < Stmt
 end
 
 ########

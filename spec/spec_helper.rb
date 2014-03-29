@@ -22,8 +22,8 @@ def parse_param(s)
   parse("int f(#{s}) { }").declarations[0].params[0]
 end
 
-def parse_statement(s)
-  parse("int f(void) { #{s} }").declarations[0].body.statements[0]
+def parse_stmt(s)
+  parse("int f(void) { #{s} }").declarations[0].body.stmts[0]
 end
 
 def parse(s)
