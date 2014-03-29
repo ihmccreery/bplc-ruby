@@ -269,15 +269,15 @@ describe ExpressionStatement do
   end
 
   describe "#expression" do
-    it "is an Expression" do
-      expect(p.expression).to be_a Expression
+    context "with an expression" do
+      it "is an Expression" do
+        expect(p.expression).to be_a Expression
+      end
     end
-  end
 
-  context "that is empty" do
-    let(:p) { get_body("x; ;").statements[1] }
+    context "that is empty" do
+      let(:p) { get_body(";").statements[0] }
 
-    describe "#expression" do
       it "is a nil expression" do
         expect(p.expression).to be_nil
       end
