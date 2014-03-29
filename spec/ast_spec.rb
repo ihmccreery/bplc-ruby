@@ -30,14 +30,9 @@ describe Program do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int x; void *y;; string z[2];"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected eof, got semicolon")
-
-      p = Parser.new(Scanner.new("int x; y; string z;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected eof, got id")
-
-      p = Parser.new(Scanner.new("int x; void *y string z[2];"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got string")
+      expect_syntax_error("int x; void *y;; string z[2];", "expected eof, got semicolon")
+      expect_syntax_error("int x; y; string z;", "expected eof, got id")
+      expect_syntax_error("int x; void *y string z[2];", "expected semicolon, got string")
     end
   end
 end
@@ -67,14 +62,9 @@ describe SimpleDeclaration do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("x;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
-
-      p = Parser.new(Scanner.new("int ;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got semicolon")
-
-      p = Parser.new(Scanner.new("int x"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got eof")
+      expect_syntax_error("x;", "expected type_specifier, got id")
+      expect_syntax_error("int ;", "expected id, got semicolon")
+      expect_syntax_error("int x", "expected semicolon, got eof")
     end
   end
 end
@@ -100,14 +90,9 @@ describe PointerDeclaration do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int x*;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got asterisk")
-
-      p = Parser.new(Scanner.new("int *;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got semicolon")
-
-      p = Parser.new(Scanner.new("*x;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got asterisk")
+      expect_syntax_error("int x*;", "expected semicolon, got asterisk")
+      expect_syntax_error("int *;", "expected id, got semicolon")
+      expect_syntax_error("*x;", "expected type_specifier, got asterisk")
     end
   end
 end
@@ -143,14 +128,9 @@ describe  ArrayDeclaration do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int [2]x;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got l_bracket")
-
-      p = Parser.new(Scanner.new("int x[2;"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_bracket, got semicolon")
-
-      p = Parser.new(Scanner.new("x[2];"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
+      expect_syntax_error("int [2]x;", "expected id, got l_bracket")
+      expect_syntax_error("int x[2;", "expected r_bracket, got semicolon")
+      expect_syntax_error("x[2];", "expected type_specifier, got id")
     end
   end
 end
@@ -182,17 +162,10 @@ describe FunctionDeclaration do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f()"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
-
-      p = Parser.new(Scanner.new("int f( { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got l_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { "))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_brace, got eof")
-
-      p = Parser.new(Scanner.new("int f(void) } "))
-      expect{p.parse}.to raise_error(SyntaxError, "expected l_brace, got r_brace")
+      expect_syntax_error("int f()", "expected type_specifier, got r_paren")
+      expect_syntax_error("int f( { }", "expected type_specifier, got l_brace")
+      expect_syntax_error("int f(void) { ", "expected r_brace, got eof")
+      expect_syntax_error("int f(void) } ", "expected l_brace, got r_brace")
     end
   end
 
@@ -206,11 +179,8 @@ describe FunctionDeclaration do
 
     context "that is malformed" do
       it "raises SyntaxErrors" do
-        p = Parser.new(Scanner.new("int f() { }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got r_paren")
-
-        p = Parser.new(Scanner.new("int f(void void) { }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got void")
+        expect_syntax_error("int f() { }", "expected type_specifier, got r_paren")
+        expect_syntax_error("int f(void void) { }", "expected r_paren, got void")
       end
     end
   end
@@ -242,14 +212,9 @@ describe FunctionDeclaration do
 
     context "that are malformed" do
       it "raises SyntaxErrors" do
-        p = Parser.new(Scanner.new("int f(int x, int y,, int z) { }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got comma")
-
-        p = Parser.new(Scanner.new("int f(int x, y, int z) { }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
-
-        p = Parser.new(Scanner.new("int f(int x, int y int z) { }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got int")
+        expect_syntax_error("int f(int x, int y,, int z) { }", "expected type_specifier, got comma")
+        expect_syntax_error("int f(int x, y, int z) { }", "expected type_specifier, got id")
+        expect_syntax_error("int f(int x, int y int z) { }", "expected r_paren, got int")
       end
     end
   end
@@ -280,11 +245,8 @@ describe SimpleParam do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(x) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected type_specifier, got id")
-
-      p = Parser.new(Scanner.new("int f(int) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
+      expect_syntax_error("int f(x) { }", "expected type_specifier, got id")
+      expect_syntax_error("int f(int) { }", "expected id, got r_paren")
     end
   end
 end
@@ -310,11 +272,8 @@ describe PointerParam do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(int x*) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got asterisk")
-
-      p = Parser.new(Scanner.new("int f(int*) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
+      expect_syntax_error("int f(int x*) { }", "expected r_paren, got asterisk")
+      expect_syntax_error("int f(int*) { }", "expected id, got r_paren")
     end
   end
 end
@@ -340,11 +299,8 @@ describe ArrayParam do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(int x[) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_bracket, got r_paren")
-
-      p = Parser.new(Scanner.new("int f(int[] x) { }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got l_bracket")
+      expect_syntax_error("int f(int x[) { }", "expected r_bracket, got r_paren")
+      expect_syntax_error("int f(int[] x) { }", "expected id, got l_bracket")
     end
   end
 end
@@ -423,14 +379,9 @@ describe CompoundStatement do
 
     context "that is malformed" do
       it "raises SyntaxErrors" do
-        p = Parser.new(Scanner.new("int f(void) { int x void y; string z[2]; }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got void")
-
-        p = Parser.new(Scanner.new("int f(void) { int x *y; string z[2]; }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got asterisk")
-
-        p = Parser.new(Scanner.new("int f(void) { int x; void y(void) { } string z[2]; }"))
-        expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got l_paren")
+        expect_syntax_error("int f(void) { int x void y; string z[2]; }", "expected semicolon, got void")
+        expect_syntax_error("int f(void) { int x *y; string z[2]; }", "expected semicolon, got asterisk")
+        expect_syntax_error("int f(void) { int x; void y(void) { } string z[2]; }", "expected semicolon, got l_paren")
       end
     end
   end
@@ -544,14 +495,9 @@ describe IfStatement do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { if x {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got id")
-
-      p = Parser.new(Scanner.new("int f(void) { if (x {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got l_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { if (x;) {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
+      expect_syntax_error("int f(void) { if x {y;} }", "expected l_paren, got id")
+      expect_syntax_error("int f(void) { if (x {y;} }", "expected r_paren, got l_brace")
+      expect_syntax_error("int f(void) { if (x;) {y;} }", "expected r_paren, got semicolon")
     end
   end
 end
@@ -587,14 +533,9 @@ describe WhileStatement do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { while x {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got id")
-
-      p = Parser.new(Scanner.new("int f(void) { while (x {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got l_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { while (x;) {y;} }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
+      expect_syntax_error("int f(void) { while x {y;} }", "expected l_paren, got id")
+      expect_syntax_error("int f(void) { while (x {y;} }", "expected r_paren, got l_brace")
+      expect_syntax_error("int f(void) { while (x;) {y;} }", "expected r_paren, got semicolon")
     end
   end
 end
@@ -624,11 +565,8 @@ describe ReturnStatement do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { return }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { return x }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
+      expect_syntax_error("int f(void) { return }", "expected id, got r_brace")
+      expect_syntax_error("int f(void) { return x }", "expected semicolon, got r_brace")
     end
   end
 end
@@ -648,14 +586,9 @@ describe WriteStatement do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { write(); }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_paren")
-
-      p = Parser.new(Scanner.new("int f(void) { write(x) }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { write(x;) }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got semicolon")
+      expect_syntax_error("int f(void) { write(); }", "expected id, got r_paren")
+      expect_syntax_error("int f(void) { write(x) }", "expected semicolon, got r_brace")
+      expect_syntax_error("int f(void) { write(x;) }", "expected r_paren, got semicolon")
     end
   end
 end
@@ -669,14 +602,9 @@ describe WritelnStatement do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { writeln() }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got r_brace")
-
-      p = Parser.new(Scanner.new("int f(void) { writeln(x); }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected r_paren, got id")
-
-      p = Parser.new(Scanner.new("int f(void) { writeln }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected l_paren, got r_brace")
+      expect_syntax_error("int f(void) { writeln() }", "expected semicolon, got r_brace")
+      expect_syntax_error("int f(void) { writeln(x); }", "expected r_paren, got id")
+      expect_syntax_error("int f(void) { writeln }", "expected l_paren, got r_brace")
     end
   end
 end
@@ -737,17 +665,10 @@ end
 describe Var do
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { x + y = z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
-
-      p = Parser.new(Scanner.new("int f(void) { x * y = z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
-
-      p = Parser.new(Scanner.new("int f(void) { &x = y; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
-
-      p = Parser.new(Scanner.new("int f(void) { read() = y; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "lhs not assignable")
+      expect_syntax_error("int f(void) { x + y = z; }", "lhs not assignable")
+      expect_syntax_error("int f(void) { x * y = z; }", "lhs not assignable")
+      expect_syntax_error("int f(void) { &x = y; }", "lhs not assignable")
+      expect_syntax_error("int f(void) { read() = y; }", "lhs not assignable")
     end
   end
 end
@@ -787,8 +708,7 @@ describe ArrayVar do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { x [] = z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got r_bracket")
+      expect_syntax_error("int f(void) { x [] = z; }", "expected id, got r_bracket")
     end
   end
 end
@@ -808,8 +728,7 @@ describe PointerVar do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { x* = z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got gets")
+      expect_syntax_error("int f(void) { x* = z; }", "expected id, got gets")
     end
   end
 end
@@ -928,11 +847,8 @@ describe E do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { x + y z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
-
-      p = Parser.new(Scanner.new("int f(void) { x ++ y + z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got plus")
+      expect_syntax_error("int f(void) { x + y z; }", "expected semicolon, got id")
+      expect_syntax_error("int f(void) { x ++ y + z; }", "expected id, got plus")
     end
   end
 end
@@ -972,11 +888,8 @@ describe T do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      p = Parser.new(Scanner.new("int f(void) { x * y z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected semicolon, got id")
-
-      p = Parser.new(Scanner.new("int f(void) { x */ y + z; }"))
-      expect{p.parse}.to raise_error(SyntaxError, "expected id, got slash")
+      expect_syntax_error("int f(void) { x * y z; }", "expected semicolon, got id")
+      expect_syntax_error("int f(void) { x */ y + z; }", "expected id, got slash")
     end
   end
 end

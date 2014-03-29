@@ -17,3 +17,8 @@ end
 def get_factor(s)
   Parser.new(Scanner.new("int f(void) { #{s}; }")).parse.declarations[0].body.statements[0].expression.e.t.f.factor
 end
+
+def expect_syntax_error(s, message)
+  p = Parser.new(Scanner.new(s))
+  expect{p.parse}.to raise_error(SyntaxError, message)
+end
