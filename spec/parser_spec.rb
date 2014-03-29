@@ -19,6 +19,7 @@ describe Parser do
     end
   end
 
+  # TODO
   # it "parses ex1.bpl properly" do
   #   expect(Parser.new(Scanner.new(File.new(EX1_FNAME))).parse).to be_a Ast
   # end
