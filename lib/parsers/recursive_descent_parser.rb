@@ -112,9 +112,9 @@ module Parsers
       return p
     end
 
-    ##############
+    #########
     # stmts #
-    ##############
+    #########
 
     def compound_stmt
       eat(:l_brace)
@@ -239,12 +239,36 @@ module Parsers
       return WritelnStmt.new
     end
 
-    ###############
+    ########
     # exps #
-    ###############
+    ########
 
     def exp
-      return Exp.new(eat(:id))
+      if at? :ampersand
+        eat(:ampersand)
+        i = id
+        if at? :l_bracket
+          eat(:l_bracket)
+          n = num
+          eat(:r_bracket)
+          return AddrArrayVarExp.new(i, n)
+        else
+          return AddrVarExp.new(i)
+        end
+      elsif at? :asterisk
+        eat(:asterisk)
+        return PointerVarExp.new(id)
+      else
+        i = id
+        if at? :l_bracket
+          eat(:l_bracket)
+          n = num
+          eat(:r_bracket)
+          return ArrayVarExp.new(i, n)
+        else
+          return SimpleVarExp.new(i)
+        end
+      end
     end
 
     #####################

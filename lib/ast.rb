@@ -33,6 +33,7 @@ end
 # Declarations #
 ################
 
+# FIXME this is a really unclear interface
 class Declaration < Ast
   attr_reader :type_specifier, :id
 
@@ -96,9 +97,9 @@ end
 class ArrayParam < Param
 end
 
-##############
+#########
 # Stmts #
-##############
+#########
 
 class Stmt < Ast
 end
@@ -163,7 +164,50 @@ end
 ########
 
 class Exp < Ast
-  include TokenAst
+end
+
+# FIXME this is a really unclear interface
+class VarExp < Exp
+  attr_reader :id
+
+  def initialize(id)
+    @id = id
+  end
+
+  def symbol
+    @id.value
+  end
+end
+
+class SimpleVarExp < VarExp
+end
+
+class PointerVarExp < VarExp
+end
+
+class AddrVarExp < VarExp
+end
+
+class ArrayVarExp < VarExp
+  def initialize(id, index)
+    super(id)
+    @index = index
+  end
+
+  def index
+    @index.value
+  end
+end
+
+class AddrArrayVarExp < VarExp
+  def initialize(id, index)
+    super(id)
+    @index = index
+  end
+
+  def index
+    @index.value
+  end
 end
 
 #####################

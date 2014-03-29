@@ -214,9 +214,9 @@ describe ArrayParam do
   end
 end
 
-##############
+#########
 # Stmts #
-##############
+#########
 
 describe CompoundStmt do
   let(:p) { parse_stmt("{int x; void *y; string z[2]; x; y; z;}") }
@@ -234,9 +234,9 @@ describe CompoundStmt do
 
   # FIXME
   it "has properly formed stmts" do
-    expect(p.stmts[0].exp.value).to eq("x")
-    expect(p.stmts[1].exp.value).to eq("y")
-    expect(p.stmts[2].exp.value).to eq("z")
+    expect(p.stmts[0].exp.symbol).to eq("x")
+    expect(p.stmts[1].exp.symbol).to eq("y")
+    expect(p.stmts[2].exp.symbol).to eq("z")
     expect(p.stmts[3]).to be_nil
   end
 
@@ -291,8 +291,8 @@ describe IfStmt do
 
   # FIXME
   it "is properly formed" do
-    expect(p.body.exp.value).to eq("y")
-    expect(p.else_body.exp.value).to eq("z")
+    expect(p.body.exp.symbol).to eq("y")
+    expect(p.else_body.exp.symbol).to eq("z")
   end
 
   context "with no else stmt" do
@@ -399,6 +399,86 @@ end
 ########
 # Exps #
 ########
+
+describe SimpleVarExp do
+  let(:p) { parse_exp("x") }
+
+  it "is a SimpleVarExp" do
+    expect(p).to be_a SimpleVarExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("x")
+  end
+end
+
+describe ArrayVarExp do
+  let(:p) { parse_exp("x[2]") }
+
+  it "is a ArrayVarExp" do
+    expect(p).to be_a ArrayVarExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("x")
+    expect(p.index).to eq(2)
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(int x) { [2]x; }", "expected r_brace, got l_bracket")
+    end
+  end
+end
+
+describe PointerVarExp do
+  let(:p) { parse_exp("*x") }
+
+  it "is a PointerVarExp" do
+    expect(p).to be_a PointerVarExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("x")
+  end
+end
+
+describe AddrVarExp do
+  let(:p) { parse_exp("&x") }
+
+  it "is a AddrVarExp" do
+    expect(p).to be_a AddrVarExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("x")
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(int x) { x&; }", "expected semicolon, got ampersand")
+    end
+  end
+end
+
+describe AddrArrayVarExp do
+  let(:p) { parse_exp("&x[2]") }
+
+  it "is a AddrArrayVarExp" do
+    expect(p).to be_a AddrArrayVarExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.symbol).to eq("x")
+    expect(p.index).to eq(2)
+  end
+
+  context "that is malformed" do
+    it "raises SyntaxErrors" do
+      expect_syntax_error("int f(int x) { x&[2]; }", "expected semicolon, got ampersand")
+    end
+  end
+end
 
 #####################
 # general terminals #

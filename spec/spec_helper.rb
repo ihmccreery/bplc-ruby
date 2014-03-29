@@ -26,6 +26,10 @@ def parse_stmt(s)
   parse("int f(void) { #{s} }").declarations[0].body.stmts[0]
 end
 
+def parse_exp(s)
+  parse("int f(void) { #{s}; }").declarations[0].body.stmts[0].exp
+end
+
 def parse(s)
   Parser.new(Scanner.new(s)).parse
 end
