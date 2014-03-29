@@ -1,23 +1,22 @@
 require 'spec_helper'
 
 describe Parser do
+  let(:p) { Parser.new(Scanner.new("int x;")) }
+
   describe "#initialize" do
     it "can be constructed from a Scanner" do
-      expect(Parser.new(Scanner.new("int x;"))).to be_a Parser
+      expect(p).to be_a Parser
     end
   end
 
   describe "#parse" do
     it "returns a Program that is also an Ast" do
-      p = Parser.new(Scanner.new("int x;")).parse
-      expect(p).to be_a Program
-      expect(p).to be_a Ast
+      expect(p.parse).to be_a Program
+      expect(p.parse).to be_a Ast
     end
 
     it "can be called multiple times" do
-      p = Parser.new(Scanner.new("int x;"))
-      expect(p.parse).to be_a Ast
-      expect(p.parse).to be_a Ast
+      expect(p.parse).to eq(p.parse)
     end
   end
 
