@@ -21,19 +21,10 @@ describe Program do
       y = p.declarations[1]
       z = p.declarations[2]
 
-      expect(p.declarations[3]).to be_nil
-
-      expect(x).to be_a SimpleDeclaration
-      expect(x.type).to eq(:int)
       expect(x.symbol).to eq("x")
-
-      expect(y).to be_a PointerDeclaration
-      expect(y.type).to eq(:void)
       expect(y.symbol).to eq("y")
-
-      expect(z).to be_a ArrayDeclaration
-      expect(z.type).to eq(:string)
       expect(z.symbol).to eq("z")
+      expect(p.declarations[3]).to be_nil
     end
   end
 
