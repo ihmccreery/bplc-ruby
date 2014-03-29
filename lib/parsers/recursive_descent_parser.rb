@@ -244,13 +244,21 @@ module Parsers
     ########
 
     def exp
-      return neg_exp
+      return mul_exp
+    end
+
+    def mul_exp
+      e = neg_exp
+      while at? MUL_OPS
+        e = MulExp.new(eat_token, e, neg_exp)
+      end
+      return e
     end
 
     def neg_exp
       if at? :minus
         eat(:minus)
-        return NegExp.new(exp)
+        return NegExp.new(neg_exp)
       else
         return var_exp
       end

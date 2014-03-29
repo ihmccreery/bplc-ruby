@@ -398,6 +398,26 @@ end
 # Exps #
 ########
 
+describe MulExp do
+  let(:p) { parse_exp("x*y") }
+
+  it "is a MulExp" do
+    expect(p).to be_a MulExp
+  end
+
+  it "has the correct attributes" do
+    expect(p.op).to eq(:asterisk)
+    expect(p.lhs).to be_a Exp
+    expect(p.rhs).to be_a Exp
+  end
+
+  it "handles *, /, and %" do
+    expect(parse_exp("x*y").op).to eq(:asterisk)
+    expect(parse_exp("x/y").op).to eq(:slash)
+    expect(parse_exp("x%y").op).to eq(:percent)
+  end
+end
+
 describe NegExp do
   let(:p) { parse_exp("-x") }
 
