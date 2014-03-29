@@ -244,7 +244,15 @@ module Parsers
     ########
 
     def exp
-      return mul_exp
+      return add_exp
+    end
+
+    def add_exp
+      e = mul_exp
+      while at? ADD_OPS
+        e = AddExp.new(eat_token, e, mul_exp)
+      end
+      return e
     end
 
     def mul_exp

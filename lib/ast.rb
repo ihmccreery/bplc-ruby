@@ -170,6 +170,20 @@ end
 class Exp < Ast
 end
 
+class AddExp < Exp
+  attr_reader :op, :lhs, :rhs
+
+  def initialize(op, lhs, rhs)
+    @op = op
+    @lhs = lhs
+    @rhs = rhs
+  end
+
+  def op
+    @op.type
+  end
+end
+
 class MulExp < Exp
   attr_reader :op, :lhs, :rhs
 
