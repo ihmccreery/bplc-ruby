@@ -238,6 +238,7 @@ describe CompoundStatement do
     end
   end
 
+  # FIXME
   describe "#statements" do
     it "is an array of Statements that is properly formed" do
       expect(p.statements[0].expression.e.t.f.factor.id.value).to eq("x")
