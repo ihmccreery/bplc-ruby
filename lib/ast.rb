@@ -82,13 +82,7 @@ end
 # Params #
 ##########
 
-class Param < Ast
-  attr_accessor :type_specifier, :id
-
-  def initialize(type_specifier, id)
-    @type_specifier = type_specifier
-    @id = id
-  end
+class Param < VariableDeclaration
 end
 
 class SimpleParam < Param

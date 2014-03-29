@@ -248,16 +248,16 @@ describe FunctionDeclaration do
         expect(p.params[3]).to be_nil
 
         expect(x).to be_a Param
-        expect(x.type_specifier.type).to eq(:int)
-        expect(x.id.value).to eq("x")
+        expect(x.type).to eq(:int)
+        expect(x.symbol).to eq("x")
 
         expect(y).to be_a Param
-        expect(y.type_specifier.type).to eq(:int)
-        expect(y.id.value).to eq("y")
+        expect(y.type).to eq(:int)
+        expect(y.symbol).to eq("y")
 
         expect(z).to be_a Param
-        expect(z.type_specifier.type).to eq(:int)
-        expect(z.id.value).to eq("z")
+        expect(z.type).to eq(:int)
+        expect(z.symbol).to eq("z")
       end
     end
 
