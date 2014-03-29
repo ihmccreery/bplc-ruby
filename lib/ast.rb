@@ -60,11 +60,13 @@ class PointerDeclaration < VariableDeclaration
 end
 
 class ArrayDeclaration < VariableDeclaration
-  attr_accessor :size
-
   def initialize(type_specifier, id, size)
     super(type_specifier, id)
     @size = size
+  end
+
+  def size
+    @size.value
   end
 end
 
@@ -353,6 +355,10 @@ end
 
 class Num < Ast
   include TokenAst
+
+  def value
+    @token.value.to_i
+  end
 end
 
 class Str < Ast

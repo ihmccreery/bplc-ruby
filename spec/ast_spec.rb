@@ -48,16 +48,9 @@ describe SimpleDeclaration do
     expect(p).to be_a SimpleDeclaration
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
   end
 
   context "that is malformed" do
@@ -76,16 +69,9 @@ describe PointerDeclaration do
     expect(p).to be_a PointerDeclaration
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
   end
 
   context "that is malformed" do
@@ -104,26 +90,10 @@ describe  ArrayDeclaration do
     expect(p).to be_a ArrayDeclaration
   end
 
-  it "is an ArrayDeclaration" do
-    expect(p).to be_a ArrayDeclaration
-  end
-
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
-  end
-
-  describe "#size" do
-    it "is a Num" do
-      expect(p.size).to be_a Num
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
+    expect(p.size).to eq(2)
   end
 
   context "that is malformed" do
@@ -142,16 +112,9 @@ describe FunctionDeclaration do
     expect(p).to be_a FunctionDeclaration
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("f")
   end
 
   describe "#body" do
@@ -231,16 +194,9 @@ describe SimpleParam do
     expect(p).to be_a SimpleParam
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
   end
 
   context "that is malformed" do
@@ -258,16 +214,9 @@ describe PointerParam do
     expect(p).to be_a PointerParam
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
   end
 
   context "that is malformed" do
@@ -285,16 +234,9 @@ describe ArrayParam do
     expect(p).to be_a ArrayParam
   end
 
-  describe "#type_specifier" do
-    it "is a TypeSpecifier" do
-      expect(p.type_specifier).to be_a TypeSpecifier
-    end
-  end
-
-  describe "#id" do
-    it "is an Id" do
-      expect(p.id).to be_a Id
-    end
+  it "has the correct attributes" do
+    expect(p.type).to eq(:int)
+    expect(p.symbol).to eq("x")
   end
 
   context "that is malformed" do
@@ -1162,7 +1104,7 @@ describe Id do
 end
 
 describe Num do
-  let(:p) { Parser.new(Scanner.new("int x[2];")).parse.declarations[0].size }
+  let(:p) { get_factor('2').num }
 
   it "is a Num" do
     expect(p).to be_a Num
