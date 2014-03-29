@@ -407,8 +407,8 @@ describe AddExp do
 
   it "has the correct attributes" do
     expect(p.op).to eq(:plus)
-    expect(p.lhs).to be_a Exp
-    expect(p.rhs).to be_a Exp
+    expect(p.lhs.symbol).to eq("x")
+    expect(p.rhs.symbol).to eq("y")
   end
 
   it "handles + and -" do
@@ -426,8 +426,8 @@ describe MulExp do
 
   it "has the correct attributes" do
     expect(p.op).to eq(:asterisk)
-    expect(p.lhs).to be_a Exp
-    expect(p.rhs).to be_a Exp
+    expect(p.lhs.symbol).to eq("x")
+    expect(p.rhs.symbol).to eq("y")
   end
 
   it "handles *, /, and %" do
@@ -445,7 +445,7 @@ describe NegExp do
   end
 
   it "has the correct attributes" do
-    expect(p.exp).to be_a Exp
+    expect(p.exp.symbol).to eq("x")
   end
 end
 
