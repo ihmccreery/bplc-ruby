@@ -322,7 +322,7 @@ module Parsers
         i = id
         if at? :l_bracket
           eat(:l_bracket)
-          n = num
+          n = exp
           eat(:r_bracket)
           return AddrArrayVarExp.new(i, n)
         else

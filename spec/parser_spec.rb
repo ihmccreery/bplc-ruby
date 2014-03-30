@@ -115,7 +115,7 @@ describe Parser do
     end
 
     it "properly nests VarExps" do
-      p = parse_exp("&x[2] * *y")
+      p = parse_exp("&x[y] * *z")
 
       expect(p.lhs).to be_a AddrArrayVarExp
       expect(p.rhs).to be_a PointerVarExp
