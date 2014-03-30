@@ -84,7 +84,6 @@ describe Parser do
 
     it "properly nests AddExps and MulExps" do
       p = parse_exp("x * y + z / w - v")
-
       minus = p
       plus = minus.lhs
       times = plus.lhs
@@ -115,10 +114,38 @@ describe Parser do
       expect(q.rhs.exp.symbol).to eq("y")
     end
 
-    it "properly nests VarExps"
-    it "raises errors on improperly nested variable expressions"
-    it "properly nests LitExps"
-    it "properly nests parenthesized Exps"
+    it "properly nests VarExps" do
+      p = parse_exp("&x[2] * *y")
+
+      expect(p.lhs).to be_a AddrArrayVarExp
+      expect(p.rhs).to be_a PointerVarExp
+    end
+
+    it "raises errors on improperly nested variable expressions" do
+      expect_syntax_error("int f(void) { *(x); }", "expected id, got l_paren")
+      expect_syntax_error("int f(void) { *2+x; }", "expected id, got num")
+    end
+
+    it "properly nests parenthesized Exps" do
+      p = parse_exp("x * ((y + z) / w) - v")
+      minus = p
+      times = p.lhs
+      divides = times.rhs
+      plus = divides.lhs
+
+      expect(minus.op).to eq(:minus)
+      expect(minus.rhs.symbol).to eq("v")
+
+      expect(times.op).to eq(:asterisk)
+      expect(times.lhs.symbol).to eq("x")
+
+      expect(divides.op).to eq(:slash)
+      expect(divides.rhs.symbol).to eq("w")
+
+      expect(plus.op).to eq(:plus)
+      expect(plus.lhs.symbol).to eq("y")
+      expect(plus.rhs.symbol).to eq("z")
+    end
   end
 
   it "parses ex1.bpl properly" do
