@@ -62,7 +62,7 @@ module Parsers
         i = id
         if at? :l_bracket
           eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, num)
+          d = ArrayDeclaration.new(t, i, num_lit_exp)
           eat(:r_bracket)
           eat(:semicolon)
         elsif at? :l_paren
@@ -143,7 +143,7 @@ module Parsers
         i = id
         if at? :l_bracket
           eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, num)
+          d = ArrayDeclaration.new(t, i, num_lit_exp)
           eat(:r_bracket)
           eat(:semicolon)
         else
@@ -368,20 +368,32 @@ module Parsers
 
     def lit_exp
       if at? :read
-        r = eat(:read)
-        eat(:l_paren)
-        eat(:r_paren)
-        return ReadLitExp.new(r)
+        return read_lit_exp
       elsif at? :num
-        return NumLitExp.new(eat(:num))
+        return num_lit_exp
       else
-        return StrLitExp.new(eat(:str))
+        return str_lit_exp
       end
     end
 
-    #####################
-    # general terminals #
-    #####################
+    def read_lit_exp
+      r = eat(:read)
+      eat(:l_paren)
+      eat(:r_paren)
+      return ReadLitExp.new(r)
+    end
+
+    def num_lit_exp
+      return NumLitExp.new(eat(:num))
+    end
+
+    def str_lit_exp
+      return StrLitExp.new(eat(:str))
+    end
+
+    #########################
+    # type_specifier and id #
+    #########################
 
     def type_specifier
       if at? TYPE_SPECIFIERS
@@ -393,10 +405,6 @@ module Parsers
 
     def id
       Id.new(eat(:id))
-    end
-
-    def num
-      Num.new(eat(:num))
     end
 
     ###################

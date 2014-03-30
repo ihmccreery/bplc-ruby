@@ -651,9 +651,9 @@ describe StrLitExp do
   end
 end
 
-#####################
-# general terminals #
-#####################
+########################
+# TypeSpecifier and Id #
+########################
 
 describe TypeSpecifier do
   let(:p) { parse_declaration("int x;").type_specifier }
@@ -685,20 +685,3 @@ describe Id do
     end
   end
 end
-
-# TODO
-# describe Num do
-#   let(:p) { get_factor('2').num }
-
-#   it "is a Num" do
-#     expect(p).to be_a Num
-#   end
-
-#   describe "#token" do
-#     it "is a token of the appropriate type and value" do
-#       expect(p.token).to be_a Token
-#       expect(p.token.type).to eq(:num)
-#       expect(p.token.value).to eq("2")
-#     end
-#   end
-# end

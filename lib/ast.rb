@@ -291,9 +291,9 @@ end
 class StrLitExp < LitExp
 end
 
-#####################
-# general terminals #
-#####################
+########################
+# TypeSpecifier and Id #
+########################
 
 class TypeSpecifier < Ast
   include TokenAst
@@ -301,12 +301,4 @@ end
 
 class Id < Ast
   include TokenAst
-end
-
-class Num < Ast
-  include TokenAst
-
-  def value
-    @token.value.to_i
-  end
 end
