@@ -44,3 +44,7 @@ def expect_syntax_error(s, message)
   p = Parser.new(Scanner.new(s))
   expect{p.parse}.to raise_error(SyntaxError, message)
 end
+
+def expect_syntax_error_on_stmts(s, message)
+  expect_syntax_error("int f(void) { #{s} }", message)
+end

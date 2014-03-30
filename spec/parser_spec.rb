@@ -51,7 +51,7 @@ describe Parser do
 
     it "raises SyntaxErrors on bad lhss" do
       ["&x", "2", "x + z", "2 + x"].each do |lhs|
-        expect_syntax_error("int f(void) { #{lhs} = &y }", "lhs not assignable")
+        expect_syntax_error_on_stmts("#{lhs} = &y;", "lhs not assignable")
       end
     end
   end
@@ -79,7 +79,7 @@ describe Parser do
     end
 
     it "raises errors on chained RelExps" do
-      expect_syntax_error("int f(void) { x * y <= z + w > v; }", "expected semicolon, got gt")
+      expect_syntax_error_on_stmts("x * y <= z + w > v;", "expected semicolon, got gt")
     end
 
     it "properly nests AddExps and MulExps" do
@@ -122,8 +122,8 @@ describe Parser do
     end
 
     it "raises errors on improperly nested variable expressions" do
-      expect_syntax_error("int f(void) { *(x); }", "expected id, got l_paren")
-      expect_syntax_error("int f(void) { *2+x; }", "expected id, got num")
+      expect_syntax_error_on_stmts("*(x);", "expected id, got l_paren")
+      expect_syntax_error_on_stmts("*2+x;", "expected id, got num")
     end
 
     it "properly nests parenthesized Exps" do

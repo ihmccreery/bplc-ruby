@@ -246,9 +246,9 @@ describe CompoundStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { int x void y; }", "expected semicolon, got void")
-      expect_syntax_error("int f(void) { int x; void y(void) { } string z[2]; }", "expected semicolon, got l_paren")
-      expect_syntax_error("int f(void) { x; void y; }", "expected r_brace, got void")
+      expect_syntax_error_on_stmts("int x void y;", "expected semicolon, got void")
+      expect_syntax_error_on_stmts("int x; void y(void) { } string z[2];", "expected semicolon, got l_paren")
+      expect_syntax_error_on_stmts("x; void y;", "expected r_brace, got void")
     end
   end
 end
@@ -303,9 +303,9 @@ describe IfStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { if x {y;} }", "expected l_paren, got id")
-      expect_syntax_error("int f(void) { if (x {y;} }", "expected r_paren, got l_brace")
-      expect_syntax_error("int f(void) { if (x;) {y;} }", "expected r_paren, got semicolon")
+      expect_syntax_error_on_stmts("if x {y;}", "expected l_paren, got id")
+      expect_syntax_error_on_stmts("if (x {y;}", "expected r_paren, got l_brace")
+      expect_syntax_error_on_stmts("if (x;) {y;}", "expected r_paren, got semicolon")
     end
   end
 end
@@ -324,9 +324,9 @@ describe WhileStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { while x {y;} }", "expected l_paren, got id")
-      expect_syntax_error("int f(void) { while (x {y;} }", "expected r_paren, got l_brace")
-      expect_syntax_error("int f(void) { while (x;) {y;} }", "expected r_paren, got semicolon")
+      expect_syntax_error_on_stmts("while x {y;}", "expected l_paren, got id")
+      expect_syntax_error_on_stmts("while (x {y;}", "expected r_paren, got l_brace")
+      expect_syntax_error_on_stmts("while (x;) {y;}", "expected r_paren, got semicolon")
     end
   end
 end
@@ -352,8 +352,8 @@ describe ReturnStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { return }", "expected expression, got r_brace")
-      expect_syntax_error("int f(void) { return x }", "expected semicolon, got r_brace")
+      expect_syntax_error_on_stmts("return", "expected expression, got r_brace")
+      expect_syntax_error_on_stmts("return x", "expected semicolon, got r_brace")
     end
   end
 end
@@ -371,9 +371,9 @@ describe WriteStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { write(); }", "expected expression, got r_paren")
-      expect_syntax_error("int f(void) { write(x) }", "expected semicolon, got r_brace")
-      expect_syntax_error("int f(void) { write(x;) }", "expected r_paren, got semicolon")
+      expect_syntax_error_on_stmts("write();", "expected expression, got r_paren")
+      expect_syntax_error_on_stmts("write(x)", "expected semicolon, got r_brace")
+      expect_syntax_error_on_stmts("write(x;)", "expected r_paren, got semicolon")
     end
   end
 end
@@ -387,9 +387,9 @@ describe WritelnStmt do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(void) { writeln() }", "expected semicolon, got r_brace")
-      expect_syntax_error("int f(void) { writeln(x); }", "expected r_paren, got id")
-      expect_syntax_error("int f(void) { writeln }", "expected l_paren, got r_brace")
+      expect_syntax_error_on_stmts("writeln()", "expected semicolon, got r_brace")
+      expect_syntax_error_on_stmts("writeln(x);", "expected r_paren, got id")
+      expect_syntax_error_on_stmts("writeln", "expected l_paren, got r_brace")
     end
   end
 end
@@ -515,7 +515,7 @@ describe ArrayVarExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { [2]x; }", "expected r_brace, got l_bracket")
+      expect_syntax_error_on_stmts("[2]x;", "expected r_brace, got l_bracket")
     end
   end
 end
@@ -545,7 +545,7 @@ describe AddrVarExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { x&; }", "expected semicolon, got ampersand")
+      expect_syntax_error_on_stmts("x&;", "expected semicolon, got ampersand")
     end
   end
 end
@@ -564,7 +564,7 @@ describe AddrArrayVarExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { x&[2]; }", "expected semicolon, got ampersand")
+      expect_syntax_error_on_stmts("x&[2];", "expected semicolon, got ampersand")
     end
   end
 end
@@ -602,8 +602,8 @@ describe FunCallExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { f(; }", "expected expression, got semicolon")
-      expect_syntax_error("int f(int x) { f(x,); }", "expected expression, got r_paren")
+      expect_syntax_error_on_stmts("f(;", "expected expression, got semicolon")
+      expect_syntax_error_on_stmts("f(x,);", "expected expression, got r_paren")
     end
   end
 end
@@ -621,8 +621,8 @@ describe ReadLitExp do
 
   context "that is malformed" do
     it "raises SyntaxErrors" do
-      expect_syntax_error("int f(int x) { read); }", "expected l_paren, got r_paren")
-      expect_syntax_error("int f(int x) { read(; }", "expected r_paren, got semicolon")
+      expect_syntax_error_on_stmts("read);", "expected l_paren, got r_paren")
+      expect_syntax_error_on_stmts("read(;", "expected r_paren, got semicolon")
     end
   end
 end
