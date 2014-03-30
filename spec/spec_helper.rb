@@ -1,6 +1,12 @@
-Dir[File.expand_path("../../lib/*.rb", __FILE__)].each { |f| require f }
+require 'bplc'
 
-EX1_FNAME = File.expand_path("../ex1.bpl", __FILE__)
+def get_example(s)
+  File.expand_path("../examples/#{s}.bpl", __FILE__)
+end
+
+EX1_FNAME = get_example("ex1")
+EX_BAD_SYNTAX_FNAME = get_example("ex_bad_syntax")
+EX_FAKE_FNAME = get_example("ex_fake")
 
 RSpec.configure do |config|
   # Run specs in random order to surface order dependencies. If you find an

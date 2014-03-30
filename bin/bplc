@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# The command line BPL compiler.
+
+$:.unshift File.dirname(__FILE__) + '/../lib'
+require 'bplc'
+
+Bplc.new(ARGV[0]).compile
