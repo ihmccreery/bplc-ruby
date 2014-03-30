@@ -1,3 +1,6 @@
+require 'scanner'
+require 'parser'
+
 class Bplc
   def initialize(fname)
     @source = File.new(fname)

@@ -1,4 +1,4 @@
-Dir[File.expand_path("../../lib/*.rb", __FILE__)].each { |f| require f }
+require 'bplc'
 
 def get_example(s)
   File.expand_path("../examples/#{s}.bpl", __FILE__)
