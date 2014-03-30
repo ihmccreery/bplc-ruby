@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'ex1_tokens'
+require 'examples/ex1_tokens'
 
 describe Scanner do
   describe "#initialize" do
