@@ -24,34 +24,26 @@ describe Parser do
       p = parse_exp("x = y")
 
       expect(p).to be_a AssignmentExp
-
-      expect(p.lhs).to be_a SimpleVarExp
       expect(p.lhs.symbol).to eq("x")
-
-      expect(p.rhs).to be_a SimpleVarExp
       expect(p.rhs.symbol).to eq("y")
     end
 
     it "chains AssignmentExps" do
       p = parse_exp("x = *y = *z")
-      q = p.rhs
 
       expect(p).to be_a AssignmentExp
-      expect(q).to be_a AssignmentExp
 
-      expect(p.lhs).to be_a SimpleVarExp
       expect(p.lhs.symbol).to eq("x")
 
-      expect(q.lhs).to be_a PointerVarExp
-      expect(q.lhs.symbol).to eq("y")
-
-      expect(q.rhs).to be_a PointerVarExp
-      expect(q.rhs.symbol).to eq("z")
+      expect(p.rhs).to be_a AssignmentExp
+      expect(p.rhs.lhs.symbol).to eq("y")
+      expect(p.rhs.rhs.symbol).to eq("z")
     end
 
     it "handles assignable lhss" do
       ["x", "x[2]", "x[2+z*3]", "x[z]", "*x", "(x)"].each do |lhs|
         p = parse_exp("#{lhs} = y")
+
         expect(p).to be_a AssignmentExp
         expect(p.lhs).to be_a AssignableVarExp
       end
@@ -65,10 +57,64 @@ describe Parser do
   end
 
   describe "order of operations" do
-    it "properly nests AssignmentExps"
-    it "properly nests RelExps"
-    it "properly nests AddExps and MulExps"
-    it "properly nests NegExps"
+    it "properly nests AssignmentExps" do
+      p = parse_exp("x = y * z")
+
+      expect(p).to be_a AssignmentExp
+
+      expect(p.lhs.symbol).to eq("x")
+
+      expect(p.rhs.op).to eq(:asterisk)
+      expect(p.rhs.lhs.symbol).to eq("y")
+      expect(p.rhs.rhs.symbol).to eq("z")
+    end
+
+    it "properly nests RelExps" do
+      p = parse_exp("x * y <= z + w")
+
+      expect(p).to be_a RelExp
+      expect(p.op).to eq(:leq)
+      expect(p.lhs.op).to eq(:asterisk)
+      expect(p.rhs.op).to eq(:plus)
+    end
+
+    it "raises errors on chained RelExps" do
+      expect_syntax_error("int f(void) { x * y <= z + w > v; }", "expected semicolon, got gt")
+    end
+
+    it "properly nests AddExps and MulExps" do
+      p = parse_exp("x * y + z / w - v")
+
+      minus = p
+      plus = minus.lhs
+      times = plus.lhs
+      divides = plus.rhs
+
+      expect(minus.op).to eq(:minus)
+      expect(minus.rhs.symbol).to eq("v")
+
+      expect(plus.op).to eq(:plus)
+
+      expect(times.op).to eq(:asterisk)
+      expect(times.lhs.symbol).to eq("x")
+      expect(times.rhs.symbol).to eq("y")
+
+      expect(divides.op).to eq(:slash)
+      expect(divides.lhs.symbol).to eq("z")
+      expect(divides.rhs.symbol).to eq("w")
+    end
+
+    it "properly nests NegExps" do
+      p = parse_exp("x + -y")
+      q = parse_exp("x / -y")
+
+      expect(p.rhs).to be_a NegExp
+      expect(p.rhs.exp.symbol).to eq("y")
+
+      expect(q.rhs).to be_a NegExp
+      expect(q.rhs.exp.symbol).to eq("y")
+    end
+
     it "properly nests VarExps"
     it "raises errors on improperly nested variable expressions"
     it "properly nests LitExps"

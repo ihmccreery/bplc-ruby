@@ -265,10 +265,11 @@ module Parsers
 
     def rel_exp
       e = add_exp
-      while at? REL_OPS
-        e = RelExp.new(eat_token, e, add_exp)
+      if at? REL_OPS
+        return RelExp.new(eat_token, e, add_exp)
+      else
+        return e
       end
-      return e
     end
 
     def add_exp
