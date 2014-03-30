@@ -42,5 +42,5 @@ end
 
 def expect_syntax_error(s, message)
   p = Parser.new(Scanner.new(s))
-  expect{p.parse}.to raise_error(SyntaxError, message)
+  expect{p.parse}.to raise_error(SyntaxError, message), "tried to parse: '#{s}'"
 end

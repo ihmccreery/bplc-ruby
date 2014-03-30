@@ -20,9 +20,48 @@ describe Parser do
   end
 
   describe "building AssignmentExps" do
-    it "properly forms AssignmentExps"
-    it "chains AssignmentExps"
-    it "raises SyntaxErrors on bad lhss"
+    it "properly forms AssignmentExps" do
+      p = parse_exp("x = y")
+
+      expect(p).to be_a AssignmentExp
+
+      expect(p.lhs).to be_a SimpleVarExp
+      expect(p.lhs.symbol).to eq("x")
+
+      expect(p.rhs).to be_a SimpleVarExp
+      expect(p.rhs.symbol).to eq("y")
+    end
+
+    it "chains AssignmentExps" do
+      p = parse_exp("x = *y = *z")
+      q = p.rhs
+
+      expect(p).to be_a AssignmentExp
+      expect(q).to be_a AssignmentExp
+
+      expect(p.lhs).to be_a SimpleVarExp
+      expect(p.lhs.symbol).to eq("x")
+
+      expect(q.lhs).to be_a PointerVarExp
+      expect(q.lhs.symbol).to eq("y")
+
+      expect(q.rhs).to be_a PointerVarExp
+      expect(q.rhs.symbol).to eq("z")
+    end
+
+    it "handles assignable lhss" do
+      ["x", "x[2]", "x[2+z*3]", "x[z]", "*x", "(x)"].each do |lhs|
+        p = parse_exp("#{lhs} = y")
+        expect(p).to be_a AssignmentExp
+        expect(p.lhs).to be_a AssignableVarExp
+      end
+    end
+
+    it "raises SyntaxErrors on bad lhss" do
+      ["&x", "2", "x + z", "2 + x"].each do |lhs|
+        expect_syntax_error("int f(void) { #{lhs} = &y }", "lhs not assignable")
+      end
+    end
   end
 
   describe "order of operations" do

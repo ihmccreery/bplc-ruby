@@ -301,6 +301,11 @@ module Parsers
         return lit_exp
       elsif at? FIRST_OF_VAR_EXP
         return var_exp
+      elsif at? :l_paren
+        eat(:l_paren)
+        e = exp
+        eat(:r_paren)
+        return e
       else
         raise SyntaxError, "expected expression, got #{current_token.type.to_s}"
       end
@@ -329,7 +334,7 @@ module Parsers
         i = id
         if at? :l_bracket
           eat(:l_bracket)
-          n = num
+          n = exp
           eat(:r_bracket)
           return ArrayVarExp.new(i, n)
         elsif at? :l_paren
