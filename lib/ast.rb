@@ -1,4 +1,22 @@
 class Ast
+  private
+
+  def expect(a, klass, can_be_nil=false)
+    if can_be_nil && a.nil?
+      return a
+    else
+      raise TypeError, "expected #{klass}, got #{a.class}" unless a.is_a? klass
+      return a
+    end
+  end
+
+  def expect_array(arr, klass)
+    raise TypeError, "expected Array of #{klass}, got #{arr.class}" unless arr.is_a? Array
+    arr.each do |a|
+      expect(a, klass)
+    end
+    return arr
+  end
 end
 
 module TokenAst
@@ -24,8 +42,9 @@ end
 class Program < Ast
   attr_reader :declarations
 
+  # @param declarations [Array<Declaration>]
   def initialize(declarations)
-    @declarations = declarations
+    @declarations = expect_array(declarations, Declaration)
   end
 end
 
@@ -34,16 +53,13 @@ end
 ################
 
 class Declaration < Ast
-  # @return [TypeSpecifier]
-  attr_reader :type_specifier
-  # @return [Id]
-  attr_reader :id
+  attr_reader :type_specifier, :id
 
   # @param type_specifier [TypeSpecifier]
   # @param id [Id]
   def initialize(type_specifier, id)
-    @type_specifier = type_specifier
-    @id = id
+    @type_specifier = expect(type_specifier, TypeSpecifier)
+    @id = expect(id, Id)
   end
 
   def type
@@ -65,9 +81,12 @@ class PointerDeclaration < VariableDeclaration
 end
 
 class ArrayDeclaration < VariableDeclaration
+  # @param type_specifier [TypeSpecifier]
+  # @param id [Id]
+  # @param size [Num]
   def initialize(type_specifier, id, size)
     super(type_specifier, id)
-    @size = size
+    @size = expect(size, NumLitExp)
   end
 
   def size
@@ -78,10 +97,14 @@ end
 class FunctionDeclaration < Declaration
   attr_reader :params, :body
 
+  # @param type_specifier [TypeSpecifier]
+  # @param id [Id]
+  # @param params [Array<Param>]
+  # @param body [CompoundStmt]
   def initialize(type_specifier, id, params, body)
     super(type_specifier, id)
-    @params = params
-    @body = body
+    @params = expect_array(params, Param)
+    @body = expect(body, CompoundStmt)
   end
 end
 
@@ -109,54 +132,64 @@ class Stmt < Ast
 end
 
 class CompoundStmt < Stmt
-  attr_reader :local_declarations, :stmts
+  attr_reader :variable_declarations, :stmts
 
-  def initialize(local_declarations, stmts)
-    @local_declarations = local_declarations
-    @stmts = stmts
+  # @param variable_declarations [Array<LocalDeclaration>]
+  # @param stmts [Array<Stmt>]
+  def initialize(variable_declarations, stmts)
+    @variable_declarations = expect_array(variable_declarations, VariableDeclaration)
+    @stmts = expect_array(stmts, Stmt)
   end
 end
 
 class ExpStmt < Stmt
   attr_reader :exp
 
+  # @param exp [Exp, nil]
   def initialize(exp)
-    @exp = exp
+    @exp = expect(exp, Exp, can_be_nil: true)
   end
 end
 
 class IfStmt < Stmt
   attr_reader :condition, :body, :else_body
 
+  # @param condition [Exp]
+  # @param body [Stmt]
+  # @param else_body [Stmt, nil]
   def initialize(condition, body, else_body)
-    @condition = condition
-    @body = body
-    @else_body = else_body
+    @condition = expect(condition, Exp)
+    @body = expect(body, Stmt)
+    @else_body = expect(else_body, Stmt, can_be_nil: true)
   end
 end
 
 class WhileStmt < Stmt
   attr_reader :condition, :body
 
+  # @param condition [Exp]
+  # @param body [Stmt]
   def initialize(condition, body)
-    @condition = condition
-    @body = body
+    @condition = expect(condition, Exp)
+    @body = expect(body, Stmt)
   end
 end
 
 class ReturnStmt < Stmt
   attr_reader :value
 
+  # @param value [Exp, nil]
   def initialize(value)
-    @value = value
+    @value = expect(value, Exp, can_be_nil: true)
   end
 end
 
 class WriteStmt < Stmt
   attr_reader :value
 
+  # @param value [Exp]
   def initialize(value)
-    @value = value
+    @value = expect(value, Exp)
   end
 end
 
@@ -173,10 +206,13 @@ end
 class BinExp < Exp
   attr_reader :op, :lhs, :rhs
 
+  # @param op [Token]
+  # @param lhs [Exp]
+  # @param rhs [Exp]
   def initialize(op, lhs, rhs)
-    @op = op
-    @lhs = lhs
-    @rhs = rhs
+    @op = expect(op, Token)
+    @lhs = expect(lhs, Exp)
+    @rhs = expect(rhs, Exp)
   end
 
   def op
@@ -187,9 +223,11 @@ end
 class AssignmentExp < Exp
   attr_reader :lhs, :rhs
 
+  # @param lhs [AssignableVarExp]
+  # @param rhs [Exp]
   def initialize(lhs, rhs)
-    @lhs = lhs
-    @rhs = rhs
+    @lhs = expect(lhs, AssignableVarExp)
+    @rhs = expect(rhs, Exp)
   end
 end
 
@@ -205,8 +243,9 @@ end
 class NegExp < Exp
   attr_reader :exp
 
+  # @param exp [Exp]
   def initialize(exp)
-    @exp = exp
+    @exp = expect(exp, Exp)
   end
 end
 
@@ -215,12 +254,11 @@ end
 ###########
 
 class VarExp < Exp
-  # @return [Id]
   attr_reader :id
 
   # @param id [Id]
   def initialize(id)
-    @id = id
+    @id = expect(id, Id)
   end
 
   def symbol
@@ -238,9 +276,11 @@ class PointerVarExp < AssignableVarExp
 end
 
 class ArrayVarExp < AssignableVarExp
+  # @param id [Id]
+  # @param index [Exp]
   def initialize(id, index)
     super(id)
-    @index = index
+    @index = expect(index, Exp)
   end
 
   def index
@@ -252,9 +292,11 @@ class AddrVarExp < VarExp
 end
 
 class AddrArrayVarExp < VarExp
+  # @param id [Id]
+  # @param index [Exp]
   def initialize(id, index)
     super(id)
-    @index = index
+    @index = expect(index, Exp)
   end
 
   def index
@@ -265,9 +307,11 @@ end
 class FunCallExp < VarExp
   attr_reader :args
 
+  # @param id [Id]
+  # @param index [Array<Exp>]
   def initialize(id, args)
     super(id)
-    @args = args
+    @args = expect_array(args, Exp)
   end
 end
 
@@ -275,7 +319,7 @@ end
 # LitExps #
 ###########
 
-class LitExp < Ast
+class LitExp < Exp
   include TokenAst
 end
 

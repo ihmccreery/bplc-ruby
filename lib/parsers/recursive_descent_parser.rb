@@ -120,20 +120,20 @@ module Parsers
 
     def compound_stmt
       eat(:l_brace)
-      c = CompoundStmt.new(local_declarations, stmts)
+      c = CompoundStmt.new(variable_declarations, stmts)
       eat(:r_brace)
       return c
     end
 
-    def local_declarations
+    def variable_declarations
       d = []
       while at? TYPE_SPECIFIERS
-        d << local_declaration
+        d << variable_declaration
       end
       return d
     end
 
-    def local_declaration
+    def variable_declaration
       t = type_specifier
       if at? :asterisk
         eat(:asterisk)

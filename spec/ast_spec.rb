@@ -226,10 +226,10 @@ describe CompoundStmt do
   end
 
   it "has properly formed declarations" do
-    expect(p.local_declarations[0].symbol).to eq("x")
-    expect(p.local_declarations[1].symbol).to eq("y")
-    expect(p.local_declarations[2].symbol).to eq("z")
-    expect(p.local_declarations[3]).to be_nil
+    expect(p.variable_declarations[0].symbol).to eq("x")
+    expect(p.variable_declarations[1].symbol).to eq("y")
+    expect(p.variable_declarations[2].symbol).to eq("z")
+    expect(p.variable_declarations[3]).to be_nil
   end
 
   it "has properly formed stmts" do
