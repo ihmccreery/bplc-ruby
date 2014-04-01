@@ -24,8 +24,8 @@ describe Parser do
       p = parse_exp("x = y")
 
       expect(p).to be_a AssignmentExp
-      expect(p.lhs.symbol).to eq("x")
-      expect(p.rhs.symbol).to eq("y")
+      expect(p.lhs.id).to eq("x")
+      expect(p.rhs.id).to eq("y")
     end
 
     it "chains AssignmentExps" do
@@ -33,11 +33,11 @@ describe Parser do
 
       expect(p).to be_a AssignmentExp
 
-      expect(p.lhs.symbol).to eq("x")
+      expect(p.lhs.id).to eq("x")
 
       expect(p.rhs).to be_a AssignmentExp
-      expect(p.rhs.lhs.symbol).to eq("y")
-      expect(p.rhs.rhs.symbol).to eq("z")
+      expect(p.rhs.lhs.id).to eq("y")
+      expect(p.rhs.rhs.id).to eq("z")
     end
 
     it "handles assignable lhss" do
@@ -62,11 +62,11 @@ describe Parser do
 
       expect(p).to be_a AssignmentExp
 
-      expect(p.lhs.symbol).to eq("x")
+      expect(p.lhs.id).to eq("x")
 
       expect(p.rhs.op).to eq(:asterisk)
-      expect(p.rhs.lhs.symbol).to eq("y")
-      expect(p.rhs.rhs.symbol).to eq("z")
+      expect(p.rhs.lhs.id).to eq("y")
+      expect(p.rhs.rhs.id).to eq("z")
     end
 
     it "properly nests RelExps" do
@@ -90,17 +90,17 @@ describe Parser do
       divides = plus.rhs
 
       expect(minus.op).to eq(:minus)
-      expect(minus.rhs.symbol).to eq("v")
+      expect(minus.rhs.id).to eq("v")
 
       expect(plus.op).to eq(:plus)
 
       expect(times.op).to eq(:asterisk)
-      expect(times.lhs.symbol).to eq("x")
-      expect(times.rhs.symbol).to eq("y")
+      expect(times.lhs.id).to eq("x")
+      expect(times.rhs.id).to eq("y")
 
       expect(divides.op).to eq(:slash)
-      expect(divides.lhs.symbol).to eq("z")
-      expect(divides.rhs.symbol).to eq("w")
+      expect(divides.lhs.id).to eq("z")
+      expect(divides.rhs.id).to eq("w")
     end
 
     it "properly nests NegExps" do
@@ -108,10 +108,10 @@ describe Parser do
       q = parse_exp("x / -y")
 
       expect(p.rhs).to be_a NegExp
-      expect(p.rhs.exp.symbol).to eq("y")
+      expect(p.rhs.exp.id).to eq("y")
 
       expect(q.rhs).to be_a NegExp
-      expect(q.rhs.exp.symbol).to eq("y")
+      expect(q.rhs.exp.id).to eq("y")
     end
 
     it "properly nests VarExps" do
@@ -134,17 +134,17 @@ describe Parser do
       plus = divides.lhs
 
       expect(minus.op).to eq(:minus)
-      expect(minus.rhs.symbol).to eq("v")
+      expect(minus.rhs.id).to eq("v")
 
       expect(times.op).to eq(:asterisk)
-      expect(times.lhs.symbol).to eq("x")
+      expect(times.lhs.id).to eq("x")
 
       expect(divides.op).to eq(:slash)
-      expect(divides.rhs.symbol).to eq("w")
+      expect(divides.rhs.id).to eq("w")
 
       expect(plus.op).to eq(:plus)
-      expect(plus.lhs.symbol).to eq("y")
-      expect(plus.rhs.symbol).to eq("z")
+      expect(plus.lhs.id).to eq("y")
+      expect(plus.rhs.id).to eq("z")
     end
   end
 

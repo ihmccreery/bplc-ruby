@@ -19,6 +19,12 @@ class Ast
   end
 end
 
+module Ided
+  def id
+    @id.value
+  end
+end
+
 ###########
 # Program #
 ###########
@@ -37,6 +43,8 @@ end
 ################
 
 class Declaration < Ast
+  include Ided
+
   # @param type_specifier [Token]
   # @param id [Token]
   def initialize(type_specifier, id)
@@ -46,10 +54,6 @@ class Declaration < Ast
 
   def type
     @type_specifier.type
-  end
-
-  def symbol
-    @id.value
   end
 end
 
@@ -236,13 +240,11 @@ end
 ###########
 
 class VarExp < Exp
+  include Ided
+
   # @param id [Token]
   def initialize(id)
     @id = expect(id, Token)
-  end
-
-  def symbol
-    @id.value
   end
 end
 
@@ -256,15 +258,13 @@ class PointerVarExp < AssignableVarExp
 end
 
 class ArrayVarExp < AssignableVarExp
+  attr_reader :index
+
   # @param id [Token]
   # @param index [Exp]
   def initialize(id, index)
     super(id)
     @index = expect(index, Exp)
-  end
-
-  def index
-    @index.value
   end
 end
 
@@ -272,15 +272,13 @@ class AddrVarExp < VarExp
 end
 
 class AddrArrayVarExp < VarExp
+  attr_reader :index
+
   # @param id [Token]
   # @param index [Exp]
   def initialize(id, index)
     super(id)
     @index = expect(index, Exp)
-  end
-
-  def index
-    @index.value
   end
 end
 
@@ -314,7 +312,6 @@ class ReadLitExp < LitExp
 end
 
 class NumLitExp < LitExp
-  # TODO
   def value
     @literal.value.to_i
   end

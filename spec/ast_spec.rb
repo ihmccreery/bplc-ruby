@@ -14,9 +14,9 @@ describe Program do
   # #declarations
 
   it "has properly formed declarations" do
-    expect(p.declarations[0].symbol).to eq("x")
-    expect(p.declarations[1].symbol).to eq("y")
-    expect(p.declarations[2].symbol).to eq("z")
+    expect(p.declarations[0].id).to eq("x")
+    expect(p.declarations[1].id).to eq("y")
+    expect(p.declarations[2].id).to eq("z")
     expect(p.declarations[3]).to be_nil
   end
 
@@ -42,7 +42,7 @@ describe SimpleDeclaration do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -63,7 +63,7 @@ describe PointerDeclaration do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -84,7 +84,7 @@ describe  ArrayDeclaration do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
     expect(p.size).to eq(2)
   end
 
@@ -106,7 +106,7 @@ describe FunctionDeclaration do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("f")
+    expect(p.id).to eq("f")
     expect(p.body).to be_a CompoundStmt
   end
 
@@ -132,9 +132,9 @@ describe FunctionDeclaration do
     let(:p) { parse_declaration("int f(int x, int *y, int z[]) { }") }
 
     it "has properly formed params" do
-      expect(p.params[0].symbol).to eq("x")
-      expect(p.params[1].symbol).to eq("y")
-      expect(p.params[2].symbol).to eq("z")
+      expect(p.params[0].id).to eq("x")
+      expect(p.params[1].id).to eq("y")
+      expect(p.params[2].id).to eq("z")
       expect(p.params[3]).to be_nil
     end
   end
@@ -163,7 +163,7 @@ describe SimpleParam do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -183,7 +183,7 @@ describe PointerParam do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -203,7 +203,7 @@ describe ArrayParam do
 
   it "has the correct attributes" do
     expect(p.type).to eq(:int)
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -226,16 +226,16 @@ describe CompoundStmt do
   end
 
   it "has properly formed declarations" do
-    expect(p.variable_declarations[0].symbol).to eq("x")
-    expect(p.variable_declarations[1].symbol).to eq("y")
-    expect(p.variable_declarations[2].symbol).to eq("z")
+    expect(p.variable_declarations[0].id).to eq("x")
+    expect(p.variable_declarations[1].id).to eq("y")
+    expect(p.variable_declarations[2].id).to eq("z")
     expect(p.variable_declarations[3]).to be_nil
   end
 
   it "has properly formed stmts" do
-    expect(p.stmts[0].exp.symbol).to eq("x")
-    expect(p.stmts[1].exp.symbol).to eq("y")
-    expect(p.stmts[2].exp.symbol).to eq("z")
+    expect(p.stmts[0].exp.id).to eq("x")
+    expect(p.stmts[1].exp.id).to eq("y")
+    expect(p.stmts[2].exp.id).to eq("z")
     expect(p.stmts[3]).to be_nil
   end
 
@@ -289,8 +289,8 @@ describe IfStmt do
   end
 
   it "is properly formed" do
-    expect(p.body.exp.symbol).to eq("y")
-    expect(p.else_body.exp.symbol).to eq("z")
+    expect(p.body.exp.id).to eq("y")
+    expect(p.else_body.exp.id).to eq("z")
   end
 
   context "with no else stmt" do
@@ -406,8 +406,8 @@ describe AssignmentExp do
   end
 
   it "has the correct attributes" do
-    expect(p.lhs.symbol).to eq("x")
-    expect(p.rhs.symbol).to eq("y")
+    expect(p.lhs.id).to eq("x")
+    expect(p.rhs.id).to eq("y")
   end
 end
 
@@ -420,8 +420,8 @@ describe RelExp do
 
   it "has the correct attributes" do
     expect(p.op).to eq(:leq)
-    expect(p.lhs.symbol).to eq("x")
-    expect(p.rhs.symbol).to eq("y")
+    expect(p.lhs.id).to eq("x")
+    expect(p.rhs.id).to eq("y")
   end
 
   it "handles <=, <, ==, !=, >, and >=" do
@@ -443,8 +443,8 @@ describe AddExp do
 
   it "has the correct attributes" do
     expect(p.op).to eq(:plus)
-    expect(p.lhs.symbol).to eq("x")
-    expect(p.rhs.symbol).to eq("y")
+    expect(p.lhs.id).to eq("x")
+    expect(p.rhs.id).to eq("y")
   end
 
   it "handles + and -" do
@@ -462,8 +462,8 @@ describe MulExp do
 
   it "has the correct attributes" do
     expect(p.op).to eq(:asterisk)
-    expect(p.lhs.symbol).to eq("x")
-    expect(p.rhs.symbol).to eq("y")
+    expect(p.lhs.id).to eq("x")
+    expect(p.rhs.id).to eq("y")
   end
 
   it "handles *, /, and %" do
@@ -481,7 +481,7 @@ describe NegExp do
   end
 
   it "has the correct attributes" do
-    expect(p.exp.symbol).to eq("x")
+    expect(p.exp.id).to eq("x")
   end
 end
 
@@ -497,20 +497,20 @@ describe SimpleVarExp do
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 end
 
 describe ArrayVarExp do
-  let(:p) { parse_exp("x[2]") }
+  let(:p) { parse_exp("x[y]") }
 
   it "is a ArrayVarExp" do
     expect(p).to be_a ArrayVarExp
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("x")
-    expect(p.index).to eq(2)
+    expect(p.id).to eq("x")
+    expect(p.index.id).to eq("y")
   end
 
   context "that is malformed" do
@@ -528,7 +528,7 @@ describe PointerVarExp do
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 end
 
@@ -540,7 +540,7 @@ describe AddrVarExp do
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("x")
+    expect(p.id).to eq("x")
   end
 
   context "that is malformed" do
@@ -551,15 +551,15 @@ describe AddrVarExp do
 end
 
 describe AddrArrayVarExp do
-  let(:p) { parse_exp("&x[2]") }
+  let(:p) { parse_exp("&x[y]") }
 
   it "is a AddrArrayVarExp" do
     expect(p).to be_a AddrArrayVarExp
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("x")
-    expect(p.index).to eq(2)
+    expect(p.id).to eq("x")
+    expect(p.index.id).to eq("y")
   end
 
   context "that is malformed" do
@@ -577,7 +577,7 @@ describe FunCallExp do
   end
 
   it "has the correct attributes" do
-    expect(p.symbol).to eq("f")
+    expect(p.id).to eq("f")
   end
 
   # #args
@@ -593,7 +593,7 @@ describe FunCallExp do
     let(:p) { parse_exp("f(x, *y + z, 2)") }
 
     it "has properly formed args" do
-      expect(p.args[0].symbol).to eq("x")
+      expect(p.args[0].id).to eq("x")
       expect(p.args[1].op).to eq(:plus)
       expect(p.args[2].value).to eq(2)
       expect(p.args[3]).to be_nil
