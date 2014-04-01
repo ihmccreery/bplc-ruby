@@ -1,5 +1,6 @@
 require 'scanner'
 require 'parser'
+require 'type_checker'
 
 class Bplc
   def initialize(fname)
