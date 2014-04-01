@@ -1,4 +1,4 @@
 require 'spec_helper'
 
-describe TypeChecker do
+describe Resolver do
 end

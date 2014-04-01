@@ -1,4 +1,4 @@
 require 'symbol_table'
 
-class TypeChecker
+class Resolver
 end
