@@ -619,6 +619,10 @@ describe ReadLitExp do
     expect(p).to be_a ReadLitExp
   end
 
+  it "has the correct attributes" do
+    expect(p.value).to eq("read")
+  end
+
   context "that is malformed" do
     it "raises SyntaxErrors" do
       expect_syntax_error_on_stmts("read);", "expected l_paren, got r_paren")
@@ -648,40 +652,5 @@ describe StrLitExp do
 
   it "has the correct attributes" do
     expect(p.value).to eq("bob")
-  end
-end
-
-########################
-# TypeSpecifier and Id #
-########################
-
-describe TypeSpecifier do
-  let(:p) { parse_declaration("int x;").type_specifier }
-
-  it "is a TypeSpecifier" do
-    expect(p).to be_a TypeSpecifier
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:int)
-    end
-  end
-end
-
-describe Id do
-  let(:p) { parse_declaration("int x;").id }
-
-  it "is a Id" do
-    expect(p).to be_a Id
-  end
-
-  describe "#token" do
-    it "is a token of the appropriate type and value" do
-      expect(p.token).to be_a Token
-      expect(p.token.type).to eq(:id)
-      expect(p.token.value).to eq("x")
-    end
   end
 end

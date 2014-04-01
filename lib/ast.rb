@@ -19,22 +19,6 @@ class Ast
   end
 end
 
-module TokenAst
-  attr_reader :token
-
-  def initialize(token)
-    @token = token
-  end
-
-  def type
-    @token.type
-  end
-
-  def value
-    @token.value
-  end
-end
-
 ###########
 # Program #
 ###########
@@ -53,13 +37,11 @@ end
 ################
 
 class Declaration < Ast
-  attr_reader :type_specifier, :id
-
-  # @param type_specifier [TypeSpecifier]
-  # @param id [Id]
+  # @param type_specifier [Token]
+  # @param id [Token]
   def initialize(type_specifier, id)
-    @type_specifier = expect(type_specifier, TypeSpecifier)
-    @id = expect(id, Id)
+    @type_specifier = expect(type_specifier, Token)
+    @id = expect(id, Token)
   end
 
   def type
@@ -81,24 +63,24 @@ class PointerDeclaration < VariableDeclaration
 end
 
 class ArrayDeclaration < VariableDeclaration
-  # @param type_specifier [TypeSpecifier]
-  # @param id [Id]
-  # @param size [Num]
+  # @param type_specifier [Token]
+  # @param id [Token]
+  # @param size [Token]
   def initialize(type_specifier, id, size)
     super(type_specifier, id)
-    @size = expect(size, NumLitExp)
+    @size = expect(size, Token)
   end
 
   def size
-    @size.value
+    @size.value.to_i
   end
 end
 
 class FunctionDeclaration < Declaration
   attr_reader :params, :body
 
-  # @param type_specifier [TypeSpecifier]
-  # @param id [Id]
+  # @param type_specifier [Token]
+  # @param id [Token]
   # @param params [Array<Param>]
   # @param body [CompoundStmt]
   def initialize(type_specifier, id, params, body)
@@ -204,7 +186,7 @@ class Exp < Ast
 end
 
 class BinExp < Exp
-  attr_reader :op, :lhs, :rhs
+  attr_reader :lhs, :rhs
 
   # @param op [Token]
   # @param lhs [Exp]
@@ -254,11 +236,9 @@ end
 ###########
 
 class VarExp < Exp
-  attr_reader :id
-
-  # @param id [Id]
+  # @param id [Token]
   def initialize(id)
-    @id = expect(id, Id)
+    @id = expect(id, Token)
   end
 
   def symbol
@@ -276,7 +256,7 @@ class PointerVarExp < AssignableVarExp
 end
 
 class ArrayVarExp < AssignableVarExp
-  # @param id [Id]
+  # @param id [Token]
   # @param index [Exp]
   def initialize(id, index)
     super(id)
@@ -292,7 +272,7 @@ class AddrVarExp < VarExp
 end
 
 class AddrArrayVarExp < VarExp
-  # @param id [Id]
+  # @param id [Token]
   # @param index [Exp]
   def initialize(id, index)
     super(id)
@@ -307,7 +287,7 @@ end
 class FunCallExp < VarExp
   attr_reader :args
 
-  # @param id [Id]
+  # @param id [Token]
   # @param index [Array<Exp>]
   def initialize(id, args)
     super(id)
@@ -320,29 +300,25 @@ end
 ###########
 
 class LitExp < Exp
-  include TokenAst
+  # @param literal [Token]
+  def initialize(literal)
+    @literal = expect(literal, Token)
+  end
+
+  def value
+    @literal.value
+  end
 end
 
 class ReadLitExp < LitExp
 end
 
 class NumLitExp < LitExp
+  # TODO
   def value
-    @token.value.to_i
+    @literal.value.to_i
   end
 end
 
 class StrLitExp < LitExp
-end
-
-########################
-# TypeSpecifier and Id #
-########################
-
-class TypeSpecifier < Ast
-  include TokenAst
-end
-
-class Id < Ast
-  include TokenAst
 end

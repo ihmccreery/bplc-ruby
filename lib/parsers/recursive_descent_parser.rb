@@ -53,16 +53,16 @@ module Parsers
     end
 
     def declaration
-      t = type_specifier
+      t = eat_type_specifier
       if at? :asterisk
         eat(:asterisk)
-        d = PointerDeclaration.new(t, id)
+        d = PointerDeclaration.new(t, eat(:id))
         eat(:semicolon)
       else
-        i = id
+        i = eat(:id)
         if at? :l_bracket
           eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, num_lit_exp)
+          d = ArrayDeclaration.new(t, i, eat(:num))
           eat(:r_bracket)
           eat(:semicolon)
         elsif at? :l_paren
@@ -97,12 +97,12 @@ module Parsers
     end
 
     def param
-      t = type_specifier
+      t = eat_type_specifier
       if at? :asterisk
         eat(:asterisk)
-        p = PointerParam.new(t, id)
+        p = PointerParam.new(t, eat(:id))
       else
-        i = id
+        i = eat(:id)
         if at? :l_bracket
           eat(:l_bracket)
           eat(:r_bracket)
@@ -134,16 +134,16 @@ module Parsers
     end
 
     def variable_declaration
-      t = type_specifier
+      t = eat_type_specifier
       if at? :asterisk
         eat(:asterisk)
-        d = PointerDeclaration.new(t, id)
+        d = PointerDeclaration.new(t, eat(:id))
         eat(:semicolon)
       else
-        i = id
+        i = eat(:id)
         if at? :l_bracket
           eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, num_lit_exp)
+          d = ArrayDeclaration.new(t, i, eat(:num))
           eat(:r_bracket)
           eat(:semicolon)
         else
@@ -319,7 +319,7 @@ module Parsers
     def var_exp
       if at? :ampersand
         eat(:ampersand)
-        i = id
+        i = eat(:id)
         if at? :l_bracket
           eat(:l_bracket)
           n = exp
@@ -330,9 +330,9 @@ module Parsers
         end
       elsif at? :asterisk
         eat(:asterisk)
-        return PointerVarExp.new(id)
+        return PointerVarExp.new(eat(:id))
       else
-        i = id
+        i = eat(:id)
         if at? :l_bracket
           eat(:l_bracket)
           n = exp
@@ -391,25 +391,17 @@ module Parsers
       return StrLitExp.new(eat(:str))
     end
 
-    #########################
-    # type_specifier and id #
-    #########################
+    ###################
+    # support methods #
+    ###################
 
-    def type_specifier
+    def eat_type_specifier
       if at? TYPE_SPECIFIERS
-        return TypeSpecifier.new(eat_token)
+        eat_token
       else
         raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
       end
     end
-
-    def id
-      Id.new(eat(:id))
-    end
-
-    ###################
-    # support methods #
-    ###################
 
     def eat(type)
       if at? type
