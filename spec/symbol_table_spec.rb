@@ -39,7 +39,7 @@ describe SymbolTable do
 
     it "throws an error if we try to add another symbol with the same name" do
       g.add_symbol("a", :a)
-      expect{g.add_symbol("a", :t)}.to raise_error(SyntaxError, "a is already declared")
+      expect{g.add_symbol("a", :t)}.to raise_error(SyntaxError, "a has already been declared")
     end
 
     it "does not throw an error if we try to add another symbol with the same name as one in a parent" do

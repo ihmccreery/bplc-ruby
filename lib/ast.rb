@@ -1,4 +1,7 @@
 class Ast
+  def children
+    []
+  end
   private
 
   def expect(a, klass, can_be_nil=false)
@@ -35,6 +38,10 @@ class Program < Ast
   # @param declarations [Array<Declaration>]
   def initialize(declarations)
     @declarations = expect_array(declarations, Declaration)
+  end
+
+  def children
+    declarations
   end
 end
 
@@ -92,6 +99,10 @@ class FunctionDeclaration < Declaration
     @params = expect_array(params, Param)
     @body = expect(body, CompoundStmt)
   end
+
+  def children
+    params + [body]
+  end
 end
 
 ##########
@@ -126,6 +137,10 @@ class CompoundStmt < Stmt
     @variable_declarations = expect_array(variable_declarations, VariableDeclaration)
     @stmts = expect_array(stmts, Stmt)
   end
+
+  def children
+    variable_declarations + stmts
+  end
 end
 
 class ExpStmt < Stmt
@@ -134,6 +149,10 @@ class ExpStmt < Stmt
   # @param exp [Exp, nil]
   def initialize(exp)
     @exp = expect(exp, Exp, can_be_nil: true)
+  end
+
+  def children
+    [exp].compact
   end
 end
 
@@ -148,6 +167,10 @@ class IfStmt < Stmt
     @body = expect(body, Stmt)
     @else_body = expect(else_body, Stmt, can_be_nil: true)
   end
+
+  def children
+    [condition, body, else_body].compact
+  end
 end
 
 class WhileStmt < Stmt
@@ -159,6 +182,10 @@ class WhileStmt < Stmt
     @condition = expect(condition, Exp)
     @body = expect(body, Stmt)
   end
+
+  def children
+    [condition, body]
+  end
 end
 
 class ReturnStmt < Stmt
@@ -168,6 +195,10 @@ class ReturnStmt < Stmt
   def initialize(value)
     @value = expect(value, Exp, can_be_nil: true)
   end
+
+  def children
+    [value].compact
+  end
 end
 
 class WriteStmt < Stmt
@@ -176,6 +207,10 @@ class WriteStmt < Stmt
   # @param value [Exp]
   def initialize(value)
     @value = expect(value, Exp)
+  end
+
+  def children
+    [value]
   end
 end
 
@@ -204,6 +239,10 @@ class BinExp < Exp
   def op
     @op.type
   end
+
+  def children
+    [lhs, rhs]
+  end
 end
 
 class AssignmentExp < Exp
@@ -214,6 +253,10 @@ class AssignmentExp < Exp
   def initialize(lhs, rhs)
     @lhs = expect(lhs, AssignableVarExp)
     @rhs = expect(rhs, Exp)
+  end
+
+  def children
+    [lhs, rhs]
   end
 end
 
@@ -233,6 +276,10 @@ class NegExp < Exp
   def initialize(exp)
     @exp = expect(exp, Exp)
   end
+
+  def children
+    [exp]
+  end
 end
 
 ###########
@@ -241,6 +288,8 @@ end
 
 class VarExp < Exp
   include Ided
+
+  attr_accessor :declaration
 
   # @param id [Token]
   def initialize(id)
@@ -266,6 +315,10 @@ class ArrayVarExp < AssignableVarExp
     super(id)
     @index = expect(index, Exp)
   end
+
+  def children
+    [index]
+  end
 end
 
 class AddrVarExp < VarExp
@@ -280,6 +333,10 @@ class AddrArrayVarExp < VarExp
     super(id)
     @index = expect(index, Exp)
   end
+
+  def children
+    [index]
+  end
 end
 
 class FunCallExp < VarExp
@@ -290,6 +347,10 @@ class FunCallExp < VarExp
   def initialize(id, args)
     super(id)
     @args = expect_array(args, Exp)
+  end
+
+  def children
+    args
   end
 end
 
