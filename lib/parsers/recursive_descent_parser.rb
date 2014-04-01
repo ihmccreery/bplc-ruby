@@ -55,26 +55,44 @@ module Parsers
     def declaration
       t = eat_type_specifier
       if at? :asterisk
-        eat(:asterisk)
-        d = PointerDeclaration.new(t, eat(:id))
-        eat(:semicolon)
+        return pointer_declaration(t)
       else
         i = eat(:id)
         if at? :l_bracket
-          eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, eat(:num))
-          eat(:r_bracket)
-          eat(:semicolon)
+          return array_declaration(t, i)
         elsif at? :l_paren
-          eat(:l_paren)
-          p = params
-          eat(:r_paren)
-          d = FunctionDeclaration.new(t, i, p, compound_stmt)
+          return function_declaration(t, i)
         else
-          d = SimpleDeclaration.new(t, i)
-          eat(:semicolon)
+          return simple_declaration(t, i)
         end
       end
+    end
+
+    def pointer_declaration(t)
+      eat(:asterisk)
+      d = PointerDeclaration.new(t, eat(:id))
+      eat(:semicolon)
+      return d
+    end
+
+    def array_declaration(t, i)
+      eat(:l_bracket)
+      d = ArrayDeclaration.new(t, i, eat(:num))
+      eat(:r_bracket)
+      eat(:semicolon)
+      return d
+    end
+
+    def function_declaration(t, i)
+      eat(:l_paren)
+      p = params
+      eat(:r_paren)
+      return FunctionDeclaration.new(t, i, p, compound_stmt)
+    end
+
+    def simple_declaration(t, i)
+      d = SimpleDeclaration.new(t, i)
+      eat(:semicolon)
       return d
     end
 
@@ -99,60 +117,35 @@ module Parsers
     def param
       t = eat_type_specifier
       if at? :asterisk
-        eat(:asterisk)
-        p = PointerParam.new(t, eat(:id))
+        return pointer_param(t)
       else
         i = eat(:id)
         if at? :l_bracket
-          eat(:l_bracket)
-          eat(:r_bracket)
-          p = ArrayParam.new(t, i)
+          return array_param(t, i)
         else
-          p = SimpleParam.new(t, i)
+          return simple_param(t, i)
         end
       end
-      return p
+    end
+
+    def pointer_param(t)
+      eat(:asterisk)
+      return PointerParam.new(t, eat(:id))
+    end
+
+    def array_param(t, i)
+      eat(:l_bracket)
+      eat(:r_bracket)
+      return ArrayParam.new(t, i)
+    end
+
+    def simple_param(t, i)
+      return SimpleParam.new(t, i)
     end
 
     #########
     # stmts #
     #########
-
-    def compound_stmt
-      eat(:l_brace)
-      c = CompoundStmt.new(variable_declarations, stmts)
-      eat(:r_brace)
-      return c
-    end
-
-    def variable_declarations
-      d = []
-      while at? TYPE_SPECIFIERS
-        d << variable_declaration
-      end
-      return d
-    end
-
-    def variable_declaration
-      t = eat_type_specifier
-      if at? :asterisk
-        eat(:asterisk)
-        d = PointerDeclaration.new(t, eat(:id))
-        eat(:semicolon)
-      else
-        i = eat(:id)
-        if at? :l_bracket
-          eat(:l_bracket)
-          d = ArrayDeclaration.new(t, i, eat(:num))
-          eat(:r_bracket)
-          eat(:semicolon)
-        else
-          d = SimpleDeclaration.new(t, i)
-          eat(:semicolon)
-        end
-      end
-      return d
-    end
 
     def stmts
       s = []
@@ -177,6 +170,35 @@ module Parsers
         return writeln_stmt
       else
         return exp_stmt
+      end
+    end
+
+    def compound_stmt
+      eat(:l_brace)
+      c = CompoundStmt.new(variable_declarations, stmts)
+      eat(:r_brace)
+      return c
+    end
+
+    def variable_declarations
+      d = []
+      while at? TYPE_SPECIFIERS
+        d << variable_declaration
+      end
+      return d
+    end
+
+    def variable_declaration
+      t = eat_type_specifier
+      if at? :asterisk
+        return pointer_declaration(t)
+      else
+        i = eat(:id)
+        if at? :l_bracket
+          return array_declaration(t, i)
+        else
+          return simple_declaration(t, i)
+        end
       end
     end
 
@@ -303,13 +325,17 @@ module Parsers
       elsif at? FIRST_OF_VAR_EXP
         return var_exp
       elsif at? :l_paren
-        eat(:l_paren)
-        e = exp
-        eat(:r_paren)
-        return e
+        return parenthesized_exp
       else
         raise SyntaxError, "expected expression, got #{current_token.type.to_s}"
       end
+    end
+
+    def parenthesized_exp
+      eat(:l_paren)
+      e = exp
+      eat(:r_paren)
+      return e
     end
 
     ############
@@ -321,32 +347,56 @@ module Parsers
         eat(:ampersand)
         i = eat(:id)
         if at? :l_bracket
-          eat(:l_bracket)
-          n = exp
-          eat(:r_bracket)
-          return AddrArrayVarExp.new(i, n)
+          return addr_array_var_exp(i)
         else
-          return AddrVarExp.new(i)
+          return addr_var_exp(i)
         end
       elsif at? :asterisk
-        eat(:asterisk)
-        return PointerVarExp.new(eat(:id))
+        return pointer_var_exp
       else
         i = eat(:id)
         if at? :l_bracket
-          eat(:l_bracket)
-          n = exp
-          eat(:r_bracket)
-          return ArrayVarExp.new(i, n)
+          return array_var_exp(i)
         elsif at? :l_paren
-          eat(:l_paren)
-          a = args
-          eat(:r_paren)
-          return FunCallExp.new(i, a)
+          return fun_call_exp(i)
         else
-          return SimpleVarExp.new(i)
+          return simple_var_exp(i)
         end
       end
+    end
+
+    def addr_array_var_exp(i)
+      eat(:l_bracket)
+      n = exp
+      eat(:r_bracket)
+      return AddrArrayVarExp.new(i, n)
+    end
+
+    def addr_var_exp(i)
+      return AddrVarExp.new(i)
+    end
+
+    def pointer_var_exp
+      eat(:asterisk)
+      return PointerVarExp.new(eat(:id))
+    end
+
+    def array_var_exp(i)
+      eat(:l_bracket)
+      n = exp
+      eat(:r_bracket)
+      return ArrayVarExp.new(i, n)
+    end
+
+    def fun_call_exp(i)
+      eat(:l_paren)
+      a = args
+      eat(:r_paren)
+      return FunCallExp.new(i, a)
+    end
+
+    def simple_var_exp(i)
+      return SimpleVarExp.new(i)
     end
 
     def args
