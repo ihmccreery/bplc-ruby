@@ -339,17 +339,13 @@ class AddrArrayVarExp < VarExp
   end
 end
 
-class FunCallExp < Exp
-  include Ided
-
+class FunCallExp < VarExp
   attr_reader :args
-
-  attr_accessor :declaration
 
   # @param id [Token]
   # @param index [Array<Exp>]
   def initialize(id, args)
-    @id = expect(id, Token)
+    super(id)
     @args = expect_array(args, Exp)
   end
 
