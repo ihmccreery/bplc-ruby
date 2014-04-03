@@ -8,7 +8,10 @@ describe Resolver do
   end
 
   describe "#resolve" do
-    it "resolves a global variable reference" do
+
+    # global variable resolution
+
+    it "resolves global variable references" do
       a = parse_and_resolve("int x; void main(void) { x; }")
 
       x_declaration = a.declarations[0]
@@ -17,31 +20,83 @@ describe Resolver do
       expect(x_reference.declaration).to eq(x_declaration)
     end
 
-    it "resolves a function reference" do
-      a = parse_and_resolve("void f(void) { } void main(void) { f(); }")
+    # local variable resolution
 
-      f_declaration = a.declarations[0]
-      f_reference = a.declarations[1].body.stmts[0].exp
+    it "resolves local variable references" do
+      a = parse_and_resolve("int y; void main(void) { int x; int y; x; y; }")
 
-      expect(f_reference.declaration).to eq(f_declaration)
-    end
-
-    it "resolves a local variable references" do
-      a = parse_and_resolve("void main(void) { int x; x; }")
-
-      body = a.declarations[0].body
+      body = a.declarations[1].body
       x_declaration = body.variable_declarations[0]
       x_reference = body.stmts[0].exp
+      # y should reference the local, not global, declaration
+      y_declaration = body.variable_declarations[1]
+      y_reference = body.stmts[1].exp
 
       expect(x_reference.declaration).to eq(x_declaration)
+      expect(y_reference.declaration).to eq(y_declaration)
+    end
+
+    it "resolves nested local variable references" do
+      a = parse_and_resolve("void main(void) { int y; int z; if(1) {int x; int y; x; y; z;} }")
+
+      body = a.declarations[0].body
+      if_body = body.stmts[0].body
+      x_declaration = if_body.variable_declarations[0]
+      x_reference = if_body.stmts[0].exp
+      # y should reference the locally scoped declaration
+      y_declaration = if_body.variable_declarations[1]
+      y_reference = if_body.stmts[1].exp
+      # z should reference the local, out-of-immediate-scope, declaration
+      z_declaration = body.variable_declarations[1]
+      z_reference = if_body.stmts[2].exp
+
+      expect(x_reference.declaration).to eq(x_declaration)
+      expect(y_reference.declaration).to eq(y_declaration)
+      expect(z_reference.declaration).to eq(z_declaration)
+    end
+
+    # param resolution
+
+    it "resolves param variable references" do
+      a = parse_and_resolve("void main(int x) { x; }")
+
+      x_declaration = a.declarations[0].params[0]
+      x_reference = a.declarations[0].body.stmts[0].exp
+
+      expect(x_reference.declaration).to eq(x_declaration)
+    end
+
+    # variables in general
+
+    it "resolves variable references in expressions" do
+      a = parse_and_resolve("int x; void f(int y) { } void main(void) { int y; x[y+2]; f(x); }")
+
+      body = a.declarations[2].body
+      x_declaration = a.declarations[0]
+      x_array_reference = body.stmts[0].exp
+      x_arg_reference = body.stmts[0].exp
+      y_declaration = body.variable_declarations[0]
+      y_reference = body.stmts[0].exp.index.lhs
+
+      expect(x_array_reference.declaration).to eq(x_declaration)
+      expect(x_arg_reference.declaration).to eq(x_declaration)
+      expect(y_reference.declaration).to eq(y_declaration)
     end
 
     it "raises a SyntaxError if a variable is not declared" do
       expect{parse_and_resolve("void main(void) { x; }")}.to raise_error(SyntaxError, "undeclared variable x")
     end
 
+    it "raises a SyntaxError if a variable is referenced outside of its scope" do
+      expect{parse_and_resolve("void main(void) { {int x;} x; }")}.to raise_error(SyntaxError, "undeclared variable x")
+    end
+
     it "raises a SyntaxError if a variable is declared more than once in the same scope" do
       expect{parse_and_resolve("void main(void) { int x; string x; }")}.to raise_error(SyntaxError, "x has already been declared")
+    end
+
+    it "raises a SyntaxError if a variable is declared in the same scope as a parameter" do
+      expect{parse_and_resolve("void main(int x) { string x; }")}.to raise_error(SyntaxError, "x has already been declared")
     end
   end
 end
