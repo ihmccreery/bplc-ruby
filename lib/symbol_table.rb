@@ -24,7 +24,7 @@ class SymbolTable
     elsif @parent
       return parent.get_symbol(name)
     else
-      return nil
+      raise SyntaxError, "#{name} has not been declared"
     end
   end
 end

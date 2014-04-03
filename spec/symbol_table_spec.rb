@@ -55,8 +55,8 @@ describe SymbolTable do
       expect(g.get_symbol("a")).to eq(:a)
     end
 
-    it "returns nil if there is no symbol" do
-      expect(g.get_symbol("a")).to be_nil
+    it "raises an error if a symbol is not declared" do
+      expect{g.get_symbol("a")}.to raise_error(SyntaxError, "a has not been declared")
     end
 
     it "gets a symbol from the parent" do
