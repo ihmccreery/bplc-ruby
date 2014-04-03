@@ -98,5 +98,39 @@ describe Resolver do
     it "raises a SyntaxError if a variable is declared in the same scope as a parameter" do
       expect{parse_and_resolve("void main(int x) { string x; }")}.to raise_error(SyntaxError, "x has already been declared")
     end
+
+    # functions
+
+    it "resolves a function reference" do
+      a = parse_and_resolve("void f(void) { f(); }")
+
+      f_declaration = a.declarations[0]
+      f_reference = a.declarations[0].body.stmts[0].exp
+
+      expect(f_reference.declaration).to eq(f_declaration)
+    end
+
+    it "raises a SyntaxError if a function is not declared" do
+      expect{parse_and_resolve("void main(void) { f(); }")}.to raise_error(SyntaxError, "undeclared function f")
+    end
+
+    it "raises a SyntaxError if a function is declared more than once" do
+      expect{parse_and_resolve("void f(void) { } void f(void) { }")}.to raise_error(SyntaxError, "f has already been declared")
+    end
+
+    # resolutions in general
+
+    it "resolves function references and variable references of the same symbol" do
+      a = parse_and_resolve("void f(void) { int f; f(); f; }")
+
+      body = a.declarations[0].body
+      f_fun_declaration = a.declarations[0]
+      f_fun_reference = body.stmts[0].exp
+      f_var_declaration = body.variable_declarations[0]
+      f_var_reference = body.stmts[1].exp
+
+      expect(f_fun_reference.declaration).to eq(f_fun_declaration)
+      expect(f_var_reference.declaration).to eq(f_var_declaration)
+    end
   end
 end
