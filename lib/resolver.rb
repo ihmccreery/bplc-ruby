@@ -23,7 +23,7 @@ class Resolver
     if ast.is_a? FunctionDeclaration
       r_function_declaration(ast, symbol_table)
     elsif ast.is_a? CompoundStmt
-      r_compound_stmt(ast, SymbolTable.new(symbol_table))
+      r_compound_stmt(ast, symbol_table)
     elsif ast.is_a? VarExp
       r_var_exp(ast, symbol_table)
     else
@@ -31,6 +31,9 @@ class Resolver
     end
   end
 
+  # add parameters and body's variable declarations to a new symbol table and visit
+  # body's stmts
+  #
   # @param ast [FunctionDeclaration]
   # @param symbol_table [SymbolTable]
   def r_function_declaration(ast, symbol_table)
@@ -38,14 +41,21 @@ class Resolver
     ast.params.each do |p|
       symbol_table.add_symbol(p.id, p)
     end
-    r_compound_stmt(ast.body, symbol_table)
+    ast.body.variable_declarations.each do |d|
+      symbol_table.add_symbol(d.id, d)
+    end
+    ast.body.stmts.each do |s|
+      r(s, symbol_table)
+    end
   end
 
+  # add variable declarations to a new symbol table and visit
+  # body's stmts
+  #
   # @param ast [CompoundStmt]
-  # @param symbol_table [SymbolTable] The symbol table to be used in the compound
-  # statement, not the parent.  It may already contain symbols from a function's
-  # params.
+  # @param symbol_table [SymbolTable] The parent scope's symbol table
   def r_compound_stmt(ast, symbol_table)
+    symbol_table = SymbolTable.new(symbol_table)
     ast.variable_declarations.each do |d|
       symbol_table.add_symbol(d.id, d)
     end
@@ -61,8 +71,6 @@ class Resolver
     r_children(ast, symbol_table)
   end
 
-  # resolve ast
-  #
   # @param ast [VarExp]
   # @param symbol_table [SymbolTable]
   def resolve_var_exp(ast, symbol_table)
