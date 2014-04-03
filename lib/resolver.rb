@@ -31,7 +31,7 @@ class Resolver
     elsif ast.is_a? VarExp
       r_var_exp(ast, symbol_table)
     else
-      r_children(ast, symbol_table)
+      r_ast(ast, symbol_table)
     end
   end
 
@@ -71,17 +71,13 @@ class Resolver
   # @param ast [VarExp]
   # @param symbol_table [SymbolTable]
   def r_var_exp(ast, symbol_table)
-    resolve_var_exp(ast, symbol_table)
-    r_children(ast, symbol_table)
-  end
-
-  # @param ast [VarExp]
-  # @param symbol_table [SymbolTable]
-  def resolve_var_exp(ast, symbol_table)
     if ast.is_a? FunCallExp
       ast.declaration = symbol_table.get_fsymbol(ast.id)
     else
       ast.declaration = symbol_table.get_symbol(ast.id)
+    end
+    ast.children.each do |c|
+      r(c, symbol_table)
     end
   end
 
@@ -89,7 +85,7 @@ class Resolver
   #
   # @param ast [Ast]
   # @param symbol_table [SymbolTable]
-  def r_children(ast, symbol_table)
+  def r_ast(ast, symbol_table)
     ast.children.each do |c|
       r(c, symbol_table)
     end
