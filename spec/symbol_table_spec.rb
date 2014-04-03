@@ -56,7 +56,7 @@ describe SymbolTable do
     end
 
     it "raises an error if a symbol is not declared" do
-      expect{g.get_symbol("a")}.to raise_error(SyntaxError, "a has not been declared")
+      expect{g.get_symbol("a")}.to raise_error(SyntaxError, "undeclared variable a")
     end
 
     it "gets a symbol from the parent" do

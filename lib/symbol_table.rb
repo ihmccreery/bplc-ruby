@@ -24,7 +24,7 @@ class SymbolTable
     elsif @parent
       return parent.get_symbol(name)
     else
-      raise SyntaxError, "#{name} has not been declared"
+      raise SyntaxError, "undeclared variable #{name}"
     end
   end
 end
