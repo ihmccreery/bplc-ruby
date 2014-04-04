@@ -16,7 +16,7 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
-def parse_and_resolve(s)
+def resolve(s)
   a = parse_program(s)
   Resolver.new(a).resolve
   return a

@@ -12,7 +12,7 @@ describe Resolver do
     # global variable resolution
 
     it "resolves global variable references" do
-      a = parse_and_resolve("int x; void main(void) { x; }")
+      a = resolve("int x; void main(void) { x; }")
 
       x_declaration = a.declarations[0]
       x_reference = a.declarations[1].body.stmts[0].exp
@@ -23,7 +23,7 @@ describe Resolver do
     # local variable resolution
 
     it "resolves local variable references" do
-      a = parse_and_resolve("int y; void main(void) { int x; int y; x; y; }")
+      a = resolve("int y; void main(void) { int x; int y; x; y; }")
 
       body = a.declarations[1].body
       x_declaration = body.variable_declarations[0]
@@ -37,7 +37,7 @@ describe Resolver do
     end
 
     it "resolves nested local variable references" do
-      a = parse_and_resolve("void main(void) { int y; int z; if(1) {int x; int y; x; y; z;} }")
+      a = resolve("void main(void) { int y; int z; if(1) {int x; int y; x; y; z;} }")
 
       body = a.declarations[0].body
       if_body = body.stmts[0].body
@@ -58,7 +58,7 @@ describe Resolver do
     # param resolution
 
     it "resolves param variable references" do
-      a = parse_and_resolve("void main(int x) { x; }")
+      a = resolve("void main(int x) { x; }")
 
       x_declaration = a.declarations[0].params[0]
       x_reference = a.declarations[0].body.stmts[0].exp
@@ -69,7 +69,7 @@ describe Resolver do
     # variables in general
 
     it "resolves variable references in expressions" do
-      a = parse_and_resolve("int x; void f(int y) { } void main(void) { int y; x[y+2]; f(x); }")
+      a = resolve("int x; void f(int y) { } void main(void) { int y; x[y+2]; f(x); }")
 
       body = a.declarations[2].body
       x_declaration = a.declarations[0]
@@ -84,25 +84,25 @@ describe Resolver do
     end
 
     it "raises a SyntaxError if a variable is not declared" do
-      expect{parse_and_resolve("void main(void) { x; }")}.to raise_error(SyntaxError, "undeclared variable x")
+      expect{resolve("void main(void) { x; }")}.to raise_error(SyntaxError, "undeclared variable x")
     end
 
     it "raises a SyntaxError if a variable is referenced outside of its scope" do
-      expect{parse_and_resolve("void main(void) { {int x;} x; }")}.to raise_error(SyntaxError, "undeclared variable x")
+      expect{resolve("void main(void) { {int x;} x; }")}.to raise_error(SyntaxError, "undeclared variable x")
     end
 
     it "raises a SyntaxError if a variable is declared more than once in the same scope" do
-      expect{parse_and_resolve("void main(void) { int x; string x; }")}.to raise_error(SyntaxError, "x has already been declared")
+      expect{resolve("void main(void) { int x; string x; }")}.to raise_error(SyntaxError, "x has already been declared")
     end
 
     it "raises a SyntaxError if a variable is declared in the same scope as a parameter" do
-      expect{parse_and_resolve("void main(int x) { string x; }")}.to raise_error(SyntaxError, "x has already been declared")
+      expect{resolve("void main(int x) { string x; }")}.to raise_error(SyntaxError, "x has already been declared")
     end
 
     # functions
 
     it "resolves a function reference" do
-      a = parse_and_resolve("void f(void) { f(); }")
+      a = resolve("void f(void) { f(); }")
 
       f_declaration = a.declarations[0]
       f_reference = a.declarations[0].body.stmts[0].exp
@@ -111,17 +111,17 @@ describe Resolver do
     end
 
     it "raises a SyntaxError if a function is not declared" do
-      expect{parse_and_resolve("void main(void) { f(); }")}.to raise_error(SyntaxError, "undeclared function f")
+      expect{resolve("void main(void) { f(); }")}.to raise_error(SyntaxError, "undeclared function f")
     end
 
     it "raises a SyntaxError if a function is declared more than once" do
-      expect{parse_and_resolve("void f(void) { } void f(void) { }")}.to raise_error(SyntaxError, "f has already been declared")
+      expect{resolve("void f(void) { } void f(void) { }")}.to raise_error(SyntaxError, "f has already been declared")
     end
 
     # resolutions in general
 
     it "resolves function references and variable references of the same symbol" do
-      a = parse_and_resolve("void f(void) { int f; f(); f; }")
+      a = resolve("void f(void) { int f; f(); f; }")
 
       body = a.declarations[0].body
       f_fun_declaration = a.declarations[0]
