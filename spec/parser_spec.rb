@@ -158,7 +158,7 @@ end
 ###########
 
 describe Program do
-  let(:p) { parse_program("int x; void *y; string z[2];") }
+  let(:p) { parse("int x; void *y; string z[2];") }
 
   it "is a Program" do
     expect(p).to be_a Program

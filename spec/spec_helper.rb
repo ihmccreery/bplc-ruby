@@ -17,13 +17,13 @@ RSpec.configure do |config|
 end
 
 def resolve(s)
-  a = parse_program(s)
+  a = parse(s)
   Resolver.new(a).resolve
   return a
 end
 
-def parse_program(s)
-  parse(s)
+def parse(s)
+  Parser.new(Scanner.new(s)).parse
 end
 
 def parse_declaration(s)
@@ -40,10 +40,6 @@ end
 
 def parse_exp(s)
   parse("int f(void) { #{s}; }").declarations[0].body.stmts[0].exp
-end
-
-def parse(s)
-  Parser.new(Scanner.new(s)).parse
 end
 
 def expect_syntax_error(s, message)

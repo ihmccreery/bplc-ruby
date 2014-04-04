@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Resolver do
   describe "#initialize" do
     it "can be constructed from an Ast" do
-      expect(Resolver.new(parse_program("int x; void main(void) { x; }"))).to be_a Resolver
+      expect(Resolver.new(parse("int x; void main(void) { x; }"))).to be_a Resolver
     end
   end
 
