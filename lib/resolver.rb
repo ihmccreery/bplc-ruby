@@ -15,6 +15,7 @@ class Resolver
       end
       r(d, symbol_table)
     end
+    return @program
   end
 
   private

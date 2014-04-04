@@ -17,9 +17,7 @@ RSpec.configure do |config|
 end
 
 def resolve(s)
-  a = parse(s)
-  Resolver.new(a).resolve
-  return a
+  Resolver.new(parse(s)).resolve
 end
 
 def parse(s)
