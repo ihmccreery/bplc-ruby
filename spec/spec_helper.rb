@@ -16,6 +16,10 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
+def type_check(s)
+  TypeChecker.new(resolve(s)).type_check
+end
+
 def resolve(s)
   Resolver.new(parse(s)).resolve
 end

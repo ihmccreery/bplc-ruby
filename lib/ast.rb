@@ -364,12 +364,19 @@ class LitExp < Exp
     @literal = expect(literal, Token)
   end
 
+  def type
+    @literal.type
+  end
+
   def value
     @literal.value
   end
 end
 
 class ReadLitExp < LitExp
+  def type
+    :num
+  end
 end
 
 class NumLitExp < LitExp

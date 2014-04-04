@@ -8,7 +8,6 @@ describe Resolver do
   end
 
   describe "#resolve" do
-
     # global variable resolution
 
     it "resolves global variable references" do
