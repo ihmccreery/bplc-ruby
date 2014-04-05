@@ -2,7 +2,24 @@ class Ast
   def children
     []
   end
+
   private
+
+  def pointer(type)
+    ('pointer_' + type.to_s).to_sym
+  end
+
+  def unpointer(type)
+    type.to_s[8..-1].to_sym
+  end
+
+  def array(type)
+    ('array_' + type.to_s).to_sym
+  end
+
+  def unarray(type)
+    type.to_s[6..-1].to_sym
+  end
 
   def expect(a, klass, can_be_nil=false)
     if can_be_nil && a.nil?
@@ -72,7 +89,7 @@ end
 
 class PointerDeclaration < VariableDeclaration
   def type
-    ('pointer_' + @type_specifier.type.to_s).to_sym
+    pointer(@type_specifier.type)
   end
 end
 
@@ -90,7 +107,7 @@ class ArrayDeclaration < VariableDeclaration
   end
 
   def type
-    ('array_' + @type_specifier.type.to_s).to_sym
+    array(@type_specifier.type)
   end
 end
 
@@ -124,13 +141,13 @@ end
 
 class PointerParam < Param
   def type
-    ('pointer_' + @type_specifier.type.to_s).to_sym
+    pointer(@type_specifier.type)
   end
 end
 
 class ArrayParam < Param
   def type
-    ('array_' + @type_specifier.type.to_s).to_sym
+    array(@type_specifier.type)
   end
 end
 
@@ -320,6 +337,9 @@ class SimpleVarExp < AssignableVarExp
 end
 
 class PointerVarExp < AssignableVarExp
+  def type
+    unpointer(@declaration.type)
+  end
 end
 
 class ArrayVarExp < AssignableVarExp
@@ -332,12 +352,19 @@ class ArrayVarExp < AssignableVarExp
     @index = expect(index, Exp)
   end
 
+  def type
+    unarray(@declaration.type)
+  end
+
   def children
     [index]
   end
 end
 
 class AddrVarExp < VarExp
+  def type
+    pointer(@declaration.type)
+  end
 end
 
 class AddrArrayVarExp < VarExp
@@ -348,6 +375,10 @@ class AddrArrayVarExp < VarExp
   def initialize(id, index)
     super(id)
     @index = expect(index, Exp)
+  end
+
+  def type
+    pointer(unarray(@declaration.type))
   end
 
   def children

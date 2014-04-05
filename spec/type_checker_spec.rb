@@ -39,15 +39,32 @@ describe TypeChecker do
     # VarExps #
     ###########
 
-    # TODO y and z
-    it "assigns VarExps the correct type" do
-      a = type_check('int x; int *y; int z[2]; void main(void) { x; y; z; }')
+    it "assigns SimpleDeclarations the correct type" do
+      a = type_check('int x; void main(void) { x; &x; }')
 
-      body = a.declarations[3].body
+      body = a.declarations[1].body
       expect(body.stmts[0].exp.type).to eq(:int)
       expect(body.stmts[1].exp.type).to eq(:pointer_int)
-      expect(body.stmts[2].exp.type).to eq(:array_int)
     end
+
+    it "assigns PointerDeclarations the correct type" do
+      a = type_check('int *x; void main(void) { x; *x; }')
+
+      body = a.declarations[1].body
+      expect(body.stmts[0].exp.type).to eq(:pointer_int)
+      expect(body.stmts[1].exp.type).to eq(:int)
+    end
+
+    it "assigns ArrayDeclarations the correct type" do
+      a = type_check('int x[2]; void main(void) { x; x[1]; &x[1]; }')
+
+      body = a.declarations[1].body
+      expect(body.stmts[0].exp.type).to eq(:array_int)
+      expect(body.stmts[1].exp.type).to eq(:int)
+      expect(body.stmts[2].exp.type).to eq(:pointer_int)
+    end
+
+    # TODO errors for wrong types
 
     # FunCallExp
 
