@@ -6,10 +6,12 @@ class Ast
   private
 
   def pointer(type)
+    raise SyntaxError, "cannot reference #{type}" unless (type == :int or type == :str)
     ('pointer_' + type.to_s).to_sym
   end
 
   def unpointer(type)
+    raise SyntaxError, "cannot dereference #{type}" unless type.to_s[0..7] == "pointer_"
     type.to_s[8..-1].to_sym
   end
 
@@ -18,6 +20,7 @@ class Ast
   end
 
   def unarray(type)
+    raise SyntaxError, "cannot index #{type}" unless type.to_s[0..5] == "array_"
     type.to_s[6..-1].to_sym
   end
 
