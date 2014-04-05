@@ -71,6 +71,9 @@ class SimpleDeclaration < VariableDeclaration
 end
 
 class PointerDeclaration < VariableDeclaration
+  def type
+    ('pointer_' + @type_specifier.type.to_s).to_sym
+  end
 end
 
 class ArrayDeclaration < VariableDeclaration
@@ -84,6 +87,10 @@ class ArrayDeclaration < VariableDeclaration
 
   def size
     @size.value.to_i
+  end
+
+  def type
+    ('array_' + @type_specifier.type.to_s).to_sym
   end
 end
 
@@ -116,9 +123,15 @@ class SimpleParam < Param
 end
 
 class PointerParam < Param
+  def type
+    ('pointer_' + @type_specifier.type.to_s).to_sym
+  end
 end
 
 class ArrayParam < Param
+  def type
+    ('array_' + @type_specifier.type.to_s).to_sym
+  end
 end
 
 #########
@@ -301,6 +314,9 @@ class AssignableVarExp < VarExp
 end
 
 class SimpleVarExp < AssignableVarExp
+  def type
+    @declaration.type
+  end
 end
 
 class PointerVarExp < AssignableVarExp
@@ -375,11 +391,15 @@ end
 
 class ReadLitExp < LitExp
   def type
-    :num
+    :int
   end
 end
 
 class NumLitExp < LitExp
+  def type
+    :int
+  end
+
   def value
     @literal.value.to_i
   end

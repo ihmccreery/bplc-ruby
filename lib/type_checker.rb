@@ -4,5 +4,6 @@ class TypeChecker
   end
 
   def type_check
+    @program
   end
 end
