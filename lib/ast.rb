@@ -3,27 +3,6 @@ class Ast
     []
   end
 
-  private
-
-  def pointer(type)
-    raise SyntaxError, "cannot reference #{type}" unless (type == :int or type == :str)
-    ('pointer_' + type.to_s).to_sym
-  end
-
-  def unpointer(type)
-    raise SyntaxError, "cannot dereference #{type}" unless type.to_s[0..7] == "pointer_"
-    type.to_s[8..-1].to_sym
-  end
-
-  def array(type)
-    ('array_' + type.to_s).to_sym
-  end
-
-  def unarray(type)
-    raise SyntaxError, "cannot index #{type}" unless type.to_s[0..5] == "array_"
-    type.to_s[6..-1].to_sym
-  end
-
   def expect(a, klass, can_be_nil=false)
     if can_be_nil && a.nil?
       return a
@@ -79,7 +58,7 @@ class Declaration < Ast
     @id = expect(id, Token)
   end
 
-  def type
+  def type_specifier
     @type_specifier.type
   end
 end
@@ -91,9 +70,6 @@ class SimpleDeclaration < VariableDeclaration
 end
 
 class PointerDeclaration < VariableDeclaration
-  def type
-    pointer(@type_specifier.type)
-  end
 end
 
 class ArrayDeclaration < VariableDeclaration
@@ -107,10 +83,6 @@ class ArrayDeclaration < VariableDeclaration
 
   def size
     @size.value.to_i
-  end
-
-  def type
-    array(@type_specifier.type)
   end
 end
 
@@ -143,15 +115,9 @@ class SimpleParam < Param
 end
 
 class PointerParam < Param
-  def type
-    pointer(@type_specifier.type)
-  end
 end
 
 class ArrayParam < Param
-  def type
-    array(@type_specifier.type)
-  end
 end
 
 #########
@@ -334,15 +300,9 @@ class AssignableVarExp < VarExp
 end
 
 class SimpleVarExp < AssignableVarExp
-  def type
-    @declaration.type
-  end
 end
 
 class PointerVarExp < AssignableVarExp
-  def type
-    unpointer(@declaration.type)
-  end
 end
 
 class ArrayVarExp < AssignableVarExp
@@ -355,19 +315,12 @@ class ArrayVarExp < AssignableVarExp
     @index = expect(index, Exp)
   end
 
-  def type
-    unarray(@declaration.type)
-  end
-
   def children
     [index]
   end
 end
 
 class AddrVarExp < VarExp
-  def type
-    pointer(@declaration.type)
-  end
 end
 
 class AddrArrayVarExp < VarExp
@@ -378,10 +331,6 @@ class AddrArrayVarExp < VarExp
   def initialize(id, index)
     super(id)
     @index = expect(index, Exp)
-  end
-
-  def type
-    pointer(unarray(@declaration.type))
   end
 
   def children
@@ -414,25 +363,15 @@ class LitExp < Exp
     @literal = expect(literal, Token)
   end
 
-  def type
-    @literal.type
-  end
-
   def value
     @literal.value
   end
 end
 
 class ReadLitExp < LitExp
-  def type
-    :int
-  end
 end
 
 class NumLitExp < LitExp
-  def type
-    :int
-  end
 
   def value
     @literal.value.to_i

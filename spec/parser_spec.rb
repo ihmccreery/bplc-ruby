@@ -194,7 +194,7 @@ describe SimpleDeclaration do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
   end
 
@@ -215,7 +215,7 @@ describe PointerDeclaration do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:pointer_int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
   end
 
@@ -236,7 +236,7 @@ describe  ArrayDeclaration do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:array_int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
     expect(p.size).to eq(2)
   end
@@ -258,7 +258,7 @@ describe FunctionDeclaration do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("f")
     expect(p.body).to be_a CompoundStmt
   end
@@ -315,7 +315,7 @@ describe SimpleParam do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
   end
 
@@ -335,7 +335,7 @@ describe PointerParam do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:pointer_int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
   end
 
@@ -355,7 +355,7 @@ describe ArrayParam do
   end
 
   it "has the correct attributes" do
-    expect(p.type).to eq(:array_int)
+    expect(p.type_specifier).to eq(:int)
     expect(p.id).to eq("x")
   end
 
