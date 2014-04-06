@@ -221,6 +221,7 @@ end
 ########
 
 class Exp < Ast
+  attr_accessor :type
 end
 
 class BinExp < Exp
@@ -372,7 +373,6 @@ class ReadLitExp < LitExp
 end
 
 class NumLitExp < LitExp
-
   def value
     @literal.value.to_i
   end

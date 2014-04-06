@@ -39,9 +39,17 @@ describe TypeChecker do
     # VarExps #
     ###########
 
-    # TODO
     ###########
     # LitExps #
     ###########
+
+    it "assigns LitExps the correct type" do
+      a = type_check('void main(void) { 2; "a"; read(); }')
+
+      body = a.declarations[0].body
+      expect(body.stmts[0].exp.type).to eq(:int)
+      expect(body.stmts[1].exp.type).to eq(:str)
+      expect(body.stmts[2].exp.type).to eq(:int)
+    end
   end
 end
