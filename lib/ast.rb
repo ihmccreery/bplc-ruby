@@ -224,7 +224,7 @@ class Exp < Ast
   attr_accessor :type
 end
 
-class BinExp < Exp
+module BinExp
   attr_reader :lhs, :rhs
 
   # @param op [Token]
@@ -260,16 +260,22 @@ class AssignmentExp < Exp
   end
 end
 
-class RelExp < BinExp
+class RelExp < Exp
+  include BinExp
 end
 
-class AddExp < BinExp
+class ArithmeticExp < Exp
 end
 
-class MulExp < BinExp
+class AddExp < ArithmeticExp
+  include BinExp
 end
 
-class NegExp < Exp
+class MulExp < ArithmeticExp
+  include BinExp
+end
+
+class NegExp < ArithmeticExp
   attr_reader :exp
 
   # @param exp [Exp]
