@@ -11,14 +11,36 @@ class TypeChecker
   private
 
   def r(ast)
-    if ast.is_a? VarExp
+    ast.children.each do |c|
+      r(c)
+    end
+    if ast.is_a? RelExp
+      r_rel_exp(ast)
+    elsif ast.is_a? ArithmeticExp
+      r_arithmetic_exp(ast)
+    elsif ast.is_a? VarExp
       r_var_exp(ast)
     elsif ast.is_a? LitExp
       r_lit_exp(ast)
     end
-    ast.children.each do |c|
-      r(c)
+  end
+
+  # @param ast [RelExp]
+  def r_rel_exp(ast)
+    raise SyntaxError, "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
+    raise SyntaxError, "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
+    ast.type = :rel
+  end
+
+  # @param ast [ArithmeticExp]
+  def r_arithmetic_exp(ast)
+    if ast.is_a? NegExp
+      raise SyntaxError, "invalid exp: cannot minus #{ast.exp.type}" unless ast.exp.type == :int
+    else
+      raise SyntaxError, "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
+      raise SyntaxError, "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
     end
+    ast.type = :int
   end
 
   # @param ast [VarExp]
@@ -77,6 +99,10 @@ class TypeChecker
     elsif ast.is_a? AddrArrayVarExp
       ast.type = ("pointer_" + ast.declaration.type_specifier.to_s).to_sym
     end
+  end
+
+  def r_var_exp_function_declaration(ast)
+    ast.type = ast.declaration.type_specifier
   end
 
   # @param ast [LitExp]

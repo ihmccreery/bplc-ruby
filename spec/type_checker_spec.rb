@@ -34,7 +34,36 @@ describe TypeChecker do
     # Exps #
     ########
 
-    # TODO
+    it "assigns RelExps the correct type" do
+      a = type_check('int x; int *y; void main(void) { x > 5; 5 == *y; -x != *y; x > -x % *y; }')
+
+      body = a.declarations[2].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:rel)
+      end
+    end
+
+    it "raises a SyntaxError if bad operands are used in RelExps" do
+      expect{type_check('string x; void main(void) { x < 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot lt string")
+      expect{type_check('int x; void main(void) { 5 == &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot eq pointer_int")
+      expect{type_check('int x[10]; void main(void) { 2 != x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot neq array_int")
+    end
+
+    it "assigns ArithmeticExps the correct type" do
+      a = type_check('int x; int *y; void main(void) { x + 5; 5 * *y; -x; x + -x % *y; }')
+
+      body = a.declarations[2].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:int)
+      end
+    end
+
+    it "raises a SyntaxError if bad operands are used in ArithmeticExps" do
+      expect{type_check('string x; void main(void) { x + 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot plus string")
+      expect{type_check('int x; void main(void) { 5 / &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot slash pointer_int")
+      expect{type_check('int x[10]; void main(void) { -x; }')}.to raise_error(SyntaxError, "invalid exp: cannot minus array_int")
+    end
+
     ###########
     # VarExps #
     ###########
@@ -83,7 +112,14 @@ describe TypeChecker do
       expect{type_check('int x[2]; void main(void) { &x; }')}.to raise_error(SyntaxError, "cannot reference array_int")
     end
 
-    # # FunCallExp
+    it "assigns FunctionDeclarations the correct type" do
+      a = type_check('int f(void) { } string g(void) { } void h(void) { } void main(void) { f(); g(); h(); }')
+
+      body = a.declarations[3].body
+      expect(body.stmts[0].exp.type).to eq(:int)
+      expect(body.stmts[1].exp.type).to eq(:string)
+      expect(body.stmts[2].exp.type).to eq(:void)
+    end
 
     ###########
     # LitExps #
