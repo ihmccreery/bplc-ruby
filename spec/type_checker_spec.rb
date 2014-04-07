@@ -24,15 +24,28 @@ describe TypeChecker do
     # Params #
     ##########
 
-    # TODO?
+    # TODO
     #########
     # Stmts #
     #########
 
-    # TODO
     ########
     # Exps #
     ########
+
+    it "assigns AssignmentExps the correct type" do
+      a = type_check('int x; int *y; int z[2]; void main(void) { x = 5; x = *y = z[0] = 10; x = *y; *y = z[1]; z[0] = x; }')
+
+      body = a.declarations[3].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:int)
+      end
+    end
+
+    it "raises a SyntaxError if operands in AssignmentExps do not match" do
+      expect{type_check('string x; void main(void) { x = 5; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign int to string")
+      expect{type_check('int x; int *y; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign pointer_int to int")
+    end
 
     it "assigns RelExps the correct type" do
       a = type_check('int x; int *y; void main(void) { x > 5; 5 == *y; -x != *y; x > -x % *y; }')

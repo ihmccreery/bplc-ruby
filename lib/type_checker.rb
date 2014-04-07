@@ -14,7 +14,9 @@ class TypeChecker
     ast.children.each do |c|
       r(c)
     end
-    if ast.is_a? RelExp
+    if ast.is_a? AssignmentExp
+      r_assignment_exp(ast)
+    elsif ast.is_a? RelExp
       r_rel_exp(ast)
     elsif ast.is_a? ArithmeticExp
       r_arithmetic_exp(ast)
@@ -23,6 +25,12 @@ class TypeChecker
     elsif ast.is_a? LitExp
       r_lit_exp(ast)
     end
+  end
+
+  # @param ast [AssignmentExp]
+  def r_assignment_exp(ast)
+    raise SyntaxError, "invalid assignment: cannot assign #{ast.rhs.type} to #{ast.lhs.type}" unless ast.lhs.type == ast.rhs.type
+    ast.type = ast.rhs.type
   end
 
   # @param ast [RelExp]
