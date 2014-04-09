@@ -29,6 +29,7 @@ class TypeChecker
 
   # @param ast [AssignmentExp]
   def r_assignment_exp(ast)
+    raise SyntaxError, "invalid assignment: cannot assign to #{ast.lhs.type}" if [:array_int, :array_string].include? ast.lhs.type
     raise SyntaxError, "invalid assignment: cannot assign #{ast.rhs.type} to #{ast.lhs.type}" unless ast.lhs.type == ast.rhs.type
     ast.type = ast.rhs.type
   end

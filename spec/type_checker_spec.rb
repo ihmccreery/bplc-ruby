@@ -33,13 +33,45 @@ describe TypeChecker do
     # Exps #
     ########
 
-    it "assigns AssignmentExps the correct type" do
+    it "assigns int AssignmentExps the correct type" do
       a = type_check('int x; int *y; int z[2]; void main(void) { x = 5; x = *y = z[0] = 10; x = *y; *y = z[1]; z[0] = x; }')
 
       body = a.declarations[3].body
       body.stmts.each do |s|
         expect(s.exp.type).to eq(:int)
       end
+    end
+
+    it "assigns string AssignmentExps the correct type" do
+      a = type_check('string x; string *y; string z[2]; void main(void) { x = "a"; x = *y = z[0] = "b"; x = *y; *y = z[1]; z[0] = x; }')
+
+      body = a.declarations[3].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:string)
+      end
+    end
+
+    it "assigns pointer_int AssignmentExps the correct type" do
+      a = type_check('int x; int *y; int z[2]; int *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
+
+      body = a.declarations[4].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:pointer_int)
+      end
+    end
+
+    it "assigns pointer_string AssignmentExps the correct type" do
+      a = type_check('string x; string *y; string z[2]; string *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
+
+      body = a.declarations[4].body
+      body.stmts.each do |s|
+        expect(s.exp.type).to eq(:pointer_string)
+      end
+    end
+
+    it "raises a SyntaxError for array_int and array_string AssignmentExps" do
+      expect{type_check('int x[1]; int y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_int")
+      expect{type_check('string x[1]; string y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_string")
     end
 
     it "raises a SyntaxError if operands in AssignmentExps do not match" do
