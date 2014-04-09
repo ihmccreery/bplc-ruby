@@ -33,80 +33,86 @@ describe TypeChecker do
     # Exps #
     ########
 
-    it "assigns int AssignmentExps the correct type" do
-      a = type_check('int x; int *y; int z[2]; void main(void) { x = 5; x = *y = z[0] = 10; x = *y; *y = z[1]; z[0] = x; }')
+    describe "AssignmentExps" do
+      it "are type-checked as int" do
+        a = type_check('int x; int *y; int z[2]; void main(void) { x = 5; x = *y = z[0] = 10; x = *y; *y = z[1]; z[0] = x; }')
 
-      body = a.declarations[3].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:int)
+        body = a.declarations[3].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:int)
+        end
+      end
+
+      it "are type-checked as string" do
+        a = type_check('string x; string *y; string z[2]; void main(void) { x = "a"; x = *y = z[0] = "b"; x = *y; *y = z[1]; z[0] = x; }')
+
+        body = a.declarations[3].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:string)
+        end
+      end
+
+      it "are type-checked as pointer_int" do
+        a = type_check('int x; int *y; int z[2]; int *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
+
+        body = a.declarations[4].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:pointer_int)
+        end
+      end
+
+      it "are type-checked as pointer_string" do
+        a = type_check('string x; string *y; string z[2]; string *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
+
+        body = a.declarations[4].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:pointer_string)
+        end
+      end
+
+      it "raises a SyntaxError for array_int and array_string lhss" do
+        expect{type_check('int x[1]; int y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_int")
+        expect{type_check('string x[1]; string y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_string")
+      end
+
+      it "raises a SyntaxError if operands do not match" do
+        expect{type_check('string x; void main(void) { x = 5; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign int to string")
+        expect{type_check('int x; int *y; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign pointer_int to int")
       end
     end
 
-    it "assigns string AssignmentExps the correct type" do
-      a = type_check('string x; string *y; string z[2]; void main(void) { x = "a"; x = *y = z[0] = "b"; x = *y; *y = z[1]; z[0] = x; }')
+    describe "RelExps" do
+      it "are type-checked as int" do
+        a = type_check('int x; int *y; void main(void) { x > 5; 5 == *y; -x != *y; x > -x % *y; }')
 
-      body = a.declarations[3].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:string)
+        body = a.declarations[2].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:int)
+        end
+      end
+
+      it "raises a SyntaxError if bad operands are used" do
+        expect{type_check('string x; void main(void) { x < 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot lt string")
+        expect{type_check('int x; void main(void) { 5 == &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot eq pointer_int")
+        expect{type_check('int x[10]; void main(void) { 2 != x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot neq array_int")
       end
     end
 
-    it "assigns pointer_int AssignmentExps the correct type" do
-      a = type_check('int x; int *y; int z[2]; int *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
+    describe "ArithmeticExps" do
+      it "are type-checked as int" do
+        a = type_check('int x; int *y; void main(void) { x + 5; 5 * *y; -x; x + -x % *y; }')
 
-      body = a.declarations[4].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:pointer_int)
+        body = a.declarations[2].body
+        body.stmts.each do |s|
+          expect(s.exp.type).to eq(:int)
+        end
       end
-    end
 
-    it "assigns pointer_string AssignmentExps the correct type" do
-      a = type_check('string x; string *y; string z[2]; string *w; void main(void) { y = &x; y = &z[0]; y = w = &z[1]; }')
-
-      body = a.declarations[4].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:pointer_string)
+      it "raises a SyntaxError if bad operands are used" do
+        expect{type_check('string x; void main(void) { x + 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot plus string")
+        expect{type_check('int x; void main(void) { 5 / &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot slash pointer_int")
+        expect{type_check('int x[10]; void main(void) { -x; }')}.to raise_error(SyntaxError, "invalid exp: cannot minus array_int")
       end
-    end
-
-    it "raises a SyntaxError for array_int and array_string AssignmentExps" do
-      expect{type_check('int x[1]; int y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_int")
-      expect{type_check('string x[1]; string y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_string")
-    end
-
-    it "raises a SyntaxError if operands in AssignmentExps do not match" do
-      expect{type_check('string x; void main(void) { x = 5; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign int to string")
-      expect{type_check('int x; int *y; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign pointer_int to int")
-    end
-
-    it "assigns RelExps the correct type" do
-      a = type_check('int x; int *y; void main(void) { x > 5; 5 == *y; -x != *y; x > -x % *y; }')
-
-      body = a.declarations[2].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:int)
-      end
-    end
-
-    it "raises a SyntaxError if bad operands are used in RelExps" do
-      expect{type_check('string x; void main(void) { x < 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot lt string")
-      expect{type_check('int x; void main(void) { 5 == &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot eq pointer_int")
-      expect{type_check('int x[10]; void main(void) { 2 != x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot neq array_int")
-    end
-
-    it "assigns ArithmeticExps the correct type" do
-      a = type_check('int x; int *y; void main(void) { x + 5; 5 * *y; -x; x + -x % *y; }')
-
-      body = a.declarations[2].body
-      body.stmts.each do |s|
-        expect(s.exp.type).to eq(:int)
-      end
-    end
-
-    it "raises a SyntaxError if bad operands are used in ArithmeticExps" do
-      expect{type_check('string x; void main(void) { x + 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot plus string")
-      expect{type_check('int x; void main(void) { 5 / &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot slash pointer_int")
-      expect{type_check('int x[10]; void main(void) { -x; }')}.to raise_error(SyntaxError, "invalid exp: cannot minus array_int")
     end
 
     ###########
