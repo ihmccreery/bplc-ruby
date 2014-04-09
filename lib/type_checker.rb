@@ -37,7 +37,7 @@ class TypeChecker
   def r_rel_exp(ast)
     raise SyntaxError, "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
     raise SyntaxError, "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
-    ast.type = :rel
+    ast.type = :int
   end
 
   # @param ast [ArithmeticExp]

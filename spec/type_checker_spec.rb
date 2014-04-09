@@ -52,7 +52,7 @@ describe TypeChecker do
 
       body = a.declarations[2].body
       body.stmts.each do |s|
-        expect(s.exp.type).to eq(:rel)
+        expect(s.exp.type).to eq(:int)
       end
     end
 
