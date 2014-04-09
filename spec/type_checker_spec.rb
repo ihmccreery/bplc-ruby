@@ -29,11 +29,35 @@ describe TypeChecker do
     # Stmts #
     #########
 
+    # no need to type-check the nodes below:
+    # - CompoundStmt
+    # - ExpStmt
+    # - Return
+    # - WritelnStmt
+
+    describe "ConditionalStmt" do
+      it "does not raise an error for an int condition" do
+        expect{type_check('int x; void main(void) { if(x) ; }')}.not_to raise_error
+        expect{type_check('int x; void main(void) { while(x) ; }')}.not_to raise_error
+        expect{type_check('int x; void main(void) { if(x == 2) ; }')}.not_to raise_error
+        expect{type_check('int x; void main(void) { while(x == 2) ; }')}.not_to raise_error
+      end
+
+      it "raises a SyntaxError for a non-int condition" do
+        ['&x', '"a"', 'y', 'z', 'w'].each do |condition|
+          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { if(#{condition}) ; }")}.to raise_error(SyntaxError, "condition must be int")
+          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { while(#{condition}) ; }")}.to raise_error(SyntaxError, "condition must be int")
+        end
+      end
+    end
+
+    describe "Write"
+
     ########
     # Exps #
     ########
 
-    describe "AssignmentExps" do
+    describe "AssignmentExp" do
       it "are type-checked as int" do
         a = type_check('int x; int *y; int z[2]; void main(void) { x = 5; x = *y = z[0] = 10; x = *y; *y = z[1]; z[0] = x; }')
 
@@ -81,7 +105,7 @@ describe TypeChecker do
       end
     end
 
-    describe "RelExps" do
+    describe "RelExp" do
       it "are type-checked as int" do
         a = type_check('int x; int *y; void main(void) { x > 5; 5 == *y; -x != *y; x > -x % *y; }')
 
@@ -98,7 +122,7 @@ describe TypeChecker do
       end
     end
 
-    describe "ArithmeticExps" do
+    describe "ArithmeticExp" do
       it "are type-checked as int" do
         a = type_check('int x; int *y; void main(void) { x + 5; 5 * *y; -x; x + -x % *y; }')
 

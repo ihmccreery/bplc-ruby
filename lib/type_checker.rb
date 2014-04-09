@@ -14,7 +14,9 @@ class TypeChecker
     ast.children.each do |c|
       r(c)
     end
-    if ast.is_a? AssignmentExp
+    if ast.is_a? ConditionalStmt
+      r_conditional_stmt(ast)
+    elsif ast.is_a? AssignmentExp
       r_assignment_exp(ast)
     elsif ast.is_a? RelExp
       r_rel_exp(ast)
@@ -25,6 +27,11 @@ class TypeChecker
     elsif ast.is_a? LitExp
       r_lit_exp(ast)
     end
+  end
+
+  # @param ast [IfStmt]
+  def r_conditional_stmt(ast)
+    raise SyntaxError, "condition must be int" unless ast.condition.type == :int
   end
 
   # @param ast [AssignmentExp]

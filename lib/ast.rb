@@ -155,24 +155,7 @@ class ExpStmt < Stmt
   end
 end
 
-class IfStmt < Stmt
-  attr_reader :condition, :body, :else_body
-
-  # @param condition [Exp]
-  # @param body [Stmt]
-  # @param else_body [Stmt, nil]
-  def initialize(condition, body, else_body)
-    @condition = expect(condition, Exp)
-    @body = expect(body, Stmt)
-    @else_body = expect(else_body, Stmt, can_be_nil: true)
-  end
-
-  def children
-    [condition, body, else_body].compact
-  end
-end
-
-class WhileStmt < Stmt
+class ConditionalStmt < Stmt
   attr_reader :condition, :body
 
   # @param condition [Exp]
@@ -185,6 +168,25 @@ class WhileStmt < Stmt
   def children
     [condition, body]
   end
+end
+
+class IfStmt < ConditionalStmt
+  attr_reader :else_body
+
+  # @param condition [Exp]
+  # @param body [Stmt]
+  # @param else_body [Stmt, nil]
+  def initialize(condition, body, else_body)
+    super(condition, body)
+    @else_body = expect(else_body, Stmt, can_be_nil: true)
+  end
+
+  def children
+    [condition, body, else_body].compact
+  end
+end
+
+class WhileStmt < ConditionalStmt
 end
 
 class ReturnStmt < Stmt
