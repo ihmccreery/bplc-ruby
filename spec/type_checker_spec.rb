@@ -51,7 +51,18 @@ describe TypeChecker do
       end
     end
 
-    describe "Write"
+    describe "WriteStmt" do
+      it "does not raise an error for an int or string value" do
+        expect{type_check('int x; void main(void) { write(x); }')}.not_to raise_error
+        expect{type_check('string x; void main(void) { write(x); }')}.not_to raise_error
+      end
+
+      it "raises a SyntaxError for a non-int, non-string value" do
+        ['&x', '&y', 'z', 'w'].each do |value|
+          expect{type_check("int x; string y; int z[2]; string w[2]; void main(void) { write(#{value}); }")}.to raise_error(SyntaxError, "can only write int or string")
+        end
+      end
+    end
 
     ########
     # Exps #

@@ -16,6 +16,8 @@ class TypeChecker
     end
     if ast.is_a? ConditionalStmt
       r_conditional_stmt(ast)
+    elsif ast.is_a? WriteStmt
+      r_write_stmt(ast)
     elsif ast.is_a? AssignmentExp
       r_assignment_exp(ast)
     elsif ast.is_a? RelExp
@@ -29,9 +31,14 @@ class TypeChecker
     end
   end
 
-  # @param ast [IfStmt]
+  # @param ast [ConditionalStmt]
   def r_conditional_stmt(ast)
     raise SyntaxError, "condition must be int" unless ast.condition.type == :int
+  end
+
+  # @param ast [WriteStmt]
+  def r_write_stmt(ast)
+    raise SyntaxError, "can only write int or string" unless [:int, :string].include? ast.value.type
   end
 
   # @param ast [AssignmentExp]
