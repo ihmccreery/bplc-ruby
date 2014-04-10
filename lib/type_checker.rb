@@ -11,6 +11,9 @@ class TypeChecker
   private
 
   def r(ast)
+    if ast.is_a? FunctionDeclaration
+      r_function_declaration(ast)
+    end
     ast.children.each do |c|
       r(c)
     end
@@ -28,6 +31,14 @@ class TypeChecker
       r_var_exp(ast)
     elsif ast.is_a? LitExp
       r_lit_exp(ast)
+    end
+  end
+
+  # @param ast [FunctionDeclaration]
+  def r_function_declaration(ast)
+    if ast.id == "main"
+      raise SyntaxError, "main function must return void" unless ast.type_specifier == :void
+      raise SyntaxError, "main function must have void params" unless ast.params.empty?
     end
   end
 

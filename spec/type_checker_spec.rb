@@ -9,6 +9,17 @@ describe TypeChecker do
 
   describe "#type_check" do
 
+    ########
+    # main #
+    ########
+
+    describe "the main function" do
+      it "raises a SyntaxError for a non-void type or args" do
+        expect{type_check("int main(void) { }")}.to raise_error(SyntaxError, "main function must return void")
+        expect{type_check("void main(int x) { }")}.to raise_error(SyntaxError, "main function must have void params")
+      end
+    end
+
     #########
     # Stmts #
     #########
