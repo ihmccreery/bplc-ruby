@@ -9,22 +9,6 @@ describe TypeChecker do
 
   describe "#type_check" do
 
-    # TODO?
-    ###########
-    # Program #
-    ###########
-
-    # TODO?
-    ################
-    # Declarations #
-    ################
-
-    # TODO?
-    ##########
-    # Params #
-    ##########
-
-    # TODO
     #########
     # Stmts #
     #########
@@ -216,6 +200,25 @@ describe TypeChecker do
         expect(body.stmts[0].exp.type).to eq(:int)
         expect(body.stmts[1].exp.type).to eq(:string)
         expect(body.stmts[2].exp.type).to eq(:void)
+      end
+
+      it "raises a SyntaxError if the wrong number of args is used" do
+        expect{type_check('int f(int x) { } void main(void) { f(); }')}.to raise_error(SyntaxError, "wrong number of arguments in call to f")
+        expect{type_check('int f(int x) { } void main(void) { f(5, 6); }')}.to raise_error(SyntaxError, "wrong number of arguments in call to f")
+      end
+
+      it "raises a SyntaxError if bad args are used" do
+        expect do
+          type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f("hi", y, z); }')
+        end.to raise_error(SyntaxError, "bad argument type in call to f: expected int, got string")
+
+        expect do
+          type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f(x, *y, z); }')
+        end.to raise_error(SyntaxError, "bad argument type in call to f: expected pointer_string, got string")
+
+        expect do
+          type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f(x, y, z[0]); }')
+        end.to raise_error(SyntaxError, "bad argument type in call to f: expected array_int, got int")
       end
     end
 

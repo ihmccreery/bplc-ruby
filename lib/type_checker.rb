@@ -125,7 +125,22 @@ class TypeChecker
   end
 
   def r_var_exp_function_declaration(ast)
+    raise SyntaxError, "wrong number of arguments in call to #{ast.id}" unless ast.args.size == ast.declaration.params.size
+    ast.args.each_with_index do |arg, i|
+      param_type = get_param_type(ast.declaration.params[i])
+      raise SyntaxError, "bad argument type in call to #{ast.id}: expected #{param_type}, got #{arg.type}" unless arg.type == param_type
+    end
     ast.type = ast.declaration.type_specifier
+  end
+
+  def get_param_type(param)
+    if param.is_a? PointerParam
+      ("pointer_" + param.type_specifier.to_s).to_sym
+    elsif param.is_a? ArrayParam
+      ("array_" + param.type_specifier.to_s).to_sym
+    else # param.is_a? SimpleParam
+      param.type_specifier
+    end
   end
 
   # @param ast [LitExp]
