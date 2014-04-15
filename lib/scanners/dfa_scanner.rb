@@ -48,9 +48,6 @@ module Scanners
     def initialize(source)
       configure_source(source)
       @line_number = 1
-      # this is the column of the current character; if at a \n, then
-      # @column_number is -1
-      @column_number = -1
     end
 
     # gets the next Token in the source and returns it, progressing
@@ -79,7 +76,7 @@ module Scanners
         return get_eof
 
       else
-        raise BplSyntaxError.new(@line_number, @column_number+1), "invalid symbol '#{getc}'"
+        raise BplSyntaxError.new(@line_number), "invalid symbol '#{getc}'"
       end
     end
 
@@ -112,10 +109,9 @@ module Scanners
     def get_string
       # don't want the beginning quote
       getc
-      beginning_column_number = @column_number
       s = ''
       while(peek != '"')
-        raise BplSyntaxError.new(@line_number, beginning_column_number), "unterminated string \"#{s}\"" if ["\n", nil].include? peek
+        raise BplSyntaxError.new(@line_number), "unterminated string \"#{s}\"" if ["\n", nil].include? peek
         s << getc
       end
       # don't want the ending quote
@@ -135,7 +131,7 @@ module Scanners
           s << getc
           return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
-          raise BplSyntaxError.new(@line_number, @column_number), "invalid symbol '#{s}'"
+          raise BplSyntaxError.new(@line_number), "invalid symbol '#{s}'"
         end
       else
         if peek == '='
@@ -191,11 +187,10 @@ module Scanners
 
     def consume_until_end_of_comment
       beginning_line_number = @line_number
-      beginning_column_number = @column_number-1
       s = ""
       until s =~ /.*\*\//
         if peek.nil?
-          raise BplSyntaxError.new(beginning_line_number, beginning_column_number), "unterminated comment"
+          raise BplSyntaxError.new(beginning_line_number), "unterminated comment"
         else
           s << getc
         end
@@ -209,20 +204,16 @@ module Scanners
     end
 
     def getc
-      @column_number += 1
       c = @source.getc
       if c == "\n"
         @line_number += 1
-        @column_number = -1
       end
       return c
     end
 
     def ungetc(c)
-      @column_number -= 1
       if c == "\n"
         @line_number -= 1
-        @column_number = -1
       end
       @source.ungetc(c)
     end

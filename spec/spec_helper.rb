@@ -53,11 +53,10 @@ def expect_syntax_error_on_parse_stmts(s, message)
   expect_syntax_error_on_parse("int f(void) { #{s} }", message)
 end
 
-def expect_syntax_error(message, line, column)
+def expect_syntax_error(message, line)
   expect{yield}.to raise_error { |error|
     expect(error).to be_a(BplSyntaxError)
     expect(error.line).to eq(line)
-    expect(error.column).to eq(column)
     expect(error.message).to eq(message)
   }
 end

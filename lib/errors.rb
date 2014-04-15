@@ -1,8 +1,7 @@
 class BplSyntaxError < StandardError
-  attr_reader :line, :column
+  attr_reader :line
 
-  def initialize(line, column)
+  def initialize(line)
     @line = line
-    @column = column
   end
 end

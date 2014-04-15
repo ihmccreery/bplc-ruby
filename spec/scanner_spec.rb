@@ -51,13 +51,13 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on multi-line strings" do
-      expect_syntax_error('unterminated string "this is a"', 1, 0) do
+      expect_syntax_error('unterminated string "this is a"', 1) do
         Scanner.new("\"this is a\nmulti-line string\"").next_token
       end
     end
 
     it "raises BplSyntaxErrors on unterminated strings" do
-      expect_syntax_error('unterminated string "this is a"', 1, 0) do
+      expect_syntax_error('unterminated string "this is a"', 1) do
         Scanner.new("\"this is a").next_token
       end
     end
@@ -84,7 +84,7 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on '!' without a following '='" do
-      expect_syntax_error("invalid symbol '!'", 1, 0) do
+      expect_syntax_error("invalid symbol '!'", 1) do
         Scanner.new("!").next_token
       end
     end
@@ -96,7 +96,7 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on erroneous characters" do
-      expect_syntax_error("invalid symbol '#'", 1, 0) do
+      expect_syntax_error("invalid symbol '#'", 1) do
         Scanner.new("#").next_token
       end
     end
@@ -131,13 +131,13 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on unterminated comments" do
-      expect_syntax_error("unterminated comment", 1, 0) do
+      expect_syntax_error("unterminated comment", 1) do
         Scanner.new("/*").next_token
       end
     end
 
     it "raises BplSyntaxErrors on unterminated multi-line comments" do
-      expect_syntax_error("unterminated comment", 1, 0) do
+      expect_syntax_error("unterminated comment", 1) do
         Scanner.new("/*\n\n").next_token
       end
     end
@@ -149,8 +149,8 @@ describe Scanner do
     end
 
     context "when raising BplSyntaxErrors" do
-      it "assigns correct line and column" do
-        expect_syntax_error("invalid symbol '#'", 3, 2) do
+      it "assigns correct line" do
+        expect_syntax_error("invalid symbol '#'", 3) do
           s = Scanner.new("\na\na #")
           3.times do
             s.next_token
