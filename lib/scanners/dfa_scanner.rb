@@ -48,6 +48,9 @@ module Scanners
     def initialize(source)
       configure_source(source)
       @line_number = 1
+      # this is the column of the current character; if at a \n, then
+      # @column_number is -1
+      @column_number = -1
     end
 
     # gets the next Token in the source and returns it, progressing
@@ -76,7 +79,7 @@ module Scanners
         return get_eof
 
       else
-        raise BplSyntaxError.new(@line_number), "invalid symbol '#{getc}'"
+        raise BplSyntaxError.new(@line_number, @column_number+1), "invalid symbol '#{getc}'"
       end
     end
 
@@ -88,12 +91,9 @@ module Scanners
 
     def get_identifier_or_keyword
       s = getc
-      c = getc
-      while(c =~ /[0-9A-Za-z_]/)
-        s << c
-        c = getc
+      while(peek =~ /[0-9A-Za-z_]/)
+        s << getc
       end
-      ungetc(c)
       if KEYWORDS[s]
         return @current_token = Token.new(s, KEYWORDS[s], @line_number)
       else
@@ -103,28 +103,23 @@ module Scanners
 
     def get_numeric
       s = getc
-      c = getc
-      while(c =~ /[0-9]/)
-        s << c
-        c = getc
+      while(peek =~ /[0-9]/)
+        s << getc
       end
-      ungetc(c)
       return @current_token = Token.new(s, :num, @line_number)
     end
 
     def get_string
-      # don't want the quotes
+      # don't want the beginning quote
       getc
+      beginning_column_number = @column_number
       s = ''
-      c = getc
-      while(c != '"')
-        if ["\n", nil].include? c
-          ungetc(c)
-          raise BplSyntaxError.new(@line_number), "unterminated string \"#{s}\""
-        end
-        s << c
-        c = getc
+      while(peek != '"')
+        raise BplSyntaxError.new(@line_number, beginning_column_number), "unterminated string \"#{s}\"" if ["\n", nil].include? peek
+        s << getc
       end
+      # don't want the ending quote
+      getc
       return @current_token = Token.new(s, :str, @line_number)
     end
 
@@ -136,21 +131,17 @@ module Scanners
     def get_ambiguous_symbol
       s = getc
       if s == '!'
-        c = getc
-        if c == '='
-          s << c
+        if peek == '='
+          s << getc
           return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
-          ungetc(c)
-          raise BplSyntaxError.new(@line_number), "invalid symbol '#{s}'"
+          raise BplSyntaxError.new(@line_number, @column_number), "invalid symbol '#{s}'"
         end
       else
-        c = getc
-        if c == '='
-          s << c
+        if peek == '='
+          s << getc
           return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
-          ungetc(c)
           return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         end
       end
@@ -180,58 +171,58 @@ module Scanners
 
     def consume_whitespace_and_comments
       # consume whitespace
-      c = getc
-      while c =~ /\s/
-        c = getc
+      while peek =~ /\s/
+        getc
       end
 
       # consume comment
-      if c == '/'
-        d = getc
-        if d == '*'
+      if peek == '/'
+        c = getc
+        if peek == '*'
+          getc
           consume_until_end_of_comment
           # recurse to consume more whitespace and comments
           consume_whitespace_and_comments
         else
-          ungetc(d)
           ungetc(c)
         end
-      else
-        ungetc(c)
       end
     end
 
     def consume_until_end_of_comment
       beginning_line_number = @line_number
-      s = getc
+      beginning_column_number = @column_number-1
+      s = ""
       until s =~ /.*\*\//
-        c = getc
-        if c.nil?
-          ungetc(c)
-          raise BplSyntaxError.new(beginning_line_number), "unterminated comment"
+        if peek.nil?
+          raise BplSyntaxError.new(beginning_line_number, beginning_column_number), "unterminated comment"
         else
-          s << c
+          s << getc
         end
       end
     end
 
     def peek
-      c = getc
-      ungetc(c)
+      c = @source.getc
+      @source.ungetc(c)
       return c
     end
 
     def getc
+      @column_number += 1
       c = @source.getc
       if c == "\n"
         @line_number += 1
+        @column_number = -1
       end
       return c
     end
 
     def ungetc(c)
+      @column_number -= 1
       if c == "\n"
         @line_number -= 1
+        @column_number = -1
       end
       @source.ungetc(c)
     end
