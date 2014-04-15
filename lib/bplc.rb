@@ -1,3 +1,4 @@
+require 'errors'
 require 'scanner'
 require 'parser'
 require 'resolver'

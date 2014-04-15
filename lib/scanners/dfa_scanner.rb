@@ -76,7 +76,7 @@ module Scanners
         return get_eof
 
       else
-        raise SyntaxError, "invalid symbol '#{getc}' on line #{@line_number}"
+        raise BplSyntaxError.new(@line_number), "invalid symbol '#{getc}'"
       end
     end
 
@@ -120,7 +120,7 @@ module Scanners
       while(c != '"')
         if ["\n", nil].include? c
           ungetc(c)
-          raise SyntaxError, "unterminated string \"#{s}\" on line #{@line_number}"
+          raise BplSyntaxError.new(@line_number), "unterminated string \"#{s}\""
         end
         s << c
         c = getc
@@ -142,7 +142,7 @@ module Scanners
           return @current_token = Token.new(s, SYMBOLS[s], @line_number)
         else
           ungetc(c)
-          raise SyntaxError, "invalid symbol '#{s}' on line #{@line_number}"
+          raise BplSyntaxError.new(@line_number), "invalid symbol '#{s}'"
         end
       else
         c = getc
@@ -208,7 +208,7 @@ module Scanners
         c = getc
         if c.nil?
           ungetc(c)
-          raise SyntaxError, "unterminated comment beginning on line #{beginning_line_number}"
+          raise BplSyntaxError.new(beginning_line_number), "unterminated comment"
         else
           s << c
         end
