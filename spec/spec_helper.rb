@@ -44,11 +44,11 @@ def parse_exp(s)
   parse("int f(void) { #{s}; }").declarations[0].body.stmts[0].exp
 end
 
-def expect_syntax_error(s, message)
+def expect_syntax_error_on_parse(s, message)
   p = Parser.new(Scanner.new(s))
   expect{p.parse}.to raise_error(SyntaxError, message)
 end
 
-def expect_syntax_error_on_stmts(s, message)
-  expect_syntax_error("int f(void) { #{s} }", message)
+def expect_syntax_error_on_parse_stmts(s, message)
+  expect_syntax_error_on_parse("int f(void) { #{s} }", message)
 end
