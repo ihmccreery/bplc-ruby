@@ -277,11 +277,11 @@ module Parsers
     end
 
     def assignment_exp(e)
+      token = eat(:gets)
       if e.is_a? AssignableVarExp
-        eat(:gets)
         return AssignmentExp.new(e, exp)
       else
-        raise SyntaxError, "lhs not assignable"
+        raise BplSyntaxError.new(token.line), "lhs not assignable"
       end
     end
 
@@ -327,7 +327,7 @@ module Parsers
       elsif at? :l_paren
         return parenthesized_exp
       else
-        raise SyntaxError, "expected expression, got #{current_token.type.to_s}"
+        raise BplSyntaxError.new(current_token.line), "expected expression, got #{current_token.type.to_s}"
       end
     end
 
@@ -449,7 +449,7 @@ module Parsers
       if at? TYPE_SPECIFIERS
         eat_token
       else
-        raise SyntaxError, "expected type_specifier, got #{current_token.type.to_s}"
+        raise BplSyntaxError.new(current_token.line), "expected type_specifier, got #{current_token.type.to_s}"
       end
     end
 
@@ -457,7 +457,7 @@ module Parsers
       if at? type
         eat_token
       else
-        raise SyntaxError, "expected #{type.to_s}, got #{current_token.type.to_s}"
+        raise BplSyntaxError.new(current_token.line), "expected #{type.to_s}, got #{current_token.type.to_s}"
       end
     end
 

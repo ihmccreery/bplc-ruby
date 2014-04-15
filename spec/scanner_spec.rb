@@ -51,13 +51,13 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on multi-line strings" do
-      expect_syntax_error('unterminated string "this is a"', 1) do
+      expect_syntax_error('unterminated string "this is a"') do
         Scanner.new("\"this is a\nmulti-line string\"").next_token
       end
     end
 
     it "raises BplSyntaxErrors on unterminated strings" do
-      expect_syntax_error('unterminated string "this is a"', 1) do
+      expect_syntax_error('unterminated string "this is a"') do
         Scanner.new("\"this is a").next_token
       end
     end
@@ -84,7 +84,7 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on '!' without a following '='" do
-      expect_syntax_error("invalid symbol '!'", 1) do
+      expect_syntax_error("invalid symbol '!'") do
         Scanner.new("!").next_token
       end
     end
@@ -96,7 +96,7 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on erroneous characters" do
-      expect_syntax_error("invalid symbol '#'", 1) do
+      expect_syntax_error("invalid symbol '#'") do
         Scanner.new("#").next_token
       end
     end
@@ -131,13 +131,13 @@ describe Scanner do
     end
 
     it "raises BplSyntaxErrors on unterminated comments" do
-      expect_syntax_error("unterminated comment", 1) do
+      expect_syntax_error("unterminated comment") do
         Scanner.new("/*").next_token
       end
     end
 
     it "raises BplSyntaxErrors on unterminated multi-line comments" do
-      expect_syntax_error("unterminated comment", 1) do
+      expect_syntax_error("unterminated comment") do
         Scanner.new("/*\n\n").next_token
       end
     end

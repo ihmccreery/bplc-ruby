@@ -17,7 +17,9 @@ describe Bplc do
     end
 
     it "raises an error compiling an invalid program" do
-      expect{Bplc.new(EX_BAD_SYNTAX_FNAME).compile}.to raise_error(SyntaxError, "expected semicolon, got int")
+      expect_syntax_error("expected semicolon, got int", 5) do
+        Bplc.new(EX_BAD_SYNTAX_FNAME).compile
+      end
     end
   end
 end

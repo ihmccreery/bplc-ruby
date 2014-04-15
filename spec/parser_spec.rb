@@ -49,7 +49,7 @@ describe Parser do
       end
     end
 
-    it "raises SyntaxErrors on bad lhss" do
+    it "raises BplSyntaxErrors on bad lhss" do
       ["&x", "2", "x + z", "2 + x"].each do |lhs|
         expect_syntax_error_on_parse_stmts("#{lhs} = &y;", "lhs not assignable")
       end
@@ -151,6 +151,15 @@ describe Parser do
   it "parses ex1.bpl properly" do
     expect(Parser.new(Scanner.new(File.new(EX1_FNAME))).parse).to be_a Ast
   end
+
+  context "when raising BplSyntaxErrors" do
+    it "assigns correct line" do
+      expect_syntax_error_on_parse("void main(void) { \n 2 = 1;}", "lhs not assignable", 2)
+      expect_syntax_error_on_parse("void main(void) { \n \n 1 * ; }", "expected expression, got semicolon", 3)
+      expect_syntax_error_on_parse("\n void f(int x, y) { }", "expected type_specifier, got id", 2)
+      expect_syntax_error_on_parse("int x; \n int;", "expected id, got semicolon", 2)
+    end
+  end
 end
 
 ###########
@@ -174,7 +183,7 @@ describe Program do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int x; void *y;; string z[2];", "expected eof, got semicolon")
       expect_syntax_error_on_parse("int x; y; string z;", "expected eof, got id")
       expect_syntax_error_on_parse("int x; void *y string z[2];", "expected semicolon, got string")
@@ -199,7 +208,7 @@ describe SimpleDeclaration do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("x;", "expected type_specifier, got id")
       expect_syntax_error_on_parse("int ;", "expected id, got semicolon")
       expect_syntax_error_on_parse("int x", "expected semicolon, got eof")
@@ -220,7 +229,7 @@ describe PointerDeclaration do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int x*;", "expected semicolon, got asterisk")
       expect_syntax_error_on_parse("int *;", "expected id, got semicolon")
       expect_syntax_error_on_parse("*x;", "expected type_specifier, got asterisk")
@@ -242,7 +251,7 @@ describe  ArrayDeclaration do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int [2]x;", "expected id, got l_bracket")
       expect_syntax_error_on_parse("int x[2;", "expected r_bracket, got semicolon")
       expect_syntax_error_on_parse("x[2];", "expected type_specifier, got id")
@@ -264,7 +273,7 @@ describe FunctionDeclaration do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int f()", "expected type_specifier, got r_paren")
       expect_syntax_error_on_parse("int f( { }", "expected type_specifier, got l_brace")
       expect_syntax_error_on_parse("int f(void) { ", "expected r_brace, got eof")
@@ -293,7 +302,7 @@ describe FunctionDeclaration do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int f() { }", "expected type_specifier, got r_paren")
       expect_syntax_error_on_parse("int f(void void) { }", "expected r_paren, got void")
       expect_syntax_error_on_parse("int f(int x, int y,, int z) { }", "expected type_specifier, got comma")
@@ -320,7 +329,7 @@ describe SimpleParam do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int f(x) { }", "expected type_specifier, got id")
       expect_syntax_error_on_parse("int f(int) { }", "expected id, got r_paren")
     end
@@ -340,7 +349,7 @@ describe PointerParam do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int f(int x*) { }", "expected r_paren, got asterisk")
       expect_syntax_error_on_parse("int f(int*) { }", "expected id, got r_paren")
     end
@@ -360,7 +369,7 @@ describe ArrayParam do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse("int f(int x[) { }", "expected r_bracket, got r_paren")
       expect_syntax_error_on_parse("int f(int[] x) { }", "expected id, got l_bracket")
     end
@@ -398,7 +407,7 @@ describe CompoundStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("int x void y;", "expected semicolon, got void")
       expect_syntax_error_on_parse_stmts("int x; void y(void) { } string z[2];", "expected semicolon, got l_paren")
       expect_syntax_error_on_parse_stmts("x; void y;", "expected r_brace, got void")
@@ -455,7 +464,7 @@ describe IfStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("if x {y;}", "expected l_paren, got id")
       expect_syntax_error_on_parse_stmts("if (x {y;}", "expected r_paren, got l_brace")
       expect_syntax_error_on_parse_stmts("if (x;) {y;}", "expected r_paren, got semicolon")
@@ -476,7 +485,7 @@ describe WhileStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("while x {y;}", "expected l_paren, got id")
       expect_syntax_error_on_parse_stmts("while (x {y;}", "expected r_paren, got l_brace")
       expect_syntax_error_on_parse_stmts("while (x;) {y;}", "expected r_paren, got semicolon")
@@ -504,7 +513,7 @@ describe ReturnStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("return", "expected expression, got r_brace")
       expect_syntax_error_on_parse_stmts("return x", "expected semicolon, got r_brace")
     end
@@ -523,7 +532,7 @@ describe WriteStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("write();", "expected expression, got r_paren")
       expect_syntax_error_on_parse_stmts("write(x)", "expected semicolon, got r_brace")
       expect_syntax_error_on_parse_stmts("write(x;)", "expected r_paren, got semicolon")
@@ -539,7 +548,7 @@ describe WritelnStmt do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("writeln()", "expected semicolon, got r_brace")
       expect_syntax_error_on_parse_stmts("writeln(x);", "expected r_paren, got id")
       expect_syntax_error_on_parse_stmts("writeln", "expected l_paren, got r_brace")
@@ -667,7 +676,7 @@ describe ArrayVarExp do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("[2]x;", "expected r_brace, got l_bracket")
     end
   end
@@ -697,7 +706,7 @@ describe AddrVarExp do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("x&;", "expected semicolon, got ampersand")
     end
   end
@@ -716,7 +725,7 @@ describe AddrArrayVarExp do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("x&[2];", "expected semicolon, got ampersand")
     end
   end
@@ -754,7 +763,7 @@ describe FunCallExp do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("f(;", "expected expression, got semicolon")
       expect_syntax_error_on_parse_stmts("f(x,);", "expected expression, got r_paren")
     end
@@ -777,7 +786,7 @@ describe ReadLitExp do
   end
 
   context "that is malformed" do
-    it "raises SyntaxErrors" do
+    it "raises BplSyntaxErrors" do
       expect_syntax_error_on_parse_stmts("read);", "expected l_paren, got r_paren")
       expect_syntax_error_on_parse_stmts("read(;", "expected r_paren, got semicolon")
     end

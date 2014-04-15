@@ -6,12 +6,12 @@ class Token
   attr_reader :type
 
   # the line from which the Token was generated
-  attr_reader :line_number
+  attr_reader :line
 
-  def initialize(value, type, line_number)
+  def initialize(value, type, line)
     @value = value
     @type = type
-    @line_number = line_number
+    @line = line
   end
 
   # checks for equality based on the attributes of the Token
