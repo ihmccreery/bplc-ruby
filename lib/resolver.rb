@@ -69,8 +69,7 @@ class Resolver
   # @param symbol_table [SymbolTable]
   def r_var_exp(ast, symbol_table)
     unless ast.declaration = symbol_table.get_symbol(ast.id)
-      # TODO line numbers
-      raise BplDeclarationError.new(1), "undeclared variable #{ast.id}"
+      raise BplDeclarationError.new(ast.line), "undeclared variable #{ast.id}"
     end
     ast.children.each do |c|
       r(c, symbol_table)
@@ -89,8 +88,7 @@ class Resolver
 
   def add_symbol(symbol_table, d)
     unless symbol_table.add_symbol(d.id, d)
-      # TODO line numbers
-      raise BplDeclarationError.new(1), "#{d.id} has already been declared"
+      raise BplDeclarationError.new(d.line), "#{d.id} has already been declared"
     end
   end
 end

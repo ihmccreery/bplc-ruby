@@ -25,6 +25,10 @@ module Ided
   def id
     @id.value
   end
+
+  def line
+    @id.line
+  end
 end
 
 ###########

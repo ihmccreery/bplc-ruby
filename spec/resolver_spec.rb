@@ -83,26 +83,26 @@ describe Resolver do
     end
 
     it "raises a BplDeclarationError if a variable is not declared" do
-      expect_declaration_error("undeclared variable x") do
-        resolve("void main(void) { x; }")
+      expect_declaration_error("undeclared variable x", 2) do
+        resolve("void main(void) { \n x; \n }")
       end
     end
 
     it "raises a BplDeclarationError if a variable is referenced outside of its scope" do
-      expect_declaration_error("undeclared variable x") do
-        resolve("void main(void) { {int x;} x; }")
+      expect_declaration_error("undeclared variable x", 3) do
+        resolve("void main(void) { \n {int x;} \n x; \n }")
       end
     end
 
     it "raises a BplDeclarationError if a variable is declared more than once in the same scope" do
-      expect_declaration_error("x has already been declared") do
-        resolve("void main(void) { int x; string x; }")
+      expect_declaration_error("x has already been declared", 3) do
+        resolve("void main(void) { \n int x; \n string x; \n }")
       end
     end
 
     it "raises a BplDeclarationError if a variable is declared in the same scope as a parameter" do
-      expect_declaration_error("x has already been declared") do
-        resolve("void main(int x) { string x; }")
+      expect_declaration_error("x has already been declared", 2) do
+        resolve("void main(int x) { \n string x; \n }")
       end
     end
 
@@ -118,20 +118,20 @@ describe Resolver do
     end
 
     it "raises a BplDeclarationError if a function is not declared" do
-      expect_declaration_error("undeclared variable f") do
-        resolve("void main(void) { f(); }")
+      expect_declaration_error("undeclared variable f", 2) do
+        resolve("void main(void) { \n f(); \n }")
       end
     end
 
     it "raises a BplDeclarationError if a function is declared more than once" do
-      expect_declaration_error("f has already been declared") do
-        resolve("void f(void) { } void f(void) { }")
+      expect_declaration_error("f has already been declared", 2) do
+        resolve("void f(void) { } \n void f(void) { }")
       end
     end
 
     it "raises a BplDeclarationError if a function is declared with a variable of the same name" do
-      expect_declaration_error("f has already been declared") do
-        resolve("int f; void f(void) { }")
+      expect_declaration_error("f has already been declared", 2) do
+        resolve("int f; \n void f(void) { }")
       end
     end
   end
