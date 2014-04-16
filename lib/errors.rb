@@ -11,3 +11,6 @@ end
 
 class BplDeclarationError < BplError
 end
+
+class BplTypeError < StandardError
+end

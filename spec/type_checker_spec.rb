@@ -14,9 +14,9 @@ describe TypeChecker do
     ########
 
     describe "the main function" do
-      it "raises a SyntaxError for a non-void type or args" do
-        expect{type_check("int main(void) { }")}.to raise_error(SyntaxError, "main function must return void")
-        expect{type_check("void main(int x) { }")}.to raise_error(SyntaxError, "main function must have void params")
+      it "raises a BplTypeError for a non-void type or args" do
+        expect{type_check("int main(void) { }")}.to raise_error(BplTypeError, "main function must return void")
+        expect{type_check("void main(int x) { }")}.to raise_error(BplTypeError, "main function must have void params")
       end
     end
 
@@ -38,10 +38,10 @@ describe TypeChecker do
         expect{type_check('int x; void main(void) { while(x == 2) ; }')}.not_to raise_error
       end
 
-      it "raises a SyntaxError for a non-int condition" do
+      it "raises a BplTypeError for a non-int condition" do
         ['&x', '"a"', 'y', 'z', 'w'].each do |condition|
-          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { if(#{condition}) ; }")}.to raise_error(SyntaxError, "condition must be int")
-          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { while(#{condition}) ; }")}.to raise_error(SyntaxError, "condition must be int")
+          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { if(#{condition}) ; }")}.to raise_error(BplTypeError, "condition must be int")
+          expect{type_check("int x; string y; int *z; int w[2]; void main(void) { while(#{condition}) ; }")}.to raise_error(BplTypeError, "condition must be int")
         end
       end
     end
@@ -52,9 +52,9 @@ describe TypeChecker do
         expect{type_check('string x; void main(void) { write(x); }')}.not_to raise_error
       end
 
-      it "raises a SyntaxError for a non-int, non-string value" do
+      it "raises a BplTypeError for a non-int, non-string value" do
         ['&x', '&y', 'z', 'w'].each do |value|
-          expect{type_check("int x; string y; int z[2]; string w[2]; void main(void) { write(#{value}); }")}.to raise_error(SyntaxError, "can only write int or string")
+          expect{type_check("int x; string y; int z[2]; string w[2]; void main(void) { write(#{value}); }")}.to raise_error(BplTypeError, "can only write int or string")
         end
       end
     end
@@ -100,14 +100,14 @@ describe TypeChecker do
         end
       end
 
-      it "raises a SyntaxError for array_int and array_string lhss" do
-        expect{type_check('int x[1]; int y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_int")
-        expect{type_check('string x[1]; string y[5]; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign to array_string")
+      it "raises a BplTypeError for array_int and array_string lhss" do
+        expect{type_check('int x[1]; int y[5]; void main(void) { x = y; }')}.to raise_error(BplTypeError, "invalid assignment: cannot assign to array_int")
+        expect{type_check('string x[1]; string y[5]; void main(void) { x = y; }')}.to raise_error(BplTypeError, "invalid assignment: cannot assign to array_string")
       end
 
-      it "raises a SyntaxError if operands do not match" do
-        expect{type_check('string x; void main(void) { x = 5; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign int to string")
-        expect{type_check('int x; int *y; void main(void) { x = y; }')}.to raise_error(SyntaxError, "invalid assignment: cannot assign pointer_int to int")
+      it "raises a BplTypeError if operands do not match" do
+        expect{type_check('string x; void main(void) { x = 5; }')}.to raise_error(BplTypeError, "invalid assignment: cannot assign int to string")
+        expect{type_check('int x; int *y; void main(void) { x = y; }')}.to raise_error(BplTypeError, "invalid assignment: cannot assign pointer_int to int")
       end
     end
 
@@ -121,10 +121,10 @@ describe TypeChecker do
         end
       end
 
-      it "raises a SyntaxError if bad operands are used" do
-        expect{type_check('string x; void main(void) { x < 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot lt string")
-        expect{type_check('int x; void main(void) { 5 == &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot eq pointer_int")
-        expect{type_check('int x[10]; void main(void) { 2 != x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot neq array_int")
+      it "raises a BplTypeError if bad operands are used" do
+        expect{type_check('string x; void main(void) { x < 5; }')}.to raise_error(BplTypeError, "invalid lhs: cannot lt string")
+        expect{type_check('int x; void main(void) { 5 == &x; }')}.to raise_error(BplTypeError, "invalid rhs: cannot eq pointer_int")
+        expect{type_check('int x[10]; void main(void) { 2 != x; }')}.to raise_error(BplTypeError, "invalid rhs: cannot neq array_int")
       end
     end
 
@@ -138,10 +138,10 @@ describe TypeChecker do
         end
       end
 
-      it "raises a SyntaxError if bad operands are used" do
-        expect{type_check('string x; void main(void) { x + 5; }')}.to raise_error(SyntaxError, "invalid lhs: cannot plus string")
-        expect{type_check('int x; void main(void) { 5 / &x; }')}.to raise_error(SyntaxError, "invalid rhs: cannot slash pointer_int")
-        expect{type_check('int x[10]; void main(void) { -x; }')}.to raise_error(SyntaxError, "invalid exp: cannot minus array_int")
+      it "raises a BplTypeError if bad operands are used" do
+        expect{type_check('string x; void main(void) { x + 5; }')}.to raise_error(BplTypeError, "invalid lhs: cannot plus string")
+        expect{type_check('int x; void main(void) { 5 / &x; }')}.to raise_error(BplTypeError, "invalid rhs: cannot slash pointer_int")
+        expect{type_check('int x[10]; void main(void) { -x; }')}.to raise_error(BplTypeError, "invalid exp: cannot minus array_int")
       end
     end
 
@@ -164,10 +164,10 @@ describe TypeChecker do
         expect(body.stmts[3].exp.type).to eq(:pointer_string)
       end
 
-      it "raises a SyntaxError if bad operators are used" do
-        expect{type_check('int x; void main(void) { *x; }')}.to raise_error(SyntaxError, "cannot dereference int")
-        expect{type_check('int x; void main(void) { x[1]; }')}.to raise_error(SyntaxError, "cannot index int")
-        expect{type_check('int x; void main(void) { &x[1]; }')}.to raise_error(SyntaxError, "cannot index int")
+      it "raises a BplTypeError if bad operators are used" do
+        expect{type_check('int x; void main(void) { *x; }')}.to raise_error(BplTypeError, "cannot dereference int")
+        expect{type_check('int x; void main(void) { x[1]; }')}.to raise_error(BplTypeError, "cannot index int")
+        expect{type_check('int x; void main(void) { &x[1]; }')}.to raise_error(BplTypeError, "cannot index int")
       end
     end
 
@@ -180,10 +180,10 @@ describe TypeChecker do
         expect(body.stmts[1].exp.type).to eq(:int)
       end
 
-      it "raises a SyntaxError if bad operators are used" do
-        expect{type_check('int *x; void main(void) { &x; }')}.to raise_error(SyntaxError, "cannot reference pointer_int")
-        expect{type_check('int *x; void main(void) { x[1]; }')}.to raise_error(SyntaxError, "cannot index pointer_int")
-        expect{type_check('int *x; void main(void) { &x[1]; }')}.to raise_error(SyntaxError, "cannot index pointer_int")
+      it "raises a BplTypeError if bad operators are used" do
+        expect{type_check('int *x; void main(void) { &x; }')}.to raise_error(BplTypeError, "cannot reference pointer_int")
+        expect{type_check('int *x; void main(void) { x[1]; }')}.to raise_error(BplTypeError, "cannot index pointer_int")
+        expect{type_check('int *x; void main(void) { &x[1]; }')}.to raise_error(BplTypeError, "cannot index pointer_int")
       end
     end
 
@@ -197,9 +197,9 @@ describe TypeChecker do
         expect(body.stmts[2].exp.type).to eq(:pointer_int)
       end
 
-      it "raises a SyntaxError if bad operators are used" do
-        expect{type_check('int x[2]; void main(void) { *x; }')}.to raise_error(SyntaxError, "cannot dereference array_int")
-        expect{type_check('int x[2]; void main(void) { &x; }')}.to raise_error(SyntaxError, "cannot reference array_int")
+      it "raises a BplTypeError if bad operators are used" do
+        expect{type_check('int x[2]; void main(void) { *x; }')}.to raise_error(BplTypeError, "cannot dereference array_int")
+        expect{type_check('int x[2]; void main(void) { &x; }')}.to raise_error(BplTypeError, "cannot reference array_int")
       end
     end
 
@@ -213,23 +213,23 @@ describe TypeChecker do
         expect(body.stmts[2].exp.type).to eq(:void)
       end
 
-      it "raises a SyntaxError if the wrong number of args is used" do
-        expect{type_check('int f(int x) { } void main(void) { f(); }')}.to raise_error(SyntaxError, "wrong number of arguments in call to f")
-        expect{type_check('int f(int x) { } void main(void) { f(5, 6); }')}.to raise_error(SyntaxError, "wrong number of arguments in call to f")
+      it "raises a BplTypeError if the wrong number of args is used" do
+        expect{type_check('int f(int x) { } void main(void) { f(); }')}.to raise_error(BplTypeError, "wrong number of arguments in call to f")
+        expect{type_check('int f(int x) { } void main(void) { f(5, 6); }')}.to raise_error(BplTypeError, "wrong number of arguments in call to f")
       end
 
-      it "raises a SyntaxError if bad args are used" do
+      it "raises a BplTypeError if bad args are used" do
         expect do
           type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f("hi", y, z); }')
-        end.to raise_error(SyntaxError, "bad argument type in call to f: expected int, got string")
+        end.to raise_error(BplTypeError, "bad argument type in call to f: expected int, got string")
 
         expect do
           type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f(x, *y, z); }')
-        end.to raise_error(SyntaxError, "bad argument type in call to f: expected pointer_string, got string")
+        end.to raise_error(BplTypeError, "bad argument type in call to f: expected pointer_string, got string")
 
         expect do
           type_check('int f(int x, string *y, int z[]) { } void main(void) { int x; string *y; int z[5]; f(x, y, z[0]); }')
-        end.to raise_error(SyntaxError, "bad argument type in call to f: expected array_int, got int")
+        end.to raise_error(BplTypeError, "bad argument type in call to f: expected array_int, got int")
       end
     end
 
