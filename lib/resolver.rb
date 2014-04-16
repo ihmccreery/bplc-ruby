@@ -8,11 +8,7 @@ class Resolver
   def resolve
     symbol_table = SymbolTable.new(nil)
     @program.declarations.each do |d|
-      if d.is_a? FunctionDeclaration
-        symbol_table.add_fsymbol(d.id, d)
-      else
-        symbol_table.add_symbol(d.id, d)
-      end
+      symbol_table.add_symbol(d.id, d)
       r(d, symbol_table)
     end
     return @program
@@ -72,11 +68,7 @@ class Resolver
   # @param ast [VarExp]
   # @param symbol_table [SymbolTable]
   def r_var_exp(ast, symbol_table)
-    if ast.is_a? FunCallExp
-      ast.declaration = symbol_table.get_fsymbol(ast.id)
-    else
-      ast.declaration = symbol_table.get_symbol(ast.id)
-    end
+    ast.declaration = symbol_table.get_symbol(ast.id)
     ast.children.each do |c|
       r(c, symbol_table)
     end
