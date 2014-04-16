@@ -13,7 +13,7 @@ class SymbolTable
     unless @symbols[name]
       @symbols[name] = declaration
     else
-      raise SyntaxError, "#{name} has already been declared"
+      return false
     end
   end
 
@@ -24,7 +24,7 @@ class SymbolTable
     elsif @parent
       return parent.get_symbol(name)
     else
-      raise SyntaxError, "undeclared variable #{name}"
+      return nil
     end
   end
 end

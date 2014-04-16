@@ -32,20 +32,19 @@ describe SymbolTable do
   end
 
   describe "#add_symbol" do
-    it "adds a symbol" do
-      g.add_symbol("a", :a)
-      expect(g.get_symbol("a")).to eq(:a)
+    it "returns the declaration" do
+      expect(g.add_symbol("a", :a)).to eq(:a)
     end
 
-    it "throws an error if we try to add another symbol with the same name" do
+    it "returns false if we try to add another symbol with the same name" do
       g.add_symbol("a", :a)
-      expect{g.add_symbol("a", :t)}.to raise_error(SyntaxError, "a has already been declared")
+      expect(g.add_symbol("a", :t)).to be_false
     end
 
-    it "does not throw an error if we try to add another symbol with the same name as one in a parent" do
+    it "returns the declaration if we try to add another symbol with the same name as one in a parent" do
       g.add_symbol("a", :a)
       s = SymbolTable.new(g)
-      expect{s.add_symbol("a", :a)}.not_to raise_error
+      expect(s.add_symbol("a", :b)).to eq(:b)
     end
   end
 
@@ -55,8 +54,8 @@ describe SymbolTable do
       expect(g.get_symbol("a")).to eq(:a)
     end
 
-    it "raises an error if a symbol is not declared" do
-      expect{g.get_symbol("a")}.to raise_error(SyntaxError, "undeclared variable a")
+    it "returns nil if a symbol is not declared" do
+      expect(g.get_symbol("a")).to be_nil
     end
 
     it "gets a symbol from the parent" do

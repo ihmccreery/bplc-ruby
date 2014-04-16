@@ -8,7 +8,7 @@ class Resolver
   def resolve
     symbol_table = SymbolTable.new(nil)
     @program.declarations.each do |d|
-      symbol_table.add_symbol(d.id, d)
+      add_symbol(symbol_table, d)
       r(d, symbol_table)
     end
     return @program
@@ -40,10 +40,10 @@ class Resolver
   def r_function_declaration(ast, symbol_table)
     symbol_table = SymbolTable.new(symbol_table)
     ast.params.each do |p|
-      symbol_table.add_symbol(p.id, p)
+      add_symbol(symbol_table, p)
     end
     ast.body.variable_declarations.each do |d|
-      symbol_table.add_symbol(d.id, d)
+      add_symbol(symbol_table, d)
     end
     ast.body.stmts.each do |s|
       r(s, symbol_table)
@@ -58,7 +58,7 @@ class Resolver
   def r_compound_stmt(ast, symbol_table)
     symbol_table = SymbolTable.new(symbol_table)
     ast.variable_declarations.each do |d|
-      symbol_table.add_symbol(d.id, d)
+      add_symbol(symbol_table, d)
     end
     ast.stmts.each do |s|
       r(s, symbol_table)
@@ -68,7 +68,9 @@ class Resolver
   # @param ast [VarExp]
   # @param symbol_table [SymbolTable]
   def r_var_exp(ast, symbol_table)
-    ast.declaration = symbol_table.get_symbol(ast.id)
+    unless ast.declaration = symbol_table.get_symbol(ast.id)
+      raise SyntaxError, "undeclared variable #{ast.id}"
+    end
     ast.children.each do |c|
       r(c, symbol_table)
     end
@@ -81,6 +83,12 @@ class Resolver
   def r_ast(ast, symbol_table)
     ast.children.each do |c|
       r(c, symbol_table)
+    end
+  end
+
+  def add_symbol(symbol_table, d)
+    unless symbol_table.add_symbol(d.id, d)
+      raise SyntaxError, "#{d.id} has already been declared"
     end
   end
 end
