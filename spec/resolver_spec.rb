@@ -82,20 +82,28 @@ describe Resolver do
       expect(y_reference.declaration).to eq(y_declaration)
     end
 
-    it "raises a SyntaxError if a variable is not declared" do
-      expect{resolve("void main(void) { x; }")}.to raise_error(SyntaxError, "undeclared variable x")
+    it "raises a BplDeclarationError if a variable is not declared" do
+      expect_declaration_error("undeclared variable x") do
+        resolve("void main(void) { x; }")
+      end
     end
 
-    it "raises a SyntaxError if a variable is referenced outside of its scope" do
-      expect{resolve("void main(void) { {int x;} x; }")}.to raise_error(SyntaxError, "undeclared variable x")
+    it "raises a BplDeclarationError if a variable is referenced outside of its scope" do
+      expect_declaration_error("undeclared variable x") do
+        resolve("void main(void) { {int x;} x; }")
+      end
     end
 
-    it "raises a SyntaxError if a variable is declared more than once in the same scope" do
-      expect{resolve("void main(void) { int x; string x; }")}.to raise_error(SyntaxError, "x has already been declared")
+    it "raises a BplDeclarationError if a variable is declared more than once in the same scope" do
+      expect_declaration_error("x has already been declared") do
+        resolve("void main(void) { int x; string x; }")
+      end
     end
 
-    it "raises a SyntaxError if a variable is declared in the same scope as a parameter" do
-      expect{resolve("void main(int x) { string x; }")}.to raise_error(SyntaxError, "x has already been declared")
+    it "raises a BplDeclarationError if a variable is declared in the same scope as a parameter" do
+      expect_declaration_error("x has already been declared") do
+        resolve("void main(int x) { string x; }")
+      end
     end
 
     # functions
@@ -109,16 +117,22 @@ describe Resolver do
       expect(f_reference.declaration).to eq(f_declaration)
     end
 
-    it "raises a SyntaxError if a function is not declared" do
-      expect{resolve("void main(void) { f(); }")}.to raise_error(SyntaxError, "undeclared variable f")
+    it "raises a BplDeclarationError if a function is not declared" do
+      expect_declaration_error("undeclared variable f") do
+        resolve("void main(void) { f(); }")
+      end
     end
 
-    it "raises a SyntaxError if a function is declared more than once" do
-      expect{resolve("void f(void) { } void f(void) { }")}.to raise_error(SyntaxError, "f has already been declared")
+    it "raises a BplDeclarationError if a function is declared more than once" do
+      expect_declaration_error("f has already been declared") do
+        resolve("void f(void) { } void f(void) { }")
+      end
     end
 
-    it "raises a SyntaxError if a function is declared with a variable of the same name" do
-      expect{resolve("int f; void f(void) { }")}.to raise_error(SyntaxError, "f has already been declared")
+    it "raises a BplDeclarationError if a function is declared with a variable of the same name" do
+      expect_declaration_error("f has already been declared") do
+        resolve("int f; void f(void) { }")
+      end
     end
   end
 end

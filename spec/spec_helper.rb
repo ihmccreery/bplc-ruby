@@ -55,8 +55,16 @@ def expect_syntax_error_on_parse_stmts(s, message)
 end
 
 def expect_syntax_error(message, line=1)
+  expect_error(BplSyntaxError, message, line) { yield }
+end
+
+def expect_declaration_error(message, line=1)
+  expect_error(BplDeclarationError, message, line) { yield }
+end
+
+def expect_error(error_klass, message, line=1)
   expect{yield}.to raise_error { |error|
-    expect(error).to be_a(BplSyntaxError)
+    expect(error).to be_a(error_klass)
     expect(error.line).to eq(line)
     expect(error.message).to eq(message)
   }
