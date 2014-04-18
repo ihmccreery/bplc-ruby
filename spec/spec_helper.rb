@@ -62,6 +62,10 @@ def expect_declaration_error(message, line=1)
   expect_error(BplDeclarationError, message, line) { yield }
 end
 
+def expect_type_error(message, line=1)
+  expect_error(BplTypeError, message, line) { yield }
+end
+
 def expect_error(error_klass, message, line=1)
   expect{yield}.to raise_error { |error|
     expect(error).to be_a(error_klass)
