@@ -37,7 +37,7 @@ class TypeChecker
   # @param ast [FunctionDeclaration]
   def r_function_declaration(ast)
     if ast.id == "main"
-      raise BplTypeError.new(0), "main function must return void" unless ast.type_specifier == :void
+      raise BplTypeError.new(ast.type_specifier_line), "main function must return void" unless ast.type_specifier == :void
       raise BplTypeError.new(0), "main function must have void params" unless ast.params.empty?
     end
   end

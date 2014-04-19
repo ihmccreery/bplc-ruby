@@ -15,7 +15,7 @@ describe TypeChecker do
 
     describe "the main function" do
       it "raises a BplTypeError for a non-void type or args" do
-        expect_type_error("main function must return void", 0) do
+        expect_type_error("main function must return void", 1) do
           type_check("int main(void) { }")
         end
         expect_type_error("main function must have void params", 0) do

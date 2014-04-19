@@ -65,6 +65,10 @@ class Declaration < Ast
   def type_specifier
     @type_specifier.type
   end
+
+  def type_specifier_line
+    @type_specifier.line
+  end
 end
 
 class VariableDeclaration < Declaration
