@@ -237,6 +237,76 @@ describe TypeChecker do
       end
     end
 
+    # Params
+
+    describe "SimpleParam" do
+      it "assigns the correct type" do
+        a = type_check("void f(int x, string y) { x; y; &x; &y; }")
+
+        body = a.declarations[0].body
+        expect(body.stmts[0].exp.type).to eq(:int)
+        expect(body.stmts[1].exp.type).to eq(:string)
+        expect(body.stmts[2].exp.type).to eq(:pointer_int)
+        expect(body.stmts[3].exp.type).to eq(:pointer_string)
+      end
+
+      it "raises a BplTypeError if bad operators are used" do
+        expect_type_error("cannot dereference int", 1) do
+          type_check("void f(int x) { *x; }")
+        end
+        expect_type_error("cannot index int", 1) do
+          type_check("void f(int x) { x[1]; }")
+        end
+        expect_type_error("cannot index int", 1) do
+          type_check("void f(int x) { &x[1]; }")
+        end
+      end
+    end
+
+    describe "PointerParam" do
+      it "assigns the correct type" do
+        a = type_check("void f(int *x) { x; *x; }")
+
+        body = a.declarations[0].body
+        expect(body.stmts[0].exp.type).to eq(:pointer_int)
+        expect(body.stmts[1].exp.type).to eq(:int)
+      end
+
+      it "raises a BplTypeError if bad operators are used" do
+        expect_type_error("cannot reference pointer_int", 1) do
+          type_check("void f(int *x) { &x; }")
+        end
+        expect_type_error("cannot index pointer_int", 1) do
+          type_check("void f(int *x) { x[1]; }")
+        end
+        expect_type_error("cannot index pointer_int", 1) do
+          type_check("void f(int *x) { &x[1]; }")
+        end
+      end
+    end
+
+    describe "ArrayParam" do
+      it "assigns the correct type" do
+        a = type_check("void f(int x[]) { x; x[1]; &x[1]; }")
+
+        body = a.declarations[0].body
+        expect(body.stmts[0].exp.type).to eq(:array_int)
+        expect(body.stmts[1].exp.type).to eq(:int)
+        expect(body.stmts[2].exp.type).to eq(:pointer_int)
+      end
+
+      it "raises a BplTypeError if bad operators are used" do
+        expect_type_error("cannot dereference array_int", 1) do
+          type_check("void f(int x[]) { *x; }")
+        end
+        expect_type_error("cannot reference array_int", 1) do
+          type_check("void f(int x[]) { &x; }")
+        end
+      end
+    end
+
+    # FunctionDeclaration
+
     describe "FunctionDeclaration" do
       it "assigns the correct type" do
         a = type_check("int f(void) { } string g(void) { } void h(void) { } void main(void) { f(); g(); h(); }")

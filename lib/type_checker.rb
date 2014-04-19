@@ -79,11 +79,11 @@ class TypeChecker
 
   # @param ast [VarExp]
   def r_var_exp(ast)
-    if ast.declaration.is_a? SimpleDeclaration
+    if (ast.declaration.is_a? SimpleDeclaration) || (ast.declaration.is_a? SimpleParam)
       r_var_exp_simple_declaration(ast)
-    elsif ast.declaration.is_a? PointerDeclaration
+    elsif (ast.declaration.is_a? PointerDeclaration) || (ast.declaration.is_a? PointerParam)
       r_var_exp_pointer_declaration(ast)
-    elsif ast.declaration.is_a? ArrayDeclaration
+    elsif (ast.declaration.is_a? ArrayDeclaration) || (ast.declaration.is_a? ArrayParam)
       r_var_exp_array_declaration(ast)
     else # ast.declaration.is_a? FunctionDeclaration
       r_var_exp_function_declaration(ast)
