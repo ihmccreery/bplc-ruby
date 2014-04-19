@@ -38,41 +38,41 @@ class TypeChecker
   def r_function_declaration(ast)
     if ast.id == "main"
       raise BplTypeError.new(ast.type_specifier_line), "main function must return void" unless ast.type_specifier == :void
-      raise BplTypeError.new(0), "main function must have void params" unless ast.params.empty?
+      raise BplTypeError.new(ast.params.first.line), "main function must have void params" unless ast.params.empty?
     end
   end
 
   # @param ast [ConditionalStmt]
   def r_conditional_stmt(ast)
-    raise BplTypeError.new(0), "condition must be int" unless ast.condition.type == :int
+    raise BplTypeError.new(ast.condition.line), "condition must be int" unless ast.condition.type == :int
   end
 
   # @param ast [WriteStmt]
   def r_write_stmt(ast)
-    raise BplTypeError.new(0), "can only write int or string" unless [:int, :string].include? ast.value.type
+    raise BplTypeError.new(ast.value.line), "can only write int or string" unless [:int, :string].include? ast.value.type
   end
 
   # @param ast [AssignmentExp]
   def r_assignment_exp(ast)
-    raise BplTypeError.new(0), "invalid assignment: cannot assign to #{ast.lhs.type}" if [:array_int, :array_string].include? ast.lhs.type
-    raise BplTypeError.new(0), "invalid assignment: cannot assign #{ast.rhs.type} to #{ast.lhs.type}" unless ast.lhs.type == ast.rhs.type
+    raise BplTypeError.new(ast.lhs.line), "invalid assignment: cannot assign to #{ast.lhs.type}" if [:array_int, :array_string].include? ast.lhs.type
+    raise BplTypeError.new(ast.rhs.line), "invalid assignment: cannot assign #{ast.rhs.type} to #{ast.lhs.type}" unless ast.lhs.type == ast.rhs.type
     ast.type = ast.rhs.type
   end
 
   # @param ast [RelExp]
   def r_rel_exp(ast)
-    raise BplTypeError.new(0), "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
-    raise BplTypeError.new(0), "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
+    raise BplTypeError.new(ast.lhs.line), "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
+    raise BplTypeError.new(ast.rhs.line), "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
     ast.type = :int
   end
 
   # @param ast [ArithmeticExp]
   def r_arithmetic_exp(ast)
     if ast.is_a? NegExp
-      raise BplTypeError.new(0), "invalid exp: cannot minus #{ast.exp.type}" unless ast.exp.type == :int
+      raise BplTypeError.new(ast.exp.line), "invalid exp: cannot minus #{ast.exp.type}" unless ast.exp.type == :int
     else
-      raise BplTypeError.new(0), "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
-      raise BplTypeError.new(0), "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
+      raise BplTypeError.new(ast.lhs.line), "invalid lhs: cannot #{ast.op} #{ast.lhs.type}" unless ast.lhs.type == :int
+      raise BplTypeError.new(ast.rhs.line), "invalid rhs: cannot #{ast.op} #{ast.rhs.type}" unless ast.rhs.type == :int
     end
     ast.type = :int
   end
@@ -95,13 +95,13 @@ class TypeChecker
     if ast.is_a? SimpleVarExp
       ast.type = type_specifier
     elsif ast.is_a? PointerVarExp
-      raise BplTypeError.new(0), "cannot dereference #{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot dereference #{type_specifier}"
     elsif ast.is_a? ArrayVarExp
-      raise BplTypeError.new(0), "cannot index #{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot index #{type_specifier}"
     elsif ast.is_a? AddrVarExp
       ast.type = ("pointer_" + ast.declaration.type_specifier.to_s).to_sym
     elsif ast.is_a? AddrArrayVarExp
-      raise BplTypeError.new(0), "cannot index #{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot index #{type_specifier}"
     end
   end
 
@@ -112,11 +112,11 @@ class TypeChecker
     elsif ast.is_a? PointerVarExp
       ast.type = type_specifier
     elsif ast.is_a? ArrayVarExp
-      raise BplTypeError.new(0), "cannot index pointer_#{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot index pointer_#{type_specifier}"
     elsif ast.is_a? AddrVarExp
-      raise BplTypeError.new(0), "cannot reference pointer_#{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot reference pointer_#{type_specifier}"
     elsif ast.is_a? AddrArrayVarExp
-      raise BplTypeError.new(0), "cannot index pointer_#{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot index pointer_#{type_specifier}"
     end
   end
 
@@ -125,21 +125,21 @@ class TypeChecker
     if ast.is_a? SimpleVarExp
       ast.type = ("array_" + ast.declaration.type_specifier.to_s).to_sym
     elsif ast.is_a? PointerVarExp
-      raise BplTypeError.new(0), "cannot dereference array_#{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot dereference array_#{type_specifier}"
     elsif ast.is_a? ArrayVarExp
       ast.type = type_specifier
     elsif ast.is_a? AddrVarExp
-      raise BplTypeError.new(0), "cannot reference array_#{type_specifier}"
+      raise BplTypeError.new(ast.line), "cannot reference array_#{type_specifier}"
     elsif ast.is_a? AddrArrayVarExp
       ast.type = ("pointer_" + ast.declaration.type_specifier.to_s).to_sym
     end
   end
 
   def r_var_exp_function_declaration(ast)
-    raise BplTypeError.new(0), "wrong number of arguments in call to #{ast.id}" unless ast.args.size == ast.declaration.params.size
+    raise BplTypeError.new(ast.line), "wrong number of arguments in call to #{ast.id}" unless ast.args.size == ast.declaration.params.size
     ast.args.each_with_index do |arg, i|
       param_type = get_param_type(ast.declaration.params[i])
-      raise BplTypeError.new(0), "bad argument type in call to #{ast.id}: expected #{param_type}, got #{arg.type}" unless arg.type == param_type
+      raise BplTypeError.new(ast.line), "bad argument type in call to #{ast.id}: expected #{param_type}, got #{arg.type}" unless arg.type == param_type
     end
     ast.type = ast.declaration.type_specifier
   end

@@ -253,6 +253,10 @@ module BinExp
   def children
     [lhs, rhs]
   end
+
+  def line
+    @lhs.line
+  end
 end
 
 class AssignmentExp < Exp
@@ -267,6 +271,10 @@ class AssignmentExp < Exp
 
   def children
     [lhs, rhs]
+  end
+
+  def line
+    @lhs.line
   end
 end
 
@@ -295,6 +303,10 @@ class NegExp < ArithmeticExp
 
   def children
     [exp]
+  end
+
+  def line
+    @exp.line
   end
 end
 
@@ -382,6 +394,10 @@ class LitExp < Exp
 
   def value
     @literal.value
+  end
+
+  def line
+    @literal.line
   end
 end
 
