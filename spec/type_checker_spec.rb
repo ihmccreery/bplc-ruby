@@ -35,13 +35,6 @@ describe TypeChecker do
     # - WritelnStmt
 
     describe "ConditionalStmt" do
-      it "does not raise an error for an int condition" do
-        expect{type_check("int x; void main(void) { if(x) ; }")}.not_to raise_error
-        expect{type_check("int x; void main(void) { while(x) ; }")}.not_to raise_error
-        expect{type_check("int x; void main(void) { if(x == 2) ; }")}.not_to raise_error
-        expect{type_check("int x; void main(void) { while(x == 2) ; }")}.not_to raise_error
-      end
-
       it "raises a BplTypeError for a non-int condition" do
         ['&x', '"a"', 'y', 'z', 'w'].each do |condition|
           expect_type_error("condition must be int", 2) do
@@ -55,11 +48,6 @@ describe TypeChecker do
     end
 
     describe "WriteStmt" do
-      it "does not raise an error for an int or string value" do
-        expect{type_check("int x; void main(void) { write(x); }")}.not_to raise_error
-        expect{type_check("string x; void main(void) { write(x); }")}.not_to raise_error
-      end
-
       it "raises a BplTypeError for a non-int, non-string value" do
         ['&x', '&y', 'z', 'w'].each do |value|
           expect_type_error("can only write int or string", 2) do
