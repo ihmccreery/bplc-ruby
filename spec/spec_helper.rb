@@ -5,7 +5,9 @@ def get_example(s)
 end
 
 EX1_FNAME = get_example("ex1")
-EX_BAD_SYNTAX_FNAME = get_example("ex_bad_syntax")
+EX_BAD_SYNTAX_FNAME = get_example("ex_syntax_error")
+EX_BAD_DECLARATION_FNAME = get_example("ex_declaration_error")
+EX_BAD_TYPE_FNAME = get_example("ex_type_error")
 EX_FAKE_FNAME = get_example("ex_fake")
 
 RSpec.configure do |config|
@@ -72,4 +74,9 @@ def expect_error(error_klass, message, line=1)
     expect(error.line).to eq(line)
     expect(error.message).to eq(message)
   }
+end
+
+def expect_puts(message)
+  expect(STDOUT).to receive(:puts).with(message)
+  yield
 end

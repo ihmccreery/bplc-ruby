@@ -10,6 +10,16 @@ class Bplc
   end
 
   def compile
-    Parser.new(Scanner.new(@source)).parse
+    begin
+      a = Parser.new(Scanner.new(@source)).parse
+      Resolver.new(a).resolve
+      TypeChecker.new(a).type_check
+    rescue BplError => error
+      puts <<-message
+#{error.class}: #{error.message} on line #{error.line}:
+
+#{[*@source][error.line-1]}
+message
+    end
   end
 end
