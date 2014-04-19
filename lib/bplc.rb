@@ -15,11 +15,17 @@ class Bplc
       Resolver.new(a).resolve
       TypeChecker.new(a).type_check
     rescue BplError => error
-      puts <<-message
+      puts formatted_error(error)
+    end
+  end
+
+  private
+
+  def formatted_error(error)
+    return <<-message
 #{error.class}: #{error.message} on line #{error.line}:
 
 #{[*@source][error.line-1]}
 message
-    end
   end
 end

@@ -76,7 +76,15 @@ def expect_error(error_klass, message, line=1)
   }
 end
 
-def expect_puts(message)
-  expect(STDOUT).to receive(:puts).with(message)
+def expect_error_output(klass, message, line_number, line)
+  expect(STDOUT).to receive(:puts).with(formatted_error(klass, message, line_number, line))
   yield
+end
+
+def formatted_error(klass, message, line_number, line)
+  return <<-message
+#{klass}: #{message} on line #{line_number}:
+
+#{line}
+message
 end

@@ -17,19 +17,19 @@ describe Bplc do
     end
 
     it "raises an syntax error compiling an invalid program" do
-      expect_puts("BplSyntaxError: expected semicolon, got int on line 5:\n\n\tint y;\n\n") do
+      expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile
       end
     end
 
     it "raises an declaration error compiling an invalid program" do
-      expect_puts("BplDeclarationError: undeclared variable x on line 4:\n\n\tx + 5;\n\n") do
+      expect_error_output("BplDeclarationError", "undeclared variable x", 4, "\tx + 5;\n") do
         Bplc.new(EX_BAD_DECLARATION_FNAME).compile
       end
     end
 
     it "raises an type error compiling an invalid program" do
-      expect_puts("BplTypeError: invalid lhs: cannot plus string on line 5:\n\n\tx + 5;\n\n") do
+      expect_error_output("BplTypeError", "invalid lhs: cannot plus string", 5, "\tx + 5;\n") do
         Bplc.new(EX_BAD_TYPE_FNAME).compile
       end
     end
