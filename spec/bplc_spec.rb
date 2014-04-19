@@ -13,7 +13,9 @@ describe Bplc do
 
   describe "#compile" do
     it "assembles a valid program into an AST" do
-      expect(Bplc.new(EX1_FNAME).compile).to be_a Ast
+      expect{Bplc.new(EX1_FNAME).compile}.not_to raise_error
+      expect{Bplc.new(EX2_FNAME).compile}.not_to raise_error
+      expect{Bplc.new(EX3_FNAME).compile}.not_to raise_error
     end
 
     it "raises an syntax error compiling an invalid program" do
