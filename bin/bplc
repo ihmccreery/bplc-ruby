@@ -4,4 +4,4 @@
 $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'bplc'
 
-Bplc.new(ARGV[0]).compile
+Bplc.new(ARGV[0]).compile(File.new("output.s", 'w'))
