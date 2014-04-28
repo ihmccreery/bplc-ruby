@@ -1,14 +1,14 @@
-.section .rodata
-.WriteIntString: .string "%d "
-.WritelnString: .string "\n"
-.text
-.globl main
+# a translation of Bob's example using .asciz, RIP, and callq instructions
+
+	.section	__TEXT,__text,regular,pure_instructions
+	.globl	_main
+	.align	4, 0x90
 f:
 	movq %rsp, %rbx
 	movq 16(%rbx), %rax
 	imul $2, %eax
 	ret
-main:
+_main:
 	movq %rsp, %rbx
 	sub $8, %rsp
 	movl $0, %eax
@@ -17,18 +17,18 @@ main:
 	cmpl $10, -8(%rbx)
 	jge .L1
 	movl -8(%rbx), %esi
-	movq $.WriteIntString, %rdi
+	leaq .WriteIntString(%rip), %rdi
 	movl $0, %eax
-	call printf
+	callq _printf
 	push -8(%rbx)
 	push %rbx
 	call f
 	pop %rbx
 	add $8, %rsp
 	movl %eax, %esi
-	movq $.WriteIntString, %rdi
+	leaq .WriteIntString(%rip), %rdi
 	movl $0, %eax
-	call printf
+	callq _printf
 	movl -8(%rbx), %eax
 	addl $1, %eax
 	movl %eax, -8(%rbx)
@@ -36,3 +36,9 @@ main:
 .L1:
 	add $8, %rsp
 	ret
+
+	.section	__TEXT,__cstring,cstring_literals
+.WriteIntString:
+	.asciz "%d "
+.WritelnString:
+	.asciz	"\n"
