@@ -4,9 +4,28 @@
 $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'bplc'
 
-options = {}
+require 'optparse'
 
-options[:input] = ARGV[0]
-options[:output] = ARGV[1]
+# get options
+options = {output: 'a.s'}
 
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: bplc inputfile [options]"
+
+  opts.on("-o", "--output [outputfile]", "Write output to outputfile") do |o|
+    options[:output] = o
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+
+optparse.parse!
+
+options[:input] = ARGV.pop
+raise "Need to specify an inputfile" unless options[:input]
+
+# compile
 Bplc.new(options[:input]).compile(File.new(options[:output], 'w'))
