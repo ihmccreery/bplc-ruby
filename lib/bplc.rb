@@ -3,17 +3,19 @@ require 'scanner'
 require 'parser'
 require 'resolver'
 require 'type_checker'
+require 'code_generator'
 
 class Bplc
   def initialize(fname)
     @source = File.new(fname)
   end
 
-  def compile
+  def compile(output)
     begin
       a = Parser.new(Scanner.new(@source)).parse
       Resolver.new(a).resolve
       TypeChecker.new(a).type_check
+      CodeGenerator.new(a).generate(output)
     rescue BplError => error
       puts formatted_error(error)
     end
