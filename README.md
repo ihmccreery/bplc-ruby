@@ -44,7 +44,7 @@ Compiling is broken into 4 steps:
   `VarExp` node.
 - The **type checker** walks the AST and assigns each `Exp` node a type, either by checking what kind of literal it is
   or by checking what types its children are, and complains if there is an invalid type.
-- The **preprocessor** preprocesses the AST, assigning indices to arguments, local variables, and strings.
+- The **indexer** preprocesses the AST, assigning indices to arguments, local variables, and strings.
 - The **code generator** walks the AST and generates AT&T assembly code.
 
 Structure of the AST
