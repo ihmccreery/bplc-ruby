@@ -6,10 +6,10 @@
 _main:
 	pushq	%rbp			# push old fp onto the stack
 	movq	%rsp, %rbp		# set the new fp
-	leaq	L_.str0(%rip), %rdi	# load string to be printed into rax
+	leaq	L_.str0(%rip), %rdi	# load string to be printed into rdi
 	callq	_printf			# call printf
-	leaq	L_.str1(%rip), %rdi	# load string to be printed into rax
-	movq	$2, %rsi		# load argument of 2 to be printed
+	leaq	L_.str1(%rip), %rdi	# load string to be printed into rdi
+	movq	$2, %rsi		# load argument string into rsi
 	callq	_printf			# call printf
 	popq	%rbp			# restore old fp
 	ret
