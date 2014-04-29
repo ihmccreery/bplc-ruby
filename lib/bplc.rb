@@ -3,6 +3,7 @@ require 'scanner'
 require 'parser'
 require 'resolver'
 require 'type_checker'
+require 'indexer'
 require 'code_generator'
 
 class Bplc
