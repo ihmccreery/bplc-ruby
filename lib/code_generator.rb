@@ -17,7 +17,7 @@ class CodeGenerator
     emit_label("_#{ast.id}")
     emit("pushq", "%rbp", "# push old fp onto stack")
     emit("movq", "%rsp, %rbp", "# setup new fp")
-    # TODO deallocate local variables
+    # TODO allocate local variables
     # body
     ast.body.stmts.each do |stmt|
       r_stmt(stmt)
@@ -29,10 +29,15 @@ class CodeGenerator
   end
 
   def r_stmt(ast)
-    r_expression(ast.value)
-    emit("movq", "%rax, %rsi", "# load rax into rsi")
-    emit("leaq", ".WriteIntString(%rip), %rdi", "# load formatting string into rdi")
-    emit("callq", "_printf", "# call printf")
+    if ast.is_a? WriteStmt
+      r_expression(ast.value)
+      emit("movq", "%rax, %rsi", "# load rax into rsi")
+      emit("leaq", ".WriteIntString(%rip), %rdi", "# load formatting string into rdi")
+      emit("callq", "_printf", "# call printf")
+    elsif ast.is_a? WritelnStmt
+      emit("leaq", ".WritelnString(%rip), %rdi", "# load formatting string into rdi")
+      emit("callq", "_printf", "# call printf")
+    end
   end
 
   def r_expression(ast)
