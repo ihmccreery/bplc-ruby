@@ -37,7 +37,7 @@ end
 
 class Program < Ast
   attr_reader :declarations
-  attr_accessor :strs
+  attr_accessor :str_lit_exps
 
   # @param declarations [Array<Declaration>]
   def initialize(declarations)

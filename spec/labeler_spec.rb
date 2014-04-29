@@ -11,8 +11,8 @@ describe Resolver do
     it "labels string literals" do
       a = label('void main(void) { "a"; write("hello"); } void f(void) { string x; x = "argh"; }')
       ["a", "hello", "argh"].each_with_index do |v, i|
-        expect(a.strs[i].value).to eq(v)
-        expect(a.strs[i].label).to eq(".str#{i}")
+        expect(a.str_lit_exps[i].value).to eq(v)
+        expect(a.str_lit_exps[i].label).to eq(".str#{i}")
       end
     end
   end

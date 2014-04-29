@@ -11,7 +11,7 @@ class Labeler
   private
 
   def label_strings
-    @program.strs = []
+    @program.str_lit_exps = []
     @string_index = 0
     r(@program)
   end
@@ -19,7 +19,7 @@ class Labeler
   def r(ast)
     if ast.is_a? StrLitExp
       ast.label = ".str#{@string_index}"
-      @program.strs << ast
+      @program.str_lit_exps << ast
       @string_index += 1
     else
       ast.children.each do |c|
