@@ -15,7 +15,7 @@ class Bplc
       a = Parser.new(Scanner.new(@source)).parse
       Resolver.new(a).resolve
       TypeChecker.new(a).type_check
-      CodeGenerator.new(a).generate(output)
+      CodeGenerator.new(a, output).generate
     rescue BplError => error
       puts formatted_error(error)
     end
