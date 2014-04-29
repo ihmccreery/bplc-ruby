@@ -20,6 +20,10 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
+def label(s)
+  Labeler.new(type_check(s)).label
+end
+
 def type_check(s)
   TypeChecker.new(resolve(s)).type_check
 end
