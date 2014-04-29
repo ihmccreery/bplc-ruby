@@ -7,7 +7,9 @@ class CodeGenerator
   def generate
     generate_header
     @program.declarations.each do |d|
-      r_function_declaration(d)
+      if d.is_a? FunctionDeclaration
+        r_function_declaration(d)
+      end
     end
     generate_io_string_section
   end
@@ -41,7 +43,9 @@ class CodeGenerator
   end
 
   def r_expression(ast)
-    emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
+    if ast.is_a? NumLitExp
+      emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
+    end
   end
 
   # header and io_string_section
