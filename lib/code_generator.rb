@@ -125,6 +125,8 @@ class CodeGenerator
       r_add_exp(ast)
     elsif ast.is_a? MulExp
       r_mul_exp(ast)
+    elsif ast.is_a? NegExp
+      r_neg_exp(ast)
     elsif ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
     elsif ast.is_a? StrLitExp
@@ -158,6 +160,14 @@ class CodeGenerator
       end
     end
     pop
+  end
+
+  def r_neg_exp(ast)
+    r(ast.exp)
+    # TODO is there a better way to do this?
+    emit("movq", "%rax, %rdx", "# move rax into rdx")
+    emit("movq", "$0, %rax", "# move 0 into rax")
+    emit("subq", "%rdx, %rax", "# subtract rdx from rax")
   end
 
   ###################
