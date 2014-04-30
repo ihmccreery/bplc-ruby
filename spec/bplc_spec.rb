@@ -24,7 +24,7 @@ describe Bplc do
     end
 
     it "properly compiles a program with arithmetic" do
-      expect(compile_and_run("arithmetic.bpl")).to eq("10 20 ")
+      expect(compile_and_run("arithmetic.bpl")).to eq("10 20 30 40 50 ")
     end
 
     it "raises an syntax error compiling an invalid program" do

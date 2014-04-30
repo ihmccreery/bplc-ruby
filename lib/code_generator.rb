@@ -123,6 +123,8 @@ class CodeGenerator
   def r_exp(ast)
     if ast.is_a? AddExp
       r_add_exp(ast)
+    elsif ast.is_a? MulExp
+      r_mul_exp(ast)
     elsif ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
     elsif ast.is_a? StrLitExp
@@ -138,6 +140,22 @@ class CodeGenerator
       emit("addq", "(%rsp), %rax", "# add top of stack to rax")
     else
       emit("subq", "(%rsp), %rax", "# subtract top of stack to rax")
+    end
+    pop
+  end
+
+  def r_mul_exp(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax onto stack")
+    r(ast.lhs)
+    if ast.op == :asterisk
+      emit("imulq", "(%rsp)", "# multiply top of stack into rax")
+    else # ast.op == :slash or :percent
+      emit("cqto", "", "# sign extend rax")
+      emit("idivq", "(%rsp)", "# divide top of stack into rax")
+      if ast.op == :percent
+        emit("movq", "%rdx, %rax", "# move modulo into rax")
+      end
     end
     pop
   end
