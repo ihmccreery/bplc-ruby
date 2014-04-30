@@ -20,6 +20,10 @@ RSpec.configure do |config|
   config.order = "random"
 end
 
+def compile_and_run(s)
+  `./bin/bplc spec/examples/#{s} && clang a.s && rm a.s && ./a.out`
+end
+
 def label(s)
   Labeler.new(type_check(s)).label
 end

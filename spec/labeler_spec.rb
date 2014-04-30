@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Resolver do
+describe Labeler do
   describe "#initialize" do
     it "can be constructed from an Ast" do
       expect(Labeler.new(type_check("int x; void main(void) { x; }"))).to be_a Labeler
