@@ -20,7 +20,7 @@ describe Bplc do
 
     # TODO there's got to be a better way to do this
     it "properly compiles a program to print integers and strings" do
-      expect(compile_and_run("printing.bpl")).to eq("34 \n72 \nHello, world! \nArgh! \n")
+      expect(compile_and_run("printing.bpl")).to eq("34 72 Hello, world! Argh! \n")
     end
 
     it "raises an syntax error compiling an invalid program" do
