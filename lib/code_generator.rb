@@ -121,16 +121,34 @@ class CodeGenerator
   ########
 
   def r_exp(ast)
-    if ast.is_a? NumLitExp
+    if ast.is_a? AddExp
+      r_add_exp(ast)
+    elsif ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
     elsif ast.is_a? StrLitExp
       emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
     end
   end
 
+  def r_add_exp(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax onto stack")
+    r(ast.lhs)
+    if ast.op == :plus
+      emit("addq", "(%rsp), %rax", "# add top of stack to rax")
+    else
+      emit("subq", "(%rsp), %rax", "# subtract top of stack to rax")
+    end
+    pop
+  end
+
   ###################
   # support methods #
   ###################
+
+  def pop
+    emit("addq", "$8, %rsp", "# pop the stack")
+  end
 
   def emit(instruction, arguments="", comment="")
     write("\t#{instruction}\t#{arguments} #{comment}")

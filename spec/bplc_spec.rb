@@ -23,6 +23,10 @@ describe Bplc do
       expect(compile_and_run("printing.bpl")).to eq("34 72 Hello, world! Argh! \n")
     end
 
+    it "properly compiles a program with arithmetic" do
+      expect(compile_and_run("arithmetic.bpl")).to eq("10 20 ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)
