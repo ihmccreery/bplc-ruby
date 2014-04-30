@@ -5,13 +5,23 @@ class CodeGenerator
   end
 
   def generate
+    r(@program)
+  end
+
+  def r(ast)
+    if ast.is_a? Program
+      r_program(ast)
+    end
+  end
+
+  def r_program(ast)
     generate_header
-    @program.declarations.each do |d|
+    ast.declarations.each do |d|
       if d.is_a? FunctionDeclaration
         r_function_declaration(d)
       end
     end
-    generate_io_string_section
+    generate_string_section(ast)
   end
 
   def r_function_declaration(ast)
@@ -34,7 +44,11 @@ class CodeGenerator
     if ast.is_a? WriteStmt
       r_expression(ast.value)
       emit("movq", "%rax, %rsi", "# load rax into rsi")
-      emit("leaq", ".WriteIntString(%rip), %rdi", "# load formatting string into rdi")
+      if ast.value.type == :int
+        emit("leaq", ".WriteIntString(%rip), %rdi", "# load int formatting string into rdi")
+      else
+        emit("leaq", ".WriteStringString(%rip), %rdi", "# load string formatting string into rdi")
+      end
       emit("callq", "_printf", "# call printf")
     elsif ast.is_a? WritelnStmt
       emit("leaq", ".WritelnString(%rip), %rdi", "# load formatting string into rdi")
@@ -45,10 +59,12 @@ class CodeGenerator
   def r_expression(ast)
     if ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
+    elsif ast.is_a? StrLitExp
+      emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
     end
   end
 
-  # header and io_string_section
+  # header and string_section
 
   def generate_header
     emit(".section","__TEXT,__text,regular,pure_instructions")
@@ -56,9 +72,17 @@ class CodeGenerator
     emit(".align","4,0x90")
   end
 
-  def generate_io_string_section
+  def generate_string_section(ast)
     emit_empty_line
     emit(".section","__TEXT,__cstring,cstring_literals")
+    generate_io_strings
+    ast.str_lit_exps.each do |e|
+      emit_label(e.label)
+      emit(".asciz","\"#{e.value}\"")
+    end
+  end
+
+  def generate_io_strings
     emit_label(".WriteIntString")
     emit(".asciz",'"%d "')
     emit_label(".WriteStringString")

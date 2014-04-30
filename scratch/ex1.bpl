@@ -3,4 +3,8 @@ void main(void) {
 	writeln();
 	write(72);
 	writeln();
+	write("Hello, world!");
+	writeln();
+	write("Argh!");
+	writeln();
 }
