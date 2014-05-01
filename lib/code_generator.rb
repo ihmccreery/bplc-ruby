@@ -1,4 +1,6 @@
 class CodeGenerator
+  QUADWORD_SIZE = 8.freeze
+
   def initialize(program, output)
     @program = program
     @output = output
@@ -174,6 +176,8 @@ class CodeGenerator
       r_mul_exp(ast)
     elsif ast.is_a? NegExp
       r_neg_exp(ast)
+    elsif ast.is_a? SimpleVarExp
+      r_simple_var_exp(ast)
     elsif ast.is_a? FunCallExp
       r_fun_call_exp(ast)
     elsif ast.is_a? NumLitExp
@@ -246,10 +250,26 @@ class CodeGenerator
     emit("subq", "%rdx, %rax", "# subtract rdx from rax")
   end
 
+  def r_simple_var_exp(ast)
+    if ast.declaration.is_a? Param
+      emit("movq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
+    end
+  end
+
   def r_fun_call_exp(ast)
-    # TODO push arguments onto the stack
+    # add an empty quadword if there is an odd number of arguments to maintain
+    # 16-byte alignment for a function call
+    if ast.args.size.odd?
+      emit("pushq", "$0", "# push empty quadword onto stack to maintain alignment with #{ast.args.size} arguments")
+    end
+    ast.args.reverse_each do |a|
+      r(a)
+      emit("pushq", "%rax", "# push arg onto stack")
+    end
     emit("callq", format_function_id(ast.id), "# call #{ast.id}")
-    # TODO remove arguments from the stack
+    # pop off size + size % 2: in case there is an odd number of arguments, we
+    # need to pop off the extra empty quadword
+    emit("addq", "$#{QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)}, %rsp", "# pop #{ast.args.size} args off the stack")
   end
 
   ###################

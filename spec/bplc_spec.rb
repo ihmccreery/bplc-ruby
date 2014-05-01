@@ -39,7 +39,7 @@ describe Bplc do
     end
 
     it "properly compiles a program with a function call" do
-      expect(compile_and_run("function_calls.bpl")).to eq("hello 5 ")
+      expect(compile_and_run("function_calls.bpl")).to eq("5 times two 10 3 times 4 12 ")
     end
 
     it "raises an syntax error compiling an invalid program" do
