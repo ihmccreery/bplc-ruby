@@ -121,7 +121,9 @@ class CodeGenerator
   ########
 
   def r_exp(ast)
-    if ast.is_a? AddExp
+    if ast.is_a? RelExp
+      r_rel_exp(ast)
+    elsif ast.is_a? AddExp
       r_add_exp(ast)
     elsif ast.is_a? MulExp
       r_mul_exp(ast)
@@ -132,6 +134,34 @@ class CodeGenerator
     elsif ast.is_a? StrLitExp
       emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
     end
+  end
+
+  def r_rel_exp(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax onto stack")
+    r(ast.lhs)
+    emit("cmpq", "(%rsp), %rax", "# compare top of stack to rax")
+
+    if ast.op == :lt
+      emit("jl", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    elsif ast.op == :leq
+      emit("jle", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    elsif ast.op == :eq
+      emit("je", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    elsif ast.op == :neq
+      emit("jne", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    elsif ast.op == :geq
+      emit("jge", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    else # ast.op == :gt
+      emit("jg", ast.true_label, "# jump to #{ast.true_label} to resolve True")
+    end
+
+    emit("clrq", "%rax", "# move 0 (False) into rax")
+    emit("jmp", ast.follow_label, "# jump to #{ast.follow_label} after resolving False")
+    emit_label(ast.true_label)
+    emit("movq", "$1, %rax", "# move 1 (True) into rax")
+    emit_label(ast.follow_label)
+    pop
   end
 
   def r_add_exp(ast)

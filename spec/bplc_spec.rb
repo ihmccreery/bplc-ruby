@@ -27,6 +27,10 @@ describe Bplc do
       expect(compile_and_run("arithmetic.bpl")).to eq("10 20 30 40 50 -10 -20 -30 -40 -50 ")
     end
 
+    it "properly compiles a program with relative expressions" do
+      expect(compile_and_run("relative_expressions.bpl")).to eq("0 1 0 1 0 1 0 1 0 1 0 1 ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)

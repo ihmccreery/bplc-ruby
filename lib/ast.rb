@@ -280,6 +280,7 @@ class AssignmentExp < Exp
 end
 
 class RelExp < Exp
+  attr_accessor :true_label, :follow_label
   include BinExp
 end
 
