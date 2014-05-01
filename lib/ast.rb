@@ -118,6 +118,7 @@ end
 ##########
 
 class Param < VariableDeclaration
+  attr_accessor :offset
 end
 
 class SimpleParam < Param

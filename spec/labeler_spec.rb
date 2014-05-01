@@ -35,5 +35,13 @@ describe Labeler do
       expect(body.stmts[1].else_label).to eq(".if1else")
       expect(body.stmts[1].follow_label).to eq(".if1follow")
     end
+
+    it "computes offsets for Params" do
+      a = label('int f(int x, int y, string z) { }')
+      params = a.declarations[0].params
+      expect(params[0].offset).to eq(16)
+      expect(params[1].offset).to eq(24)
+      expect(params[2].offset).to eq(32)
+    end
   end
 end

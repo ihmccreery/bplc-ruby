@@ -1,4 +1,7 @@
 class Labeler
+  PARAMS_FRAME_OFFSET = 16.freeze
+  QUADWORD_SIZE = 8.freeze
+
   def initialize(program)
     @program = program
   end
@@ -17,7 +20,11 @@ class Labeler
   private
 
   def r(ast)
-    if ast.is_a? StrLitExp
+    if ast.is_a? FunctionDeclaration
+      ast.params.each_with_index do |p, i|
+        p.offset = PARAMS_FRAME_OFFSET + (QUADWORD_SIZE * i)
+      end
+    elsif ast.is_a? StrLitExp
       ast.label = ".str#{@string_index}"
       @program.str_lit_exps << ast
       @string_index += 1
