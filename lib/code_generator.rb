@@ -99,6 +99,8 @@ class CodeGenerator
       r_exp_stmt(ast)
     elsif ast.is_a? IfStmt
       r_if_stmt(ast)
+    elsif ast.is_a? ReturnStmt
+      r_return_stmt(ast)
     elsif ast.is_a? WriteStmt
       r_write_stmt(ast)
     elsif ast.is_a? WritelnStmt
@@ -131,6 +133,16 @@ class CodeGenerator
       r(ast.else_body)
       emit_label(ast.follow_label)
     end
+  end
+
+  def r_return_stmt(ast)
+    unless ast.value.nil?
+      r(ast.value)
+    end
+    # TODO deallocate local variables
+    # should we deallocate local variables by moving fp to sp?
+    emit("popq", "%rbp", "# restore old fp from stack")
+    emit("ret")
   end
 
   def r_write_stmt(ast)
