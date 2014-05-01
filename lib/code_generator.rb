@@ -74,7 +74,7 @@ class CodeGenerator
 
   def r_function_declaration(ast)
     emit_empty_line
-    emit_label("_#{ast.id}")
+    emit_label(format_function_id(ast.id))
     emit("pushq", "%rbp", "# push old fp onto stack")
     emit("movq", "%rsp, %rbp", "# setup new fp")
     # TODO allocate local variables
@@ -237,7 +237,7 @@ class CodeGenerator
 
   def r_fun_call_exp(ast)
     # TODO push arguments onto the stack
-    emit("callq", "_#{ast.id}", "# call #{ast.id}")
+    emit("callq", format_function_id(ast.id), "# call #{ast.id}")
     # TODO remove arguments from the stack
   end
 
@@ -247,6 +247,10 @@ class CodeGenerator
 
   def pop
     emit("addq", "$8, %rsp", "# pop the stack")
+  end
+
+  def format_function_id(id)
+    "_#{id}"
   end
 
   def emit(instruction, arguments="", comment="")
