@@ -1,9 +1,14 @@
 #include <stdio.h>
 
-/* this is a comment */
+int f(int n) {
+	if(n == 0)
+		return 1;
+	else
+		return n * f(n-1);
+}
+
 int main(int argc, char *argv[])
 {
-	printf("hello\n");
+	printf("%d\n", f(5));
 	return 0;
-	printf("hello again %d\n", 2);
 }
