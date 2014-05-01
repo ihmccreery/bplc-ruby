@@ -18,7 +18,6 @@ describe Bplc do
       expect{Bplc.new(EX3_FNAME).compile(StringIO.new)}.not_to raise_error
     end
 
-    # TODO there's got to be a better way to do this
     it "properly compiles a program to print integers and strings" do
       expect(compile_and_run("printing.bpl")).to eq("34 72 Hello, world! Argh! \n")
     end

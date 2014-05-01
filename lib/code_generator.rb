@@ -241,7 +241,6 @@ class CodeGenerator
 
   def r_neg_exp(ast)
     r(ast.exp)
-    # TODO is there a better way to do this?
     emit("movq", "%rax, %rdx", "# move rax into rdx")
     emit("movq", "$0, %rax", "# move 0 into rax")
     emit("subq", "%rdx, %rax", "# subtract rdx from rax")

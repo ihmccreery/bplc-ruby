@@ -28,7 +28,6 @@ _f:
 .L2.if:
 	movq	$1, %rax			# load 1 into rax for return
 .L3.follow:
-	# TODO how do we deal with nested returns like this?
 	addq	$8, %rsp			# pop 0 off of stack
 	popq	%rbp				# restore old fp
 	ret
