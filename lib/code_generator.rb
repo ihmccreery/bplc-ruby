@@ -93,10 +93,29 @@ class CodeGenerator
   #########
 
   def r_stmt(ast)
-    if ast.is_a? WriteStmt
+    if ast.is_a? IfStmt
+      r_if_stmt(ast)
+    elsif ast.is_a? WriteStmt
       r_write_stmt(ast)
     elsif ast.is_a? WritelnStmt
       r_writeln_stmt(ast)
+    end
+  end
+
+  def r_if_stmt(ast)
+    r(ast.condition)
+    emit("cmpq", "$0, %rax", "# check to see if rax is 0 (False)")
+    if(ast.else_body.nil?)
+      emit("jz", ast.follow_label, "# jump to #{ast.follow_label}")
+      r(ast.body)
+      emit_label(ast.follow_label)
+    else
+      emit("jz", ast.else_label, "# jump to #{ast.else_label}")
+      r(ast.body)
+      emit("jmp", ast.follow_label, "# jump to #{ast.follow_label} after completing body")
+      emit_label(ast.else_label)
+      r(ast.else_body)
+      emit_label(ast.follow_label)
     end
   end
 

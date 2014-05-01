@@ -31,6 +31,10 @@ describe Bplc do
       expect(compile_and_run("relative_expressions.bpl")).to eq("0 1 0 1 0 1 0 1 0 1 0 1 ")
     end
 
+    it "properly compiles a program with if statements" do
+      expect(compile_and_run("if_stmts.bpl")).to eq("yes0 yes2 yes3 ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)
