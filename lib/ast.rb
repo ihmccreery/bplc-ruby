@@ -182,6 +182,8 @@ end
 class IfStmt < ConditionalStmt
   attr_reader :else_body
 
+  attr_accessor :else_label, :follow_label
+
   # @param condition [Exp]
   # @param body [Stmt]
   # @param else_body [Stmt, nil]

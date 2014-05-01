@@ -5,9 +5,10 @@ class Labeler
 
   def label
     @program.str_lit_exps = []
-    @string_index = 0
 
+    @string_index = 0
     @rel_index = 0
+    @if_index = 0
 
     r(@program)
     @program
@@ -24,6 +25,10 @@ class Labeler
       ast.true_label = ".rel#{@rel_index}true"
       ast.follow_label = ".rel#{@rel_index}follow"
       @rel_index += 1
+    elsif ast.is_a? IfStmt
+      ast.else_label = ".if#{@if_index}else"
+      ast.follow_label = ".if#{@if_index}follow"
+      @if_index += 1
     end
     ast.children.each do |c|
       r(c)

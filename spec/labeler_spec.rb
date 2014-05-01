@@ -26,5 +26,14 @@ describe Labeler do
       expect(body.stmts[1].body.stmts[0].exp.true_label).to eq(".rel2true")
       expect(body.stmts[1].body.stmts[0].exp.follow_label).to eq(".rel2follow")
     end
+
+    it "labels IfStmts" do
+      a = label('void main(void) { int x; if(x == x) { 5 < 3; } if(x < 5) { } }')
+      body = a.declarations[0].body
+      expect(body.stmts[0].else_label).to eq(".if0else")
+      expect(body.stmts[0].follow_label).to eq(".if0follow")
+      expect(body.stmts[1].else_label).to eq(".if1else")
+      expect(body.stmts[1].follow_label).to eq(".if1follow")
+    end
   end
 end
