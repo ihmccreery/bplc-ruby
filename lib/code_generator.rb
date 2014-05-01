@@ -93,12 +93,20 @@ class CodeGenerator
   #########
 
   def r_stmt(ast)
-    if ast.is_a? IfStmt
+    if ast.is_a? CompoundStmt
+      r_compound_stmt(ast)
+    elsif ast.is_a? IfStmt
       r_if_stmt(ast)
     elsif ast.is_a? WriteStmt
       r_write_stmt(ast)
     elsif ast.is_a? WritelnStmt
       r_writeln_stmt(ast)
+    end
+  end
+
+  def r_compound_stmt(ast)
+    ast.stmts.each do |s|
+      r(s)
     end
   end
 
