@@ -78,8 +78,9 @@ the modifications.
   frame pointer, sets up its own, and restores the old frame pointer before returning.
   - So, the steps to call a function
   are:
-    - load the function arguments in reverse order onto the stack and
-    - call the function.
+    - load the function arguments in reverse order onto the stack,
+    - call the function, and
+    - remove arguments from stack.
   - The steps for the function called are:
     - push the old frame pointer onto the stack;
     - set the new frame pointer by loading the stack pointer into the frame pointer;

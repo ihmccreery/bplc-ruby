@@ -95,6 +95,8 @@ class CodeGenerator
   def r_stmt(ast)
     if ast.is_a? CompoundStmt
       r_compound_stmt(ast)
+    elsif ast.is_a? ExpStmt
+      r_exp_stmt(ast)
     elsif ast.is_a? IfStmt
       r_if_stmt(ast)
     elsif ast.is_a? WriteStmt
@@ -108,6 +110,10 @@ class CodeGenerator
     ast.stmts.each do |s|
       r(s)
     end
+  end
+
+  def r_exp_stmt(ast)
+    r(ast.exp)
   end
 
   def r_if_stmt(ast)
@@ -156,6 +162,8 @@ class CodeGenerator
       r_mul_exp(ast)
     elsif ast.is_a? NegExp
       r_neg_exp(ast)
+    elsif ast.is_a? FunCallExp
+      r_fun_call_exp(ast)
     elsif ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
     elsif ast.is_a? StrLitExp
@@ -225,6 +233,12 @@ class CodeGenerator
     emit("movq", "%rax, %rdx", "# move rax into rdx")
     emit("movq", "$0, %rax", "# move 0 into rax")
     emit("subq", "%rdx, %rax", "# subtract rdx from rax")
+  end
+
+  def r_fun_call_exp(ast)
+    # TODO push arguments onto the stack
+    emit("callq", "_#{ast.id}", "# call #{ast.id}")
+    # TODO remove arguments from the stack
   end
 
   ###################
