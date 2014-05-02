@@ -99,6 +99,8 @@ end
 class FunctionDeclaration < Declaration
   attr_reader :params, :body
 
+  attr_accessor :local_variable_allocation
+
   # @param type_specifier [Token]
   # @param id [Token]
   # @param params [Array<Param>]

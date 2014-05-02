@@ -268,7 +268,7 @@ class CodeGenerator
     end
     emit("callq", format_function_id(ast.id), "# call #{ast.id}")
     # pop off size + size % 2: in case there is an odd number of arguments, we
-    # need to pop off the extra empty quadword
+    # need to pop off the extra empty quadword to keep 16-byte alignment
     emit("addq", "$#{QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)}, %rsp", "# pop #{ast.args.size} args off the stack")
   end
 

@@ -68,10 +68,12 @@ describe Labeler do
 
         expect(while_body.variable_declarations[0].offset).to eq(-48)
         expect(while_body.variable_declarations[1].offset).to eq(-56)
+
+        expect(a.declarations[0].local_variable_allocation).to eq(-64)
       end
 
       it "correctly nests offsets at the same level and don't interfere with each other" do
-        a = label('void main(void) { int x; int y; string z; if(1 < 2) { int a; string b; } while(x) { int s; int t; } }')
+        a = label('void main(void) { int x; int y; string z; if(1 < 2) { int a; string b; int c; } while(x) { int r; int s; int t; } }')
         main_body = a.declarations[0].body
         if_body = main_body.stmts[0].body
         while_body = main_body.stmts[1].body
@@ -82,9 +84,13 @@ describe Labeler do
 
         expect(if_body.variable_declarations[0].offset).to eq(-32)
         expect(if_body.variable_declarations[1].offset).to eq(-40)
+        expect(if_body.variable_declarations[2].offset).to eq(-48)
 
         expect(while_body.variable_declarations[0].offset).to eq(-32)
         expect(while_body.variable_declarations[1].offset).to eq(-40)
+        expect(while_body.variable_declarations[2].offset).to eq(-48)
+
+        expect(a.declarations[0].local_variable_allocation).to eq(-48)
       end
     end
   end

@@ -21,7 +21,7 @@ class Labeler
 
   def r(ast)
     if ast.is_a? FunctionDeclaration
-      i(ast.body, 0)
+      index_local_variables(ast)
       ast.params.each_with_index do |p, i|
         p.offset = PARAMS_FRAME_OFFSET + (QUADWORD_SIZE * i)
       end
@@ -43,17 +43,30 @@ class Labeler
     end
   end
 
-  def i(ast, starting_index)
+  def index_local_variables(ast)
+    ast.local_variable_allocation = 0
+    i(ast.body, 0, ast)
+  end
+
+  def i(ast, starting_offset, parent_function)
     if ast.is_a? CompoundStmt
       ast.variable_declarations.each_with_index do |d, i|
-        d.offset = -1 * (starting_index + i + 1) * QUADWORD_SIZE
+        d.offset = starting_offset - (i + 1) * QUADWORD_SIZE
+      end
+      new_offset = starting_offset - ast.variable_declarations.size * QUADWORD_SIZE
+      # reassign parent_function.local_variable_allocation if necessary
+      if parent_function.local_variable_allocation > new_offset
+        # allocate offset + offset % -16: in case there is an odd number of local
+        # variables, we need to allocate an extra empty quadword to keep 16-byte
+        # alignment
+        parent_function.local_variable_allocation = new_offset + new_offset % -16
       end
       ast.children.each do |c|
-        i(c, starting_index + ast.variable_declarations.size)
+        i(c, new_offset, parent_function)
       end
     else
       ast.children.each do |c|
-        i(c, starting_index)
+        i(c, starting_offset, parent_function)
       end
     end
   end
