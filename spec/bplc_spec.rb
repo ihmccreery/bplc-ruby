@@ -42,6 +42,10 @@ describe Bplc do
       expect(compile_and_run("function_calls.bpl")).to eq("5 times two 10 3 times 4 12 ")
     end
 
+    it "properly compiles a program with a function call" do
+      expect(compile_and_run("local_variables.bpl")).to eq("5 times two 10 3 times 4 12 ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)

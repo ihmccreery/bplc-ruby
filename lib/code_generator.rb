@@ -79,14 +79,14 @@ class CodeGenerator
     emit_label(format_function_id(ast.id))
     emit("pushq", "%rbp", "# push old fp onto stack")
     emit("movq", "%rsp, %rbp", "# setup new fp")
-    # TODO allocate local variables
+    emit("addq", "$#{ast.local_variable_allocation}, %rsp", "# allocate local variables")
     # body
     ast.body.stmts.each do |s|
       r(s)
     end
-    # TODO deallocate local variables
-    # should we deallocate local variables by moving fp to sp?
     emit_label(format_function_return(ast.id))
+    # should we deallocate local variables by moving fp to sp?
+    emit("subq", "$#{ast.local_variable_allocation}, %rsp", "# deallocate local variables")
     emit("popq", "%rbp", "# restore old fp from stack")
     emit("ret")
   end
