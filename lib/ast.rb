@@ -207,6 +207,8 @@ end
 class ReturnStmt < Stmt
   attr_reader :value
 
+  attr_accessor :parent_function_declaration
+
   # @param value [Exp, nil]
   def initialize(value)
     @value = expect(value, Exp, can_be_nil: true)

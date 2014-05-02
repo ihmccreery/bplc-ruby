@@ -134,5 +134,17 @@ describe Resolver do
         resolve("int f; \n void f(void) { }")
       end
     end
+
+    # return statements
+
+    it "resolves return statements" do
+      a = resolve("void f(void) { return 2; if(2 < 3) { return 3; while(3 < 4) { return 5; } } }")
+
+      f = a.declarations[0]
+      expect(f.body.stmts[0].parent_function_declaration).to eq(f)
+      expect(f.body.stmts[1].body.stmts[0].parent_function_declaration).to eq(f)
+      expect(f.body.stmts[1].body.stmts[1].body.stmts[0].parent_function_declaration).to eq(f)
+    end
+
   end
 end

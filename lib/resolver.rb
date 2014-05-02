@@ -48,6 +48,18 @@ class Resolver
     ast.body.stmts.each do |s|
       r(s, symbol_table)
     end
+
+    resolve_return_stmts(ast, ast)
+  end
+
+  # resolve all return statements in ast
+  def resolve_return_stmts(ast, parent_function_declaration)
+    if ast.is_a? ReturnStmt
+      ast.parent_function_declaration = parent_function_declaration
+    end
+    ast.children.each do |c|
+      resolve_return_stmts(c, parent_function_declaration)
+    end
   end
 
   # add variable declarations to a new symbol table and visit
