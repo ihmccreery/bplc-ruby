@@ -86,6 +86,7 @@ class CodeGenerator
     end
     # TODO deallocate local variables
     # should we deallocate local variables by moving fp to sp?
+    emit_label(format_function_return(ast.id))
     emit("popq", "%rbp", "# restore old fp from stack")
     emit("ret")
   end
@@ -141,10 +142,9 @@ class CodeGenerator
     unless ast.value.nil?
       r(ast.value)
     end
-    # TODO deallocate local variables
-    # should we deallocate local variables by moving fp to sp?
-    emit("popq", "%rbp", "# restore old fp from stack")
-    emit("ret")
+      emit("jmp",
+           format_function_return(ast.parent_function_declaration.id),
+           "# jump to return")
   end
 
   def r_write_stmt(ast)
@@ -282,6 +282,10 @@ class CodeGenerator
 
   def format_function_id(id)
     "_#{id}"
+  end
+
+  def format_function_return(id)
+    ".return_#{id}"
   end
 
   def emit(instruction, arguments="", comment="")
