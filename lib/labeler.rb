@@ -21,6 +21,7 @@ class Labeler
 
   def r(ast)
     if ast.is_a? FunctionDeclaration
+      i(ast.body, 0)
       ast.params.each_with_index do |p, i|
         p.offset = PARAMS_FRAME_OFFSET + (QUADWORD_SIZE * i)
       end
@@ -39,6 +40,21 @@ class Labeler
     end
     ast.children.each do |c|
       r(c)
+    end
+  end
+
+  def i(ast, starting_index)
+    if ast.is_a? CompoundStmt
+      ast.variable_declarations.each_with_index do |d, i|
+        d.offset = -1 * (starting_index + i + 1) * QUADWORD_SIZE
+      end
+      ast.children.each do |c|
+        i(c, starting_index + ast.variable_declarations.size)
+      end
+    else
+      ast.children.each do |c|
+        i(c, starting_index)
+      end
     end
   end
 end

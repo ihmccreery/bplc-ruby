@@ -43,5 +43,49 @@ describe Labeler do
       expect(params[1].offset).to eq(24)
       expect(params[2].offset).to eq(32)
     end
+
+    describe "local variable offset computation" do
+      it "computes local variable offsets" do
+        a = label('void main(void) { int x; int y; string z; }')
+        declarations = a.declarations[0].body.variable_declarations
+        expect(declarations[0].offset).to eq(-8)
+        expect(declarations[1].offset).to eq(-16)
+        expect(declarations[2].offset).to eq(-24)
+      end
+
+      it "correctly nests offsets" do
+        a = label('void main(void) { int x; int y; string z; if(1 < 2) { int a; string b; while(x) { int s; int t; } } }')
+        main_body = a.declarations[0].body
+        if_body = main_body.stmts[0].body
+        while_body = if_body.stmts[0].body
+
+        expect(main_body.variable_declarations[0].offset).to eq(-8)
+        expect(main_body.variable_declarations[1].offset).to eq(-16)
+        expect(main_body.variable_declarations[2].offset).to eq(-24)
+
+        expect(if_body.variable_declarations[0].offset).to eq(-32)
+        expect(if_body.variable_declarations[1].offset).to eq(-40)
+
+        expect(while_body.variable_declarations[0].offset).to eq(-48)
+        expect(while_body.variable_declarations[1].offset).to eq(-56)
+      end
+
+      it "correctly nests offsets at the same level and don't interfere with each other" do
+        a = label('void main(void) { int x; int y; string z; if(1 < 2) { int a; string b; } while(x) { int s; int t; } }')
+        main_body = a.declarations[0].body
+        if_body = main_body.stmts[0].body
+        while_body = main_body.stmts[1].body
+
+        expect(main_body.variable_declarations[0].offset).to eq(-8)
+        expect(main_body.variable_declarations[1].offset).to eq(-16)
+        expect(main_body.variable_declarations[2].offset).to eq(-24)
+
+        expect(if_body.variable_declarations[0].offset).to eq(-32)
+        expect(if_body.variable_declarations[1].offset).to eq(-40)
+
+        expect(while_body.variable_declarations[0].offset).to eq(-32)
+        expect(while_body.variable_declarations[1].offset).to eq(-40)
+      end
+    end
   end
 end

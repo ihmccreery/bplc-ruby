@@ -73,6 +73,7 @@ class Declaration < Ast
 end
 
 class VariableDeclaration < Declaration
+  attr_accessor :offset
 end
 
 class SimpleDeclaration < VariableDeclaration
