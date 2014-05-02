@@ -168,7 +168,9 @@ class CodeGenerator
   ########
 
   def r_exp(ast)
-    if ast.is_a? RelExp
+    if ast.is_a? AssignmentExp
+      r_assignment_exp(ast)
+    elsif ast.is_a? RelExp
       r_rel_exp(ast)
     elsif ast.is_a? AddExp
       r_add_exp(ast)
@@ -185,6 +187,12 @@ class CodeGenerator
     elsif ast.is_a? StrLitExp
       emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
     end
+  end
+
+  def r_assignment_exp(ast)
+    r(ast.rhs)
+    lhs = ast.lhs
+    emit("movq", "%rax, #{ast.lhs.declaration.offset}(%rbp)", "# #{ast.lhs.id} = rax")
   end
 
   def r_rel_exp(ast)
@@ -251,9 +259,7 @@ class CodeGenerator
   end
 
   def r_simple_var_exp(ast)
-    if ast.declaration.is_a? Param
-      emit("movq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
-    end
+    emit("movq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
   end
 
   def r_fun_call_exp(ast)
