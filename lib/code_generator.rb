@@ -1,6 +1,4 @@
 class CodeGenerator
-  QUADWORD_SIZE = 8.freeze
-
   def initialize(program, output)
     @program = program
     @output = output
@@ -275,7 +273,8 @@ class CodeGenerator
     emit("callq", format_function_id(ast.id), "# call #{ast.id}")
     # pop off size + size % 2: in case there is an odd number of arguments, we
     # need to pop off the extra empty quadword to keep 16-byte alignment
-    emit("addq", "$#{QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)}, %rsp", "# pop #{ast.args.size} args off the stack")
+    pop_size = Constants::QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)
+    emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
   end
 
   ###################

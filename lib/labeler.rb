@@ -1,6 +1,4 @@
 class Labeler
-  PARAMS_FRAME_OFFSET = 16.freeze
-  QUADWORD_SIZE = 8.freeze
 
   def initialize(program)
     @program = program
@@ -23,7 +21,7 @@ class Labeler
     if ast.is_a? FunctionDeclaration
       index_local_variables(ast)
       ast.params.each_with_index do |p, i|
-        p.offset = PARAMS_FRAME_OFFSET + (QUADWORD_SIZE * i)
+        p.offset = Constants::PARAMS_FRAME_OFFSET + (Constants::QUADWORD_SIZE * i)
       end
     elsif ast.is_a? StrLitExp
       ast.label = ".str#{@string_index}"
@@ -51,9 +49,9 @@ class Labeler
   def i(ast, starting_offset, parent_function)
     if ast.is_a? CompoundStmt
       ast.variable_declarations.each_with_index do |d, i|
-        d.offset = starting_offset - (i + 1) * QUADWORD_SIZE
+        d.offset = starting_offset - (i + 1) * Constants::QUADWORD_SIZE
       end
-      new_offset = starting_offset - ast.variable_declarations.size * QUADWORD_SIZE
+      new_offset = starting_offset - ast.variable_declarations.size * Constants::QUADWORD_SIZE
       # reassign parent_function.local_variable_allocation if necessary
       if parent_function.local_variable_allocation > new_offset
         # allocate offset + offset % -16: in case there is an odd number of local
