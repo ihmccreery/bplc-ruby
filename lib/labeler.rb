@@ -10,6 +10,7 @@ class Labeler
     @string_index = 0
     @rel_index = 0
     @if_index = 0
+    @while_index = 0
 
     r(@program)
     @program
@@ -31,6 +32,10 @@ class Labeler
       ast.true_label = ".rel#{@rel_index}true"
       ast.follow_label = ".rel#{@rel_index}follow"
       @rel_index += 1
+    elsif ast.is_a? WhileStmt
+      ast.condition_label = ".while#{@while_index}condition"
+      ast.follow_label = ".while#{@while_index}follow"
+      @while_index += 1
     elsif ast.is_a? IfStmt
       ast.else_label = ".if#{@if_index}else"
       ast.follow_label = ".if#{@if_index}follow"

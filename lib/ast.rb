@@ -202,6 +202,7 @@ class IfStmt < ConditionalStmt
 end
 
 class WhileStmt < ConditionalStmt
+  attr_accessor :condition_label, :follow_label
 end
 
 class ReturnStmt < Stmt
