@@ -13,5 +13,5 @@ int g(int x, int y) {
 
 void main(void) {
 	write(f(5));
-	write(g(3, 4));
+	write(g(3, 4) * 2);
 }
