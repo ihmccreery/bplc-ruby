@@ -12,6 +12,9 @@ int g(int x, int y) {
 }
 
 void main(void) {
+	int x;
 	write(f(5));
-	write(g(3, 4) * 2);
+	x = g(3, 4) * 2;
+	write("times two again");
+	write(x);
 }

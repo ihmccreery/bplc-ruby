@@ -273,20 +273,29 @@ class CodeGenerator
   end
 
   def r_fun_call_exp(ast)
-    # add an empty quadword if there is an odd number of arguments to maintain
+    emit("movq", "%rsp, %rdx", "# store rsp in rdx")
+    emit("andq", "$-16, %rsp", "# align the stack to 16 bytes")
+    emit("pushq", "%rdx", "# push rdx (the old stack pointer,) onto the stack")
+    # the stack is now definitely not aligned
+
+    # add an empty quadword if there is an even number of arguments to create
     # 16-byte alignment for a function call
-    if ast.args.size.odd?
+    if ast.args.size.even?
       emit("pushq", "$0", "# push empty quadword onto stack to maintain alignment with #{ast.args.size} arguments")
     end
+
     ast.args.reverse_each do |a|
       r(a)
       emit("pushq", "%rax", "# push arg onto stack")
     end
     emit("callq", format_function_id(ast.id), "# call #{ast.id}")
-    # pop off size + size % 2: in case there is an odd number of arguments, we
+
+    # pop off size + (size + 1) % 2: in case there is an odd number of arguments, we
     # need to pop off the extra empty quadword to keep 16-byte alignment
-    pop_size = Constants::QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)
+    pop_size = Constants::QUADWORD_SIZE*(ast.args.size + (ast.args.size + 1) % 2)
     emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
+
+    emit("popq", "%rsp", "# pop old stack pointer as it was before the function call")
   end
 
   ###################

@@ -74,14 +74,32 @@ Runtime Environment
 For the most part, we're using the same runtime environment as Bob suggests, but we are modifying it slightly.  Here are
 the modifications.
 
+### Stack alignment on function calls
+
+OS X requires [(3.2.2: The Stack Frame, page 14)](http://people.freebsd.org/~obrien/amd64-elf-abi.pdf) that a function
+call provide a 16-byte-aligned stack at the time of call.  This is for [performance
+reasons](http://stackoverflow.com/questions/612443/why-does-the-mac-abi-require-16-byte-stack-alignment-for-x86-32).
+
+We must also de-align the stack before pushing arguments on:
+
+- store `%rsp` in `%rdx`;
+- align the stack to 16 bytes;
+- push `%rdx`, (the old stack pointer,) onto the stack, (the stack is now definitely *not* aligned).
+
+So, whenever we call a function, we push an extra 8 bytes onto the stack if we've got an even number of arguments, so
+that the stack is then aligned.  See below for the full algorithm.
+
 ### %rbp ownership
 
 Instead of requiring the caller to push the frame pointer onto the stack before the call, the callee saves the old frame
 pointer, sets up its own, and restores the old frame pointer before returning.  So, the steps to call a function are:
 
-  - load the function arguments in reverse order onto the stack,
-  - call the function, and
-  - remove arguments from stack.
+  - dealign the stack, as described above,
+  - load the function arguments in reverse order onto the stack, with an additional empty argument to start if there is
+    an even number of arguments,
+  - call the function,
+  - remove arguments from stack, including the possible additional empty argument,
+  - restore the stack pointer as saved in the first step.
 
 The steps for the function called are:
 
@@ -92,13 +110,3 @@ The steps for the function called are:
   - deallocate local variables;
   - pop the stack into the frame pointer; and
   - return.
-
-### Stack alignment on function calls
-
-OS X requires [(3.2.2: The Stack Frame, page 14)](http://people.freebsd.org/~obrien/amd64-elf-abi.pdf) that a function
-call provide a 16-byte-aligned stack at the time of call.  This is for [performance
-reasons](http://stackoverflow.com/questions/612443/why-does-the-mac-abi-require-16-byte-stack-alignment-for-x86-32).
-
-Note that after a call and pushing the old frame pointer onto the stack, we're back to 16-byte alignment, (we've pushed
-on 8 bytes for the return address and 8 bytes for the old frame pointer: `pushq   %rbp`).  So, whenever we call a
-function, we push an extra 8 bytes onto the stack if we've got an odd number of arguments.
