@@ -1,3 +1,4 @@
+require 'constants'
 require 'errors'
 require 'scanner'
 require 'parser'

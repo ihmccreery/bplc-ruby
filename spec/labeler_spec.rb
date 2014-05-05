@@ -36,6 +36,15 @@ describe Labeler do
       expect(body.stmts[1].follow_label).to eq(".if1follow")
     end
 
+    it "labels WhileStmts" do
+      a = label('void main(void) { int x; while(x == x) { x = 1; } while(x < 5) { } }')
+      body = a.declarations[0].body
+      expect(body.stmts[0].condition_label).to eq(".while0condition")
+      expect(body.stmts[0].follow_label).to eq(".while0follow")
+      expect(body.stmts[1].condition_label).to eq(".while1condition")
+      expect(body.stmts[1].follow_label).to eq(".while1follow")
+    end
+
     it "computes offsets for Params" do
       a = label('int f(int x, int y, string z) { }')
       params = a.declarations[0].params

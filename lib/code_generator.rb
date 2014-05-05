@@ -1,6 +1,4 @@
 class CodeGenerator
-  QUADWORD_SIZE = 8.freeze
-
   def initialize(program, output)
     @program = program
     @output = output
@@ -102,6 +100,8 @@ class CodeGenerator
       r_exp_stmt(ast)
     elsif ast.is_a? IfStmt
       r_if_stmt(ast)
+    elsif ast.is_a? WhileStmt
+      r_while_stmt(ast)
     elsif ast.is_a? ReturnStmt
       r_return_stmt(ast)
     elsif ast.is_a? WriteStmt
@@ -136,6 +136,16 @@ class CodeGenerator
       r(ast.else_body)
       emit_label(ast.follow_label)
     end
+  end
+
+  def r_while_stmt(ast)
+    emit_label(ast.condition_label)
+    r(ast.condition)
+    emit("cmpq", "$0, %rax", "# check to see if rax is 0 (False)")
+    emit("jz", ast.follow_label, "# jump to #{ast.follow_label}")
+    r(ast.body)
+    emit("jmp", ast.condition_label, "# jump to #{ast.condition_label} after completing body")
+    emit_label(ast.follow_label)
   end
 
   def r_return_stmt(ast)
@@ -275,7 +285,8 @@ class CodeGenerator
     emit("callq", format_function_id(ast.id), "# call #{ast.id}")
     # pop off size + size % 2: in case there is an odd number of arguments, we
     # need to pop off the extra empty quadword to keep 16-byte alignment
-    emit("addq", "$#{QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)}, %rsp", "# pop #{ast.args.size} args off the stack")
+    pop_size = Constants::QUADWORD_SIZE*(ast.args.size + ast.args.size % 2)
+    emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
   end
 
   ###################
