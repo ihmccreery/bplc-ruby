@@ -80,14 +80,14 @@ OS X requires [(3.2.2: The Stack Frame, page 14)](http://people.freebsd.org/~obr
 call provide a 16-byte-aligned stack at the time of call.  This is for [performance
 reasons](http://stackoverflow.com/questions/612443/why-does-the-mac-abi-require-16-byte-stack-alignment-for-x86-32).
 
-We must also de-align the stack before pushing arguments on:
+We de-align the stack before pushing arguments on, then realign it with the arguments:
 
 - store `%rsp` in `%rdx`;
 - align the stack to 16 bytes;
 - push `%rdx`, (the old stack pointer,) onto the stack, (the stack is now definitely *not* aligned).
 
-So, whenever we call a function, we push an extra 8 bytes onto the stack if we've got an even number of arguments, so
-that the stack is then aligned.  See below for the full algorithm.
+We may now push on arguments, with an extra 8 bytes if there is an even number of arguments to make sure the stack is
+aligned.  See below for the full algorithm.
 
 ### %rbp ownership
 
