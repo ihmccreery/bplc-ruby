@@ -263,9 +263,9 @@ class CodeGenerator
 
   def r_neg_exp(ast)
     r(ast.exp)
-    emit("movq", "%rax, %rdx", "# move rax into rdx")
+    emit("movq", "%rax, %rbx", "# move rax into rbx")
     emit("movq", "$0, %rax", "# move 0 into rax")
-    emit("subq", "%rdx, %rax", "# subtract rdx from rax")
+    emit("subq", "%rbx, %rax", "# subtract rbx from rax")
   end
 
   def r_simple_var_exp(ast)
@@ -273,9 +273,9 @@ class CodeGenerator
   end
 
   def r_fun_call_exp(ast)
-    emit("movq", "%rsp, %rdx", "# store rsp in rdx")
+    emit("movq", "%rsp, %rbx", "# store rsp in rbx")
     emit("andq", "$-16, %rsp", "# align the stack to 16 bytes")
-    emit("pushq", "%rdx", "# push rdx (the old stack pointer,) onto the stack")
+    emit("pushq", "%rbx", "# push rbx (the old stack pointer,) onto the stack")
     # the stack is now definitely not aligned
 
     # add an empty quadword if there is an even number of arguments to create
