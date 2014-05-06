@@ -80,23 +80,24 @@ OS X requires [(3.2.2: The Stack Frame, page 14)](http://people.freebsd.org/~obr
 call provide a 16-byte-aligned stack at the time of call.  This is for [performance
 reasons](http://stackoverflow.com/questions/612443/why-does-the-mac-abi-require-16-byte-stack-alignment-for-x86-32).
 
-We de-align the stack before pushing arguments on, then realign it with the arguments:
+We align the stack before pushing arguments on, then keep it aligned with the arguments:
 
 - store `%rsp` in `%rdx`;
+- push an empty byte on the stack to ensure we have room to store the old stack pointer
 - align the stack to 16 bytes;
-- push `%rdx`, (the old stack pointer,) onto the stack, (the stack is now definitely *not* aligned).
+- move `%rdx`, (the old stack pointer,) into the allocated space on the stack.
 
-We may now push on arguments, with an extra 8 bytes if there is an even number of arguments to make sure the stack is
-aligned.  See below for the full algorithm.
+We may now push on arguments, with an extra 8 bytes if there is an odd number of arguments to make sure the stack
+remains aligned.  See below for the full algorithm.
 
 ### %rbp ownership
 
 Instead of requiring the caller to push the frame pointer onto the stack before the call, the callee saves the old frame
 pointer, sets up its own, and restores the old frame pointer before returning.  So, the steps to call a function are:
 
-  - dealign the stack, as described above,
+  - align the stack, as described above,
   - load the function arguments in reverse order onto the stack, with an additional empty argument to start if there is
-    an even number of arguments,
+    an odd number of arguments,
   - call the function,
   - remove arguments from stack, including the possible additional empty argument,
   - restore the stack pointer as saved in the first step.
