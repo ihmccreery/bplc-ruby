@@ -55,7 +55,7 @@ class CodeGenerator
 
   def generate_io_strings
     emit_label(".WriteIntString")
-    emit(".asciz",'"%d "')
+    emit(".asciz",'"%lld "')
     emit_label(".WriteStringString")
     emit(".asciz",'"%s "')
     emit_label(".WritelnString")
