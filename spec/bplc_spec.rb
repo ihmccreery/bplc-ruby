@@ -46,6 +46,10 @@ describe Bplc do
       expect(compile_and_run("local_variables.bpl")).to eq("25 5 10 100 2 20 hello! ")
     end
 
+    it "properly compiles a program with chained assignments" do
+      expect(compile_and_run("chained_assignments.bpl")).to eq("15 15 30 ")
+    end
+
     it "properly compiles a program with while statements" do
       expect(compile_and_run("while_stmts.bpl")).to eq("0 1 2 3 4 5 6 7 8 9 ")
     end

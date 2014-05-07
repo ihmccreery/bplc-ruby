@@ -208,6 +208,7 @@ class CodeGenerator
     emit("pushq", "%rax", "# push rax (rhs) onto stack")
     get_address(ast.lhs)
     emit("popq", "(%rax)", "# assign rhs to lhs")
+    emit("movq", "(%rax), %rax", "# leave rhs in rax")
   end
 
   def r_rel_exp(ast)
