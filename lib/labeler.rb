@@ -51,22 +51,26 @@ class Labeler
     i(ast.body, 0, ast)
   end
 
-  def i(ast, starting_offset, parent_function)
+  def i(ast, offset, parent_function)
     if ast.is_a? CompoundStmt
-      ast.variable_declarations.each_with_index do |d, i|
-        d.offset = starting_offset - (i + 1) * Constants::QUADWORD_SIZE
+      ast.variable_declarations.each do |d|
+        if d.is_a? ArrayDeclaration
+          offset -= d.size * Constants::QUADWORD_SIZE
+        else
+          offset -= Constants::QUADWORD_SIZE
+        end
+        d.offset = offset
       end
-      new_offset = starting_offset - ast.variable_declarations.size * Constants::QUADWORD_SIZE
       # reassign parent_function.local_variable_allocation if necessary
-      if parent_function.local_variable_allocation > new_offset
-        parent_function.local_variable_allocation = new_offset
+      if parent_function.local_variable_allocation < -offset
+        parent_function.local_variable_allocation = -offset
       end
       ast.children.each do |c|
-        i(c, new_offset, parent_function)
+        i(c, offset, parent_function)
       end
     else
       ast.children.each do |c|
-        i(c, starting_offset, parent_function)
+        i(c, offset, parent_function)
       end
     end
   end
