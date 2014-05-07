@@ -165,12 +165,12 @@ class CodeGenerator
     else
       emit("leaq", ".WriteStringString(%rip), %rdi", "# load string formatting string into rdi")
     end
-    emit("callq", "_printf", "# call printf")
+    with_aligned_stack { emit("callq", "_printf", "# call printf") }
   end
 
   def r_writeln_stmt(ast)
     emit("leaq", ".WritelnString(%rip), %rdi", "# load formatting string into rdi")
-    emit("callq", "_printf", "# call printf")
+    with_aligned_stack { emit("callq", "_printf", "# call printf") }
   end
 
   ########
@@ -306,7 +306,7 @@ class CodeGenerator
 
     yield
 
-    emit("popq", "%rsp", "# pop old stack pointer as it was before the function call")
+    emit("popq", "%rsp", "# pop old stack pointer as it was before the stack alignment")
   end
 
   def pop
