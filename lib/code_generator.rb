@@ -190,10 +190,8 @@ class CodeGenerator
       r_mul_exp(ast)
     elsif ast.is_a? NegExp
       r_neg_exp(ast)
-    elsif ast.is_a? SimpleVarExp
-      r_simple_var_exp(ast)
-    elsif ast.is_a? FunCallExp
-      r_fun_call_exp(ast)
+    elsif ast.is_a? VarExp
+      r_var_exp(ast)
     elsif ast.is_a? NumLitExp
       emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
     elsif ast.is_a? StrLitExp
@@ -271,9 +269,13 @@ class CodeGenerator
     emit("subq", "%rbx, %rax", "# subtract rbx from rax")
   end
 
-  def r_simple_var_exp(ast)
-    get_address(ast)
-    emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
+  def r_var_exp(ast)
+    if ast.is_a? FunCallExp
+      r_fun_call_exp(ast)
+    else
+      get_address(ast)
+      emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
+    end
   end
 
   def r_fun_call_exp(ast)
@@ -302,7 +304,15 @@ class CodeGenerator
   ###################
 
   def get_address(ast)
-    emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
+    if ast.is_a? SimpleVarExp
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    elsif ast.is_a? ArrayVarExp
+      r(ast.index)
+      emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute offset from index")
+      emit("movq", "%rax, %rbx", "# move index into rbx")
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      emit("addq", "%rbx, %rax", "# add index to #{ast.id} address")
+    end
   end
 
   def with_aligned_stack
