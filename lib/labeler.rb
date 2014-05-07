@@ -59,10 +59,7 @@ class Labeler
       new_offset = starting_offset - ast.variable_declarations.size * Constants::QUADWORD_SIZE
       # reassign parent_function.local_variable_allocation if necessary
       if parent_function.local_variable_allocation > new_offset
-        # allocate offset + offset % -16: in case there is an odd number of local
-        # variables, we need to allocate an extra empty quadword to keep 16-byte
-        # alignment
-        parent_function.local_variable_allocation = new_offset + new_offset % -16
+        parent_function.local_variable_allocation = new_offset
       end
       ast.children.each do |c|
         i(c, new_offset, parent_function)

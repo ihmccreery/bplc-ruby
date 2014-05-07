@@ -78,7 +78,7 @@ describe Labeler do
         expect(while_body.variable_declarations[0].offset).to eq(-48)
         expect(while_body.variable_declarations[1].offset).to eq(-56)
 
-        expect(a.declarations[0].local_variable_allocation).to eq(-64)
+        expect(a.declarations[0].local_variable_allocation).to eq(-56)
       end
 
       it "correctly nests offsets at the same level and don't interfere with each other" do
