@@ -60,6 +60,8 @@ class CodeGenerator
     emit(".asciz",'"%s "')
     emit_label(".WritelnString")
     emit(".asciz",'"\n"')
+    emit_label(".ReadString")
+    emit(".asciz",'"%d"')
   end
 
   ################
@@ -194,10 +196,12 @@ class CodeGenerator
       r_simple_var_exp(ast)
     elsif ast.is_a? FunCallExp
       r_fun_call_exp(ast)
+    elsif ast.is_a? ReadLitExp
+      r_read_lit_exp(ast)
     elsif ast.is_a? NumLitExp
-      emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
+      r_num_lit_exp(ast)
     elsif ast.is_a? StrLitExp
-      emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
+      r_str_lit_exp(ast)
     end
   end
 
@@ -293,6 +297,27 @@ class CodeGenerator
       pop_size = Constants::QUADWORD_SIZE*(ast.args.size + (ast.args.size % 2))
       emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
     end
+  end
+
+  def r_read_lit_exp(ast)
+    with_aligned_stack do
+      emit("subq", "$16, %rsp", "# allocate two quadwords for scanf, (to keep alignment)")
+      emit("leaq", "(%rsp), %rsi", "# put scanf storage location into rsi")
+      emit("leaq", ".ReadString(%rip), %rdi", "# load int formatting string into rdi")
+
+      emit("callq", "_scanf", "# call scanf")
+
+      emit("popq", "%rax", "# pop storage location into rax")
+      emit("addq", "$8, %rsp", "# deallocate the extra space we pushed onto the stack")
+    end
+  end
+
+  def r_num_lit_exp(ast)
+    emit("movq", "$#{ast.value}, %rax", "# load #{ast.value} into rax")
+  end
+
+  def r_str_lit_exp(ast)
+    emit("leaq", "#{ast.label}(%rip), %rax", "# load \"#{ast.value}\" into rax")
   end
 
   ###################
