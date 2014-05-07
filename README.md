@@ -111,3 +111,13 @@ The steps for the function called are:
   - deallocate local variables;
   - pop the stack into the frame pointer; and
   - return.
+
+# Array parameters
+
+Consider the expression `a[0]`.  If `a` is a locally-allocated, we know that its offset is something like -80, and that
+`a[0]` is at `-80(%rbp)`.  However, if `a` is a parameter passed into the function, then its offset is something like
+16, but `16(%rpb)` holds not `a[0]`, but rather the address of `a[0]`.
+
+So, if an array is declared as a parameter rather than a local variable, we add an additional layer of indirection, and
+must take that into account.  We do so by checking whether the declaration is a parameter, and if it is, then we must
+move the value in the address into `rax` a second time.

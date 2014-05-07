@@ -274,7 +274,9 @@ class CodeGenerator
       r_fun_call_exp(ast)
     else
       get_address(ast)
-      emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
+      unless [:array_int, :array_string].include? ast.type
+        emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
+      end
     end
   end
 
@@ -310,8 +312,21 @@ class CodeGenerator
       r(ast.index)
       emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute offset from index")
       emit("movq", "%rax, %rbx", "# move index into rbx")
-      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      get_array_base_address(ast)
       emit("addq", "%rbx, %rax", "# add index to #{ast.id} address")
+    end
+  end
+
+  def get_array_base_address(ast)
+    # If an array is declared as a parameter rather than a local variable, we
+    # add an additional layer of indirection, and must take that into account.
+    # We do so by checking whether the declaration is a parameter, and if it is,
+    # then we must move the value in the address into `rax` a second time.
+    if ast.declaration.is_a? ArrayParam
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} param address into rax")
+      emit("movq", "(%rax), %rax", "# move address of #{ast.id} param into rax")
+    else
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
     end
   end
 

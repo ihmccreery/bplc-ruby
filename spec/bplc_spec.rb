@@ -59,7 +59,7 @@ describe Bplc do
     end
 
     it "properly compiles a program with array params" do
-      expect(compile_and_run("array_params.bpl")).to eq("0 1 2 3 4 zero one two three four ")
+      expect(compile_and_run("array_params.bpl")).to eq("0 1 2 3 4 zero one two three four 5 hello 6 hello 7 hello 8 hello 9 hello ")
     end
 
     it "raises an syntax error compiling an invalid program" do
