@@ -203,8 +203,9 @@ class CodeGenerator
 
   def r_assignment_exp(ast)
     r(ast.rhs)
-    lhs = ast.lhs
-    emit("movq", "%rax, #{ast.lhs.declaration.offset}(%rbp)", "# #{ast.lhs.id} = rax")
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
+    get_address(ast.lhs)
+    emit("popq", "(%rax)", "# assign rhs to lhs")
   end
 
   def r_rel_exp(ast)
@@ -271,7 +272,8 @@ class CodeGenerator
   end
 
   def r_simple_var_exp(ast)
-    emit("movq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
+    get_address(ast)
+    emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
   end
 
   def r_fun_call_exp(ast)
@@ -298,6 +300,10 @@ class CodeGenerator
   ###################
   # support methods #
   ###################
+
+  def get_address(ast)
+    emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
+  end
 
   def with_aligned_stack
     emit("movq", "%rsp, %rbx", "# store rsp in rbx")
