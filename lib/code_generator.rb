@@ -80,14 +80,14 @@ class CodeGenerator
     emit("pushq", "%rbp", "# push old fp onto stack")
     emit("pushq", "%rbx", "# push old rbx onto stack")
     emit("movq", "%rsp, %rbp", "# setup new fp")
-    emit("addq", "$#{ast.local_variable_allocation}, %rsp", "# allocate local variables")
+    emit("subq", "$#{ast.local_variable_allocation}, %rsp", "# allocate local variables")
     # body
     ast.body.stmts.each do |s|
       r(s)
     end
     emit_label(format_function_return(ast.id))
     # should we deallocate local variables by moving fp to sp?
-    emit("subq", "$#{ast.local_variable_allocation}, %rsp", "# deallocate local variables")
+    emit("addq", "$#{ast.local_variable_allocation}, %rsp", "# deallocate local variables")
     emit("popq", "%rbx", "# restore old rbx from stack")
     emit("popq", "%rbp", "# restore old fp from stack")
     emit("ret")
@@ -192,10 +192,8 @@ class CodeGenerator
       r_mul_exp(ast)
     elsif ast.is_a? NegExp
       r_neg_exp(ast)
-    elsif ast.is_a? SimpleVarExp
-      r_simple_var_exp(ast)
-    elsif ast.is_a? FunCallExp
-      r_fun_call_exp(ast)
+    elsif ast.is_a? VarExp
+      r_var_exp(ast)
     elsif ast.is_a? ReadLitExp
       r_read_lit_exp(ast)
     elsif ast.is_a? NumLitExp
@@ -207,8 +205,9 @@ class CodeGenerator
 
   def r_assignment_exp(ast)
     r(ast.rhs)
-    lhs = ast.lhs
-    emit("movq", "%rax, #{ast.lhs.declaration.offset}(%rbp)", "# #{ast.lhs.id} = rax")
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
+    get_address(ast.lhs)
+    emit("popq", "(%rax)", "# assign rhs to lhs")
   end
 
   def r_rel_exp(ast)
@@ -274,8 +273,15 @@ class CodeGenerator
     emit("subq", "%rbx, %rax", "# subtract rbx from rax")
   end
 
-  def r_simple_var_exp(ast)
-    emit("movq", "#{ast.declaration.offset}(%rbp), %rax", "# move #{ast.id} into rax")
+  def r_var_exp(ast)
+    if ast.is_a? FunCallExp
+      r_fun_call_exp(ast)
+    else
+      get_address(ast)
+      unless [:array_int, :array_string].include? ast.type
+        emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
+      end
+    end
   end
 
   def r_fun_call_exp(ast)
@@ -323,6 +329,31 @@ class CodeGenerator
   ###################
   # support methods #
   ###################
+
+  def get_address(ast)
+    if ast.is_a? SimpleVarExp
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    elsif ast.is_a? ArrayVarExp
+      r(ast.index)
+      emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute offset from index")
+      emit("movq", "%rax, %rbx", "# move index into rbx")
+      get_array_base_address(ast)
+      emit("addq", "%rbx, %rax", "# add index to #{ast.id} address")
+    end
+  end
+
+  def get_array_base_address(ast)
+    # If an array is declared as a parameter rather than a local variable, we
+    # add an additional layer of indirection, and must take that into account.
+    # We do so by checking whether the declaration is a parameter, and if it is,
+    # then we must move the value in the address into `rax` a second time.
+    if ast.declaration.is_a? ArrayParam
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} param address into rax")
+      emit("movq", "(%rax), %rax", "# move address of #{ast.id} param into rax")
+    else
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    end
+  end
 
   def with_aligned_stack
     emit("movq", "%rsp, %rbx", "# store rsp in rbx")
