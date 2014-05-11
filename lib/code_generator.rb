@@ -1,21 +1,25 @@
 class CodeGenerator
+
+  CONDITIONAL_JUMPS = {lt: "jl",
+                       leq: "jle",
+                       eq: "je",
+                       neq: "jne",
+                       geq: "jge",
+                       gt: "jg"}
+
   def initialize(program, output)
     @program = program
     @output = output
   end
 
   def generate
-    r(@program)
+    r_program(@program)
   end
 
   private
 
   def r(ast)
-    if ast.is_a? Program
-      r_program(ast)
-    elsif ast.is_a? Declaration
-      r_declaration(ast)
-    elsif ast.is_a? Stmt
+    if ast.is_a? Stmt
       r_stmt(ast)
     elsif ast.is_a? Exp
       r_exp(ast)
@@ -30,7 +34,9 @@ class CodeGenerator
     generate_header
     # TODO globals
     ast.declarations.each do |d|
-      r(d)
+      if d.is_a? FunctionDeclaration
+        r_function_declaration(d)
+      end
     end
     generate_string_section(ast)
   end
@@ -64,15 +70,9 @@ class CodeGenerator
     emit(".asciz",'"%d"')
   end
 
-  ################
-  # Declarations #
-  ################
-
-  def r_declaration(ast)
-    if ast.is_a? FunctionDeclaration
-      r_function_declaration(ast)
-    end
-  end
+  ########################
+  # FunctionDeclarations #
+  ########################
 
   def r_function_declaration(ast)
     emit_empty_line
@@ -156,9 +156,9 @@ class CodeGenerator
     unless ast.value.nil?
       r(ast.value)
     end
-      emit("jmp",
-           format_function_return(ast.parent_function_declaration.id),
-           "# jump to return")
+    emit("jmp",
+         format_function_return(ast.parent_function_declaration.id),
+         "# jump to return")
   end
 
   def r_write_stmt(ast)
@@ -204,33 +204,17 @@ class CodeGenerator
   end
 
   def r_assignment_exp(ast)
-    r(ast.rhs)
-    emit("pushq", "%rax", "# push rax (rhs) onto stack")
+    rhs_onto_stack(ast)
     get_address(ast.lhs)
     emit("popq", "(%rax)", "# assign rhs to lhs")
     emit("movq", "(%rax), %rax", "# leave rhs in rax")
   end
 
   def r_rel_exp(ast)
-    r(ast.rhs)
-    emit("pushq", "%rax", "# push rax onto stack")
+    rhs_onto_stack(ast)
     r(ast.lhs)
     emit("cmpq", "(%rsp), %rax", "# compare top of stack to rax")
-
-    if ast.op == :lt
-      emit("jl", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    elsif ast.op == :leq
-      emit("jle", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    elsif ast.op == :eq
-      emit("je", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    elsif ast.op == :neq
-      emit("jne", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    elsif ast.op == :geq
-      emit("jge", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    else # ast.op == :gt
-      emit("jg", ast.true_label, "# jump to #{ast.true_label} to resolve True")
-    end
-
+    emit(CONDITIONAL_JUMPS[ast.op], ast.true_label, "# jump to #{ast.true_label} to resolve True")
     emit("clrq", "%rax", "# move 0 (False) into rax")
     emit("jmp", ast.follow_label, "# jump to #{ast.follow_label} after resolving False")
     emit_label(ast.true_label)
@@ -240,8 +224,7 @@ class CodeGenerator
   end
 
   def r_add_exp(ast)
-    r(ast.rhs)
-    emit("pushq", "%rax", "# push rax onto stack")
+    rhs_onto_stack(ast)
     r(ast.lhs)
     if ast.op == :plus
       emit("addq", "(%rsp), %rax", "# add top of stack to rax")
@@ -252,8 +235,7 @@ class CodeGenerator
   end
 
   def r_mul_exp(ast)
-    r(ast.rhs)
-    emit("pushq", "%rax", "# push rax onto stack")
+    rhs_onto_stack(ast)
     r(ast.lhs)
     if ast.op == :asterisk
       emit("imulq", "(%rsp)", "# multiply top of stack into rax")
@@ -330,6 +312,11 @@ class CodeGenerator
   ###################
   # support methods #
   ###################
+
+  def rhs_onto_stack(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
+  end
 
   def get_address(ast)
     if ast.is_a? SimpleVarExp
