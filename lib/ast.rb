@@ -99,7 +99,7 @@ end
 class FunctionDeclaration < Declaration
   attr_reader :params, :body
 
-  attr_accessor :local_variable_allocation
+  attr_accessor :local_variable_allocation, :function_label, :return_label
 
   # @param type_specifier [Token]
   # @param id [Token]

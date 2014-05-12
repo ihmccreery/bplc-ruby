@@ -76,7 +76,7 @@ class CodeGenerator
 
   def r_function_declaration(ast)
     emit_empty_line
-    emit_label(format_function_id(ast.id))
+    emit_label(ast.function_label)
     emit("pushq", "%rbp", "# push old fp onto stack")
     emit("pushq", "%rbx", "# push old rbx onto stack")
     emit("movq", "%rsp, %rbp", "# setup new fp")
@@ -85,7 +85,7 @@ class CodeGenerator
     ast.body.stmts.each do |s|
       r(s)
     end
-    emit_label(format_function_return(ast.id))
+    emit_label(ast.return_label)
     # should we deallocate local variables by moving fp to sp?
     emit("addq", "$#{ast.local_variable_allocation}, %rsp", "# deallocate local variables")
     emit("popq", "%rbx", "# restore old rbx from stack")
@@ -157,7 +157,7 @@ class CodeGenerator
       r(ast.value)
     end
     emit("jmp",
-         format_function_return(ast.parent_function_declaration.id),
+         ast.parent_function_declaration.return_label,
          "# jump to return")
   end
 
@@ -307,7 +307,7 @@ class CodeGenerator
         r(a)
         emit("pushq", "%rax", "# push arg onto stack")
       end
-      emit("callq", format_function_id(ast.id), "# call #{ast.id}")
+      emit("callq", ast.declaration.function_label, "# call #{ast.id}")
 
       # pop off size + (size % 2): in case there is an odd number of arguments, we
       # need to pop off the extra empty quadword to keep 16-byte alignment
@@ -392,14 +392,6 @@ class CodeGenerator
 
   def pop
     emit("addq", "$8, %rsp", "# pop the stack")
-  end
-
-  def format_function_id(id)
-    "_#{id}"
-  end
-
-  def format_function_return(id)
-    ".return_#{id}"
   end
 
   def emit(instruction, arguments="", comment="")

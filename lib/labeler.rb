@@ -20,6 +20,8 @@ class Labeler
 
   def r(ast)
     if ast.is_a? FunctionDeclaration
+      ast.function_label = "_#{ast.id}"
+      ast.return_label = ".return_#{ast.id}"
       index_local_variables(ast)
       ast.params.each_with_index do |p, i|
         p.offset = Constants::PARAMS_FRAME_OFFSET + (Constants::QUADWORD_SIZE * i)
