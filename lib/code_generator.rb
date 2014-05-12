@@ -345,7 +345,7 @@ class CodeGenerator
   end
 
   def get_r_value(ast)
-    unless (ast.is_a? AddrVarExp) || (ast.declaration.is_a? AddrArrayVarExp)
+    unless (ast.is_a? AddrVarExp) || (ast.is_a? AddrArrayVarExp)
       emit("movq", "(%rax), %rax", "# convert l-value to r-value")
     end
   end
