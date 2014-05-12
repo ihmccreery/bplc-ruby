@@ -114,7 +114,7 @@ The steps for the function called are:
 
 ### Dealing with variable expressions
 
-#### VarExps:
+#### VarExps
 
 The possible `VarExps`, with their algorithms for computation:
 
