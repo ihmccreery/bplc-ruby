@@ -266,33 +266,16 @@ class CodeGenerator
 
   # TODO refactor
   def r_var_exp(ast)
-    if ast.is_a? SimpleVarExp
-      r_simple_var_exp(ast)
-    elsif ast.is_a? PointerVarExp
-      # TODO
-    elsif ast.is_a? ArrayVarExp
-      r_array_var_exp(ast)
-    elsif ast.is_a? AddrVarExp
-      # TODO
-    elsif ast.is_a? AddrArrayVarExp
-      # TODO
-    else # ast.is_a? FunCallExp
+    if ast.is_a? FunCallExp
       r_fun_call_exp(ast)
-    end
-  end
-
-  def r_simple_var_exp(ast)
-    if [:array_int, :array_string].include? ast.type
-      get_array_base(ast)
     else
-      get_l_value(ast)
-      get_r_value
+      if [:array_int, :array_string].include? ast.type
+        get_array_base(ast)
+      else
+        get_l_value(ast)
+        get_r_value(ast)
+      end
     end
-  end
-
-  def r_array_var_exp(ast)
-    get_l_value(ast)
-    get_r_value
   end
 
   def r_fun_call_exp(ast)
@@ -348,18 +331,23 @@ class CodeGenerator
   # note that this method never gets called on arrays, because they have no
   # l-values
   def get_l_value(ast)
-    if ast.is_a? ArrayVarExp
+    if (ast.is_a? SimpleVarExp) || (ast.is_a? AddrVarExp)
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    elsif (ast.is_a? ArrayVarExp) || (ast.is_a? AddrArrayVarExp)
       get_index_offset(ast)
       emit("movq", "%rax, %rbx", "# move index offset into rbx")
       get_array_base(ast)
       emit("addq", "%rbx, %rax", "# add index offset to #{ast.id} address")
-    else
+    else # ast.is_a? PointerVarExp
       emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      emit("movq", "(%rax), %rax", "# follow pointer")
     end
   end
 
-  def get_r_value
-    emit("movq", "(%rax), %rax", "# convert l-value to r-value")
+  def get_r_value(ast)
+    unless (ast.is_a? AddrVarExp) || (ast.declaration.is_a? AddrArrayVarExp)
+      emit("movq", "(%rax), %rax", "# convert l-value to r-value")
+    end
   end
 
   def get_index_offset(ast)

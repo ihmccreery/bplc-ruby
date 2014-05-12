@@ -70,6 +70,10 @@ describe Bplc do
       expect(compile_and_run("sorting.bpl")).to eq("0 1 2 3 4 5 6 7 8 9 ")
     end
 
+    it "properly compiles a program with pointers" do
+      expect(compile_and_run("pointers.bpl")).to eq("23 ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)

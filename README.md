@@ -114,58 +114,27 @@ The steps for the function called are:
 
 ### Dealing with variable expressions
 
-#### VarExps
+#### Computing r-values
 
-The possible `VarExps`, with their algorithms for computation:
+r-values are generally straightforward: unless we're at an AddrVarExp or AddrArrayVarExp, move r-value into rax by
+getting the value at the l-value's address (otherwise, do nothing).
 
-  - `SimpleVarExp`
-    - if array
-      - put base into rax
-    - else
-      - put l-value into rax
-      - move r-value into rax
+If we're at a SimpleVarExp that's actually an array, we don't use l-values; instead, the r-value is simply the base of
+the array.
+
+#### Computing l-values
+
+l-values are more complicated:
+
+  - `SimpleVarExp` or `AddrVarExp`
+    - put address into rax
   - `PointerVarExp`
-    - put l-value into rax
-    - move r-value into rax
+    - put address into rax
     - follow pointer
-  - `ArrayVarExp`
-    - put l-value into rax
-    - move r-value into rax
-  - `AddrVarExp`
-    - put l-value into rax
-  - `AddrArrayVarExp`
-    - put l-value into rax
-  - `FunCallExp`
-    - (see above)
-
-Computing the l-value for an array element happens as follows:
-
-  - compute the index, then offset, and push it into rbx
-  - put base into rax
-  - add offset to base
-
-#### Types
-
-Let's take a look at the possible types:
-
-  - `int`
-    - l-value: address in memory where the value is stored
-    - r-value: value at l-value address
-  - `pointer_int`
-    - l-value: address in memory where the pointer is stored
-    - r-value: pointer at l-value address
-  - `array_int`
-    - l-value: n/a
-    - r-value: base address
-  - `string`
-    - l-value: address in memory where the label is stored
-    - r-value: label at l-value address
-  - `pointer_string`
-    - l-value: address in memory where the pointer is stored
-    - r-value: pointer at l-value address
-  - `array_string`
-    - l-value: n/a
-    - r-value: base address
+  - `ArrayVarExp` or `AddrArrayVarExp`
+    - compute the index, then offset, and push it into rbx
+    - put base into rax
+    - add offset to base
 
 ### Array parameters
 
