@@ -9,7 +9,11 @@ class Resolver
     symbol_table = SymbolTable.new(nil)
     @program.declarations.each do |d|
       add_symbol(symbol_table, d)
-      r(d, symbol_table)
+      if d.is_a? VariableDeclaration
+        d.global = true
+      else
+        r(d, symbol_table)
+      end
     end
     return @program
   end

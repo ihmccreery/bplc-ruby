@@ -26,6 +26,8 @@ class Labeler
       ast.params.each_with_index do |p, i|
         p.offset = Constants::PARAMS_FRAME_OFFSET + (Constants::QUADWORD_SIZE * i)
       end
+    elsif (ast.is_a? VariableDeclaration) && (ast.global)
+      ast.label = "_#{ast.id}"
     elsif ast.is_a? StrLitExp
       ast.label = ".str#{@string_index}"
       @program.str_lit_exps << ast

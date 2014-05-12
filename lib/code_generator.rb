@@ -32,12 +32,12 @@ class CodeGenerator
 
   def r_program(ast)
     generate_header
-    # TODO globals
     ast.declarations.each do |d|
       if d.is_a? FunctionDeclaration
         r_function_declaration(d)
       end
     end
+    generate_globals(ast)
     generate_string_section(ast)
   end
 
@@ -47,6 +47,14 @@ class CodeGenerator
     emit(".section","__TEXT,__text,regular,pure_instructions")
     emit(".globl","_main")
     emit(".align","4,0x90")
+  end
+
+  def generate_globals(ast)
+    ast.declarations.each do |d|
+      unless d.is_a? FunctionDeclaration
+        emit(".comm","#{d.label}, #{Constants::QUADWORD_SIZE}")
+      end
+    end
   end
 
   def generate_string_section(ast)
@@ -332,14 +340,14 @@ class CodeGenerator
   # l-values
   def get_l_value(ast)
     if (ast.is_a? SimpleVarExp) || (ast.is_a? AddrVarExp)
-      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      get_base(ast)
     elsif (ast.is_a? ArrayVarExp) || (ast.is_a? AddrArrayVarExp)
       get_index_offset(ast)
       emit("movq", "%rax, %rbx", "# move index offset into rbx")
       get_array_base(ast)
       emit("addq", "%rbx, %rax", "# add index offset to #{ast.id} address")
     else # ast.is_a? PointerVarExp
-      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      get_base(ast)
       emit("movq", "(%rax), %rax", "# follow pointer")
     end
   end
@@ -355,7 +363,17 @@ class CodeGenerator
     emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute index offset from index")
   end
 
+  def get_base(ast)
+    if ast.declaration.global
+	    emit("movq", "#{ast.declaration.label}@GOTPCREL(%rip), %rax", "# load #{ast.id} address into rax")
+    else
+      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    end
+  end
+
   def get_array_base(ast)
+    # TODO modify for globals
+    #
     # If an array is declared as a parameter rather than a local variable, we
     # add an additional layer of indirection, and must take that into account.
     # We do so by checking whether the declaration is a parameter, and if it is,
