@@ -51,7 +51,9 @@ class CodeGenerator
 
   def generate_globals(ast)
     ast.declarations.each do |d|
-      unless d.is_a? FunctionDeclaration
+      if d.is_a? ArrayDeclaration
+        emit(".comm","#{d.label}, #{Constants::QUADWORD_SIZE*d.size}")
+      elsif d.is_a? VariableDeclaration
         emit(".comm","#{d.label}, #{Constants::QUADWORD_SIZE}")
       end
     end
@@ -272,7 +274,6 @@ class CodeGenerator
   # VarExps #
   ###########
 
-  # TODO refactor
   def r_var_exp(ast)
     if ast.is_a? FunCallExp
       r_fun_call_exp(ast)
@@ -378,7 +379,7 @@ class CodeGenerator
     # add an additional layer of indirection, and must take that into account.
     # We do so by checking whether the declaration is a parameter, and if it is,
     # then we must dereference the value a second time.
-    emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+    get_base(ast)
     if ast.declaration.is_a? ArrayParam
       emit("movq", "(%rax), %rax", "# dereference #{ast.id} (param) into rax")
     end

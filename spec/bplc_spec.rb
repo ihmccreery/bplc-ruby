@@ -82,6 +82,14 @@ describe Bplc do
       expect(compile_and_run("globals.bpl")).to eq("hello 55 ")
     end
 
+    it "properly compiles a program with global arrays" do
+      expect(compile_and_run("global_arrays.bpl")).to eq("0 3 5 hello maybe goodbye ")
+    end
+
+    it "properly compiles a program with global pointers" do
+      expect(compile_and_run("global_pointers.bpl")).to eq("1 hello 2 goodbye ")
+    end
+
     it "raises an syntax error compiling an invalid program" do
       expect_error_output("BplSyntaxError", "expected semicolon, got int", 5, "\tint y;\n") do
         Bplc.new(EX_BAD_SYNTAX_FNAME).compile(StringIO.new)
