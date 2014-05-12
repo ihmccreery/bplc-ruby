@@ -298,7 +298,7 @@ class CodeGenerator
   def r_fun_call_exp(ast)
     with_aligned_stack do
       # add an empty quadword if there is an odd number of arguments to keep
-      # 16-byte alignment for a function call
+      # alignment for a function call
       if ast.args.size.odd?
         emit("pushq", "$0", "# push empty quadword onto stack to maintain alignment with #{ast.args.size} arguments")
       end
@@ -310,7 +310,7 @@ class CodeGenerator
       emit("callq", ast.declaration.function_label, "# call #{ast.id}")
 
       # pop off size + (size % 2): in case there is an odd number of arguments, we
-      # need to pop off the extra empty quadword to keep 16-byte alignment
+      # need to pop off the extra empty quadword to keep alignment
       pop_size = Constants::QUADWORD_SIZE*(ast.args.size + (ast.args.size % 2))
       emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
     end
@@ -322,7 +322,7 @@ class CodeGenerator
 
   def r_read_lit_exp(ast)
     with_aligned_stack do
-      emit("subq", "$16, %rsp", "# allocate two quadwords for scanf, (to keep alignment)")
+      emit("subq", "$#{Constants::STACK_ALIGNMENT}, %rsp", "# allocate two quadwords for scanf, (to keep alignment)")
       emit("leaq", "(%rsp), %rsi", "# put scanf storage location into rsi")
       emit("leaq", ".ReadString(%rip), %rdi", "# load int formatting string into rdi")
 
@@ -381,7 +381,7 @@ class CodeGenerator
   def with_aligned_stack
     emit("movq", "%rsp, %rbx", "# store rsp in rbx")
     emit("pushq", "$0", "# push an empty byte on the stack to allocate space for the old stack pointer")
-    emit("andq", "$-16, %rsp", "# align the stack to 16 bytes")
+    emit("andq", "$-#{Constants::STACK_ALIGNMENT}, %rsp", "# align the stack")
     # the stack is now definitely aligned
     emit("movq", "%rbx, (%rsp)", "# move rbx (the old stack pointer,) into allocated space on the stack")
 
