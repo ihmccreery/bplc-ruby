@@ -112,7 +112,62 @@ The steps for the function called are:
   - pop the stack into the frame pointer; and
   - return.
 
-# Array parameters
+### Dealing with variable expressions
+
+#### VarExps:
+
+The possible `VarExps`, with their algorithms for computation:
+
+  - `SimpleVarExp`
+    - if array
+      - put base into rax
+    - else
+      - put l-value into rax
+      - move r-value into rax
+  - `PointerVarExp`
+    - put l-value into rax
+    - move r-value into rax
+    - follow pointer
+  - `ArrayVarExp`
+    - put l-value into rax
+    - move r-value into rax
+  - `AddrVarExp`
+    - put l-value into rax
+  - `AddrArrayVarExp`
+    - put l-value into rax
+  - `FunCallExp`
+    - (see above)
+
+Computing the l-value for an array element happens as follows:
+
+  - compute the index, then offset, and push it into rbx
+  - put base into rax
+  - add offset to base
+
+#### Types
+
+Let's take a look at the possible types:
+
+  - `int`
+    - l-value: address in memory where the value is stored
+    - r-value: value at l-value address
+  - `pointer_int`
+    - l-value: address in memory where the pointer is stored
+    - r-value: pointer at l-value address
+  - `array_int`
+    - l-value: n/a
+    - r-value: base address
+  - `string`
+    - l-value: address in memory where the label is stored
+    - r-value: label at l-value address
+  - `pointer_string`
+    - l-value: address in memory where the pointer is stored
+    - r-value: pointer at l-value address
+  - `array_string`
+    - l-value: n/a
+    - r-value: base address
+
+### Array parameters
 
 Consider the expression `a[0]`.  If `a` is a locally-allocated, we know that its offset is something like -80, and that
 `a[0]` is at `-80(%rbp)`.  However, if `a` is a parameter passed into the function, then its offset is something like

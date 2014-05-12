@@ -204,14 +204,16 @@ class CodeGenerator
   end
 
   def r_assignment_exp(ast)
-    rhs_onto_stack(ast)
-    get_address(ast.lhs)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
+    get_l_value(ast.lhs)
     emit("popq", "(%rax)", "# assign rhs to lhs")
     emit("movq", "(%rax), %rax", "# leave rhs in rax")
   end
 
   def r_rel_exp(ast)
-    rhs_onto_stack(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
     r(ast.lhs)
     emit("cmpq", "(%rsp), %rax", "# compare top of stack to rax")
     emit(CONDITIONAL_JUMPS[ast.op], ast.true_label, "# jump to #{ast.true_label} to resolve True")
@@ -224,7 +226,8 @@ class CodeGenerator
   end
 
   def r_add_exp(ast)
-    rhs_onto_stack(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
     r(ast.lhs)
     if ast.op == :plus
       emit("addq", "(%rsp), %rax", "# add top of stack to rax")
@@ -235,7 +238,8 @@ class CodeGenerator
   end
 
   def r_mul_exp(ast)
-    rhs_onto_stack(ast)
+    r(ast.rhs)
+    emit("pushq", "%rax", "# push rax (rhs) onto stack")
     r(ast.lhs)
     if ast.op == :asterisk
       emit("imulq", "(%rsp)", "# multiply top of stack into rax")
@@ -256,15 +260,39 @@ class CodeGenerator
     emit("subq", "%rbx, %rax", "# subtract rbx from rax")
   end
 
+  ###########
+  # VarExps #
+  ###########
+
+  # TODO refactor
   def r_var_exp(ast)
-    if ast.is_a? FunCallExp
+    if ast.is_a? SimpleVarExp
+      r_simple_var_exp(ast)
+    elsif ast.is_a? PointerVarExp
+      # TODO
+    elsif ast.is_a? ArrayVarExp
+      r_array_var_exp(ast)
+    elsif ast.is_a? AddrVarExp
+      # TODO
+    elsif ast.is_a? AddrArrayVarExp
+      # TODO
+    else # ast.is_a? FunCallExp
       r_fun_call_exp(ast)
-    else
-      get_address(ast)
-      unless [:array_int, :array_string].include? ast.type
-        emit("movq", "(%rax), %rax", "# move value of #{ast.id} into rax")
-      end
     end
+  end
+
+  def r_simple_var_exp(ast)
+    if [:array_int, :array_string].include? ast.type
+      get_array_base(ast)
+    else
+      get_l_value(ast)
+      get_r_value
+    end
+  end
+
+  def r_array_var_exp(ast)
+    get_l_value(ast)
+    get_r_value
   end
 
   def r_fun_call_exp(ast)
@@ -287,6 +315,10 @@ class CodeGenerator
       emit("addq", "$#{pop_size}, %rsp", "# pop #{ast.args.size} args off the stack")
     end
   end
+
+  ###########
+  # LitExps #
+  ###########
 
   def r_read_lit_exp(ast)
     with_aligned_stack do
@@ -313,33 +345,36 @@ class CodeGenerator
   # support methods #
   ###################
 
-  def rhs_onto_stack(ast)
-    r(ast.rhs)
-    emit("pushq", "%rax", "# push rax (rhs) onto stack")
-  end
-
-  def get_address(ast)
-    if ast.is_a? SimpleVarExp
+  # note that this method never gets called on arrays, because they have no
+  # l-values
+  def get_l_value(ast)
+    if ast.is_a? ArrayVarExp
+      get_index_offset(ast)
+      emit("movq", "%rax, %rbx", "# move index offset into rbx")
+      get_array_base(ast)
+      emit("addq", "%rbx, %rax", "# add index offset to #{ast.id} address")
+    else
       emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
-    elsif ast.is_a? ArrayVarExp
-      r(ast.index)
-      emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute offset from index")
-      emit("movq", "%rax, %rbx", "# move index into rbx")
-      get_array_base_address(ast)
-      emit("addq", "%rbx, %rax", "# add index to #{ast.id} address")
     end
   end
 
-  def get_array_base_address(ast)
+  def get_r_value
+    emit("movq", "(%rax), %rax", "# convert l-value to r-value")
+  end
+
+  def get_index_offset(ast)
+    r(ast.index)
+    emit("imulq", "$#{Constants::QUADWORD_SIZE}, %rax", "# compute index offset from index")
+  end
+
+  def get_array_base(ast)
     # If an array is declared as a parameter rather than a local variable, we
     # add an additional layer of indirection, and must take that into account.
     # We do so by checking whether the declaration is a parameter, and if it is,
-    # then we must move the value in the address into `rax` a second time.
+    # then we must dereference the value a second time.
+    emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
     if ast.declaration.is_a? ArrayParam
-      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} param address into rax")
-      emit("movq", "(%rax), %rax", "# move address of #{ast.id} param into rax")
-    else
-      emit("leaq", "#{ast.declaration.offset}(%rbp), %rax", "# load #{ast.id} address into rax")
+      emit("movq", "(%rax), %rax", "# dereference #{ast.id} (param) into rax")
     end
   end
 
